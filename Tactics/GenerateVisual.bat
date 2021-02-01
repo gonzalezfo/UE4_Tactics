@@ -1,0 +1,1 @@
+"D:\Epic Games\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe" -2015 -projectfiles -project="C:\Users\marcg\Perforce\garciacar_ESAT_homeWorkspace\PlaneShooter.uproject" -game -rocket -progress
