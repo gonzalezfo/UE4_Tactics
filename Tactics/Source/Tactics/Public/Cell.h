@@ -33,14 +33,16 @@ public:
 
 	void Init(int newID, AGrid* newGrid);
 
-	// Set the ID of each cells
+	// Setters
 	void SetID(int newID);
-
 	void SetGridPointer(AGrid* newGrid);
-
 	void SetType(CellType newType);
 
+
+	// Getters
 	FVector GetSizeOfMesh();
+	int GetID();
+	CellType GetType();
 
 
 private:

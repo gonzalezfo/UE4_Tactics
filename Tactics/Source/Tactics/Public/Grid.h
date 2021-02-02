@@ -37,6 +37,22 @@ public:
 	// Returns the size of the cell
 	FVector GetCellSize();
 
+	// Checkers
+	bool IsValidID(ACell* cell);
+	bool isWall(ACell* cell);
+	bool IsValidRowCol(int row, int col);
+
+
+	// Transformers
+	void IndexToRowCol(int* row, int* col, ACell* origin);
+
+	// Return the ID of the north, east, south or west cells if is walkable
+	int North(ACell* origin);
+	int South(ACell* origin);
+	int East(ACell* origin);
+	int West(ACell* origin);
+
+
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))

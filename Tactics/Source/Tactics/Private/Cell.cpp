@@ -58,3 +58,13 @@ FVector ACell::GetSizeOfMesh()
 	return Floor->GetStaticMesh()->GetBounds().GetBox().GetSize();
 }
 
+int ACell::GetID()
+{
+	return Id;
+}
+
+CellType ACell::GetType()
+{
+	return type;
+}
+
