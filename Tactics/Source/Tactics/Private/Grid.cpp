@@ -1,23 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ProceduralRoom.h"
-#include "..\Public\ProceduralRoom.h"
+#include "../Public/Grid.h"
+#include "../Public/Cell.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
-AProceduralRoom::AProceduralRoom()
+AGrid::AGrid()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorComponent"));
-	SetRootComponent(Floor);
-
 	GridSizeX = 5;
 	GridSizeY = 5;
-	GridHeight = 1.0f;
+
 	SquareWidth = 200.0f;
+
 	RoomLength = SquareWidth * GridSizeY;
 	RoomWidth = SquareWidth* GridSizeX;
 	TopLeft = FVector(0.0f);
@@ -25,7 +23,7 @@ AProceduralRoom::AProceduralRoom()
 }
 
 // Called when the game starts or when spawned
-void AProceduralRoom::BeginPlay()
+void AGrid::BeginPlay()
 {
 	Super::BeginPlay();	
 
@@ -34,40 +32,36 @@ void AProceduralRoom::BeginPlay()
 }
 
 // Called every frame
-void AProceduralRoom::Tick(float DeltaTime)
+void AGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-void AProceduralRoom::SpawnItem(UClass* ItemToSpawn, FVector& Position)
+float AGrid::GetCellWidth()
 {
+	return SquareWidth;
+}
 
-	float Yaw = FMath::FRandRange(0.0f, 360.0f);
-
-	FRotator rotation (0.0f, Yaw, 0.0f);
+void AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
+{
+	FRotator rotation (0.0f);
 
 	GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
 }
 
-void AProceduralRoom::CreateGrid()
+void AGrid::CreateGrid()
 {
 	for (int i = 0; i <= GridSizeX; ++i)
 	{
-		FVector Start = TopLeft + FVector(i * SquareWidth, 0.0f, GridHeight);
-		FVector End = Start + FVector(0.0f, RoomWidth, GridHeight);
-		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, true);
-	}
-
-	for (int i = 0; i <= GridSizeY; ++i)
-	{
-		FVector Start = TopLeft + FVector(0.0, i * SquareWidth, GridHeight);
-		FVector End = Start + FVector(RoomLength, 0.0f, GridHeight);
-		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, true);
+		for (int j = 0; j <= GridSizeY; ++j)
+		{
+			
+		}
 	}
 }
 
-FVector AProceduralRoom::GetMidPointInGrid(const FVector& UpperLeft, const FVector& LowerRight)
+FVector AGrid::GetMidPointInGrid(const FVector& UpperLeft, const FVector& LowerRight)
 {
 	float MidX = UpperLeft.X + (SquareWidth * 0.5f);
 	float MidY = LowerRight.Y - (SquareWidth * 0.5f);
@@ -75,7 +69,7 @@ FVector AProceduralRoom::GetMidPointInGrid(const FVector& UpperLeft, const FVect
 	return FVector(MidX, MidY, 0.0f);
 }
 
-void AProceduralRoom::PlacePointsOnGrid()
+void AGrid::PlacePointsOnGrid()
 {
 	for (int i = 0; i < GridSizeX; ++i)
 	{

@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProceduralRoom.generated.h"
+#include "Grid.generated.h"
+
+
+class ACell;
+
 
 UCLASS()
-class TACTICS_API AProceduralRoom : public AActor
+class TACTICS_API AGrid : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AProceduralRoom();
+	AGrid();
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,9 +27,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Returns the size of the cell
+	float GetCellWidth();
+
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Room, meta = (AllowPrivateAccess = "true"))
-	UStaticMeshComponent* Floor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
@@ -45,14 +50,17 @@ private:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-	float SquareWidth;
+		float SquareWidth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-	int GridSizeX;
+		int GridSizeX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-	int GridSizeY;	
+		int GridSizeY;	
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-	float GridHeight;
+		float GridHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Grid)
+		TArray<ACell*> Cells;
 };
