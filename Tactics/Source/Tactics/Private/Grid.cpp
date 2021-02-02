@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "../Public/Grid.h"
-#include "../Public/Cell.h"
+#include "Grid.h"
+#include "Cell.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -32,7 +31,6 @@ void AGrid::BeginPlay()
 void AGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 FVector AGrid::GetCellSize()
@@ -41,6 +39,117 @@ FVector AGrid::GetCellSize()
 
 	return tmp;
 }
+
+bool AGrid::IsValidID(ACell* cell)
+{
+	if (cell->GetID() >= 0 && cell->GetID() < (GridSizeX * GridSizeY))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool AGrid::isWall(ACell* cell)
+{
+	if (!IsValidID(cell))
+	{
+		return true;
+	}
+
+	if (Cells[cell->GetID()]->GetType() == kCellType_Wall)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool AGrid::IsValidRowCol(int row, int col)
+{
+	return (row >= 0 && row < GridSizeY && col >= 0 && col < GridSizeX);
+}
+
+int AGrid::North(ACell* origin)
+{
+	if (!IsValidID(origin))
+	{
+		return -1;
+	}
+
+	int const index = origin->GetID() - GridSizeX;
+
+	if (index < 0) {
+		return -1;
+	}
+
+	return index;
+}
+
+int AGrid::South(ACell* origin)
+{
+	if (!IsValidID(origin))
+	{
+		return -1;
+	}
+
+	int const index = origin->GetID() + GridSizeX;
+
+	if (index > GridSizeX * GridSizeY)
+	{
+		return -1;
+	}
+
+	return index;
+}
+
+int AGrid::East(ACell* origin)
+{
+	if (!IsValidID(origin))
+	{
+		return -1;
+	}
+
+	int row, col = -1;
+	IndexToRowCol(&row, &col, origin);
+
+	if (col == GridSizeX - 1)
+	{
+		return -1;
+	}
+
+	return origin->GetID() + 1;
+}
+
+int AGrid::West(ACell* origin)
+{
+	if (!IsValidID(origin))
+	{
+		return -1;
+	}
+
+	int row, col = -1;
+	IndexToRowCol(&row, &col, origin);
+
+	if (col == 0)
+	{
+		return -1;
+	}
+
+	return origin->GetID() - 1;
+}
+
+
+void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
+{
+	if (!IsValidID(origin))
+	{
+		return;
+	}
+
+	*row = origin->GetID() / GridSizeX;
+	*col = origin->GetID() % GridSizeX;
+}
+
 
 AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 {
@@ -62,6 +171,7 @@ void AGrid::CreateGrid()
 			FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
 			Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
 			Cells[index]->Init(index, this);
+			Cells[index]->SetType(kCellType_Normal);
 		}
 	}
 }

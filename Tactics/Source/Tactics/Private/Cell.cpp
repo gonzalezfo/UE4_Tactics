@@ -48,8 +48,23 @@ void ACell::SetGridPointer(AGrid* newGrid)
 	Grid = newGrid;
 }
 
+void ACell::SetType(CellType newType)
+{
+	type = newType;
+}
+
 FVector ACell::GetSizeOfMesh()
 {
 	return Floor->GetStaticMesh()->GetBounds().GetBox().GetSize();
+}
+
+int ACell::GetID()
+{
+	return Id;
+}
+
+CellType ACell::GetType()
+{
+	return type;
 }
 

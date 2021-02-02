@@ -9,6 +9,13 @@
 
 class ACell;
 
+UENUM(BlueprintType)
+enum CellType {
+	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
+	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
+	kCellType_Normal = 2     UMETA(DisplayName = "NORMAL"),
+	kCellType_End = 3		UMETA(DisplayName = "END")
+};
 
 UCLASS()
 class TACTICS_API AGrid : public AActor
@@ -29,6 +36,22 @@ public:
 
 	// Returns the size of the cell
 	FVector GetCellSize();
+
+	// Checkers
+	bool IsValidID(ACell* cell);
+	bool isWall(ACell* cell);
+	bool IsValidRowCol(int row, int col);
+
+
+	// Transformers
+	void IndexToRowCol(int* row, int* col, ACell* origin);
+
+	// Return the ID of the north, east, south or west cells if is walkable
+	int North(ACell* origin);
+	int South(ACell* origin);
+	int East(ACell* origin);
+	int West(ACell* origin);
+
 
 private:
 
