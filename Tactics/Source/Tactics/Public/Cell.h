@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "../Public/Grid.h"
+
 #include "Cell.generated.h"
 
-
-class AGrid;
 
 
 UCLASS()
@@ -38,6 +38,8 @@ public:
 
 	void SetGridPointer(AGrid* newGrid);
 
+	void SetType(CellType newType);
+
 	FVector GetSizeOfMesh();
 
 
@@ -46,5 +48,8 @@ private:
 		UStaticMeshComponent* Floor;
 
 	int Id;
+
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<CellType> type;
 
 };

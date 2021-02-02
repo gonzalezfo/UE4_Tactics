@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../Public/Grid.h"
 #include "../Public/Cell.h"
 #include "DrawDebugHelpers.h"
 
@@ -62,6 +61,7 @@ void AGrid::CreateGrid()
 			FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
 			Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
 			Cells[index]->Init(index, this);
+			Cells[index]->SetType(CellType::kCellType_Normal);
 		}
 	}
 }
