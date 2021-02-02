@@ -2,6 +2,8 @@
 
 
 #include "../Public/Cell.h"
+#include "../Public/Grid.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 ACell::ACell()
@@ -11,7 +13,6 @@ ACell::ACell()
 
 	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorComponent"));
 	SetRootComponent(Floor);
-
 }
 
 // Called when the game starts or when spawned
@@ -21,10 +22,34 @@ void ACell::BeginPlay()
 	
 }
 
+void ACell::Init(int newID, AGrid* newGrid)
+{
+	SetGridPointer(newGrid);
+
+	SetID(newID);
+
+	SetActorRelativeScale3D(Grid->GetCellSize() / GetSizeOfMesh());
+}
+
 // Called every frame
 void ACell::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ACell::SetID(int newID)
+{
+	Id = newID;
+}
+
+void ACell::SetGridPointer(AGrid* newGrid)
+{
+	Grid = newGrid;
+}
+
+FVector ACell::GetSizeOfMesh()
+{
+	return Floor->GetStaticMesh()->GetBounds().GetBox().GetSize();
 }
 

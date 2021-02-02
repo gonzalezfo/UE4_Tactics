@@ -18,8 +18,6 @@ AGrid::AGrid()
 
 	RoomLength = SquareWidth * GridSizeY;
 	RoomWidth = SquareWidth* GridSizeX;
-	TopLeft = FVector(0.0f);
-	BottomRight = FVector(RoomWidth, RoomLength, 0.0f);
 }
 
 // Called when the game starts or when spawned
@@ -28,7 +26,6 @@ void AGrid::BeginPlay()
 	Super::BeginPlay();	
 
 	CreateGrid();
-	PlacePointsOnGrid();
 }
 
 // Called every frame
@@ -38,51 +35,36 @@ void AGrid::Tick(float DeltaTime)
 
 }
 
-float AGrid::GetCellWidth()
+FVector AGrid::GetCellSize()
 {
-	return SquareWidth;
+	FVector tmp(SquareWidth, SquareWidth, 1.0f);
+
+	return tmp;
 }
 
-void AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
+AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 {
 	FRotator rotation (0.0f);
 
-	GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
+	return GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
 }
+
 
 void AGrid::CreateGrid()
 {
-	for (int i = 0; i <= GridSizeX; ++i)
+	Cells.Init(nullptr, GridSizeY * GridSizeX);
+
+	for (int i = 0; i < GridSizeY; ++i)
 	{
-		for (int j = 0; j <= GridSizeY; ++j)
+		for (int j = 0; j < GridSizeX; ++j)
 		{
-			
+			int index = j + GridSizeX * i;
+			FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
+			Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
+			Cells[index]->Init(index, this);
 		}
 	}
 }
 
-FVector AGrid::GetMidPointInGrid(const FVector& UpperLeft, const FVector& LowerRight)
-{
-	float MidX = UpperLeft.X + (SquareWidth * 0.5f);
-	float MidY = LowerRight.Y - (SquareWidth * 0.5f);
 
-	return FVector(MidX, MidY, 0.0f);
-}
-
-void AGrid::PlacePointsOnGrid()
-{
-	for (int i = 0; i < GridSizeX; ++i)
-	{
-		for (int j = 0; j < GridSizeY; ++j)
-		{
-			FVector UpperLeft(i * SquareWidth, j * SquareWidth, GridHeight);
-			FVector LowerRight(i * SquareWidth + SquareWidth, j * SquareWidth + SquareWidth, GridHeight);
-			FVector CenterPointInSquare = GetMidPointInGrid(UpperLeft, LowerRight);
-			
-			DrawDebugCircle(GetWorld(), CenterPointInSquare, 25.f, 48, FColor::Red, true, -1.0f, 0, 2.5f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f), true);
-
-			SpawnItem(ActorToInstantiate, CenterPointInSquare);
-		}
-	}
-}
 

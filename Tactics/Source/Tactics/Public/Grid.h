@@ -28,23 +28,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Returns the size of the cell
-	float GetCellWidth();
+	FVector GetCellSize();
 
 private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
 
-	void SpawnItem(UClass* ItemToSpawn, FVector& Position);
-
+	AActor* SpawnItem(UClass* ItemToSpawn, FVector& Position);
+	
 	void CreateGrid();
 
-	FVector GetMidPointInGrid(const FVector& UpperLeft, const FVector& LowerRight);
-
-	void PlacePointsOnGrid();
-
-	FVector TopLeft;
-	FVector BottomRight;
 	float RoomLength;
 	float RoomWidth;
 
@@ -57,9 +51,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
 		int GridSizeY;	
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-		float GridHeight;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Grid)
 		TArray<ACell*> Cells;

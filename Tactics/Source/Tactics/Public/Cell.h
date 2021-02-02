@@ -24,14 +24,27 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = References, meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<AGrid> Grid;
+		AGrid* Grid;
+
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void Init(int newID, AGrid* newGrid);
+
+	// Set the ID of each cells
+	void SetID(int newID);
+
+	void SetGridPointer(AGrid* newGrid);
+
+	FVector GetSizeOfMesh();
+
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Room, meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* Floor;
+
+	int Id;
 
 };
