@@ -8,6 +8,7 @@
 
 
 class AGrid;
+class ACustomCharacter;
 
 
 UCLASS()
@@ -26,6 +27,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = References, meta = (AllowPrivateAccess = "true"))
 		AGrid* Grid;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = References, meta = (AllowPrivateAccess = "true"))
+		ACustomCharacter* Character;
+
 
 public:	
 	// Called every frame
@@ -37,6 +41,7 @@ public:
 	void SetID(int newID);
 
 	void SetGridPointer(AGrid* newGrid);
+	void SetCharacterPointer(ACustomCharacter* newCharacter);
 
 	FVector GetSizeOfMesh();
 

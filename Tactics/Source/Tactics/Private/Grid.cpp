@@ -3,6 +3,7 @@
 
 #include "../Public/Grid.h"
 #include "../Public/Cell.h"
+#include "../Public/CustomCharacter.h"
 #include "DrawDebugHelpers.h"
 
 // Sets default values
@@ -54,14 +55,36 @@ void AGrid::CreateGrid()
 {
 	Cells.Init(nullptr, GridSizeY * GridSizeX);
 
-	for (int i = 0; i < GridSizeY; ++i)
+	if (ActorToInstantiate)
 	{
-		for (int j = 0; j < GridSizeX; ++j)
+		for (int i = 0; i < GridSizeY; ++i)
 		{
-			int index = j + GridSizeX * i;
-			FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
-			Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
-			Cells[index]->Init(index, this);
+			for (int j = 0; j < GridSizeX; ++j)
+			{
+				int index = j + GridSizeX * i;
+				FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
+				Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
+				Cells[index]->Init(index, this);
+			}
+		}
+	}
+	
+	//Checks if not null
+	if (CharacterToInstantiate)
+	{
+		//Checks if the position is less than the array size
+		if (spawn_position_ < Cells.Num())
+		{
+			//New character position
+			FVector new_pos = Cells[spawn_position_]->GetActorLocation();
+			new_pos.Z += 50.0f;
+
+			//Spawn character and set it's cell pointer
+			ACustomCharacter* cchar = Cast<ACustomCharacter>(SpawnItem(CharacterToInstantiate, new_pos));
+			cchar->InitPlayer(Cells[spawn_position_]);
+
+			//Set the character pointer on the character cell.
+			Cells[spawn_position_]->SetCharacterPointer(cchar);
 		}
 	}
 }

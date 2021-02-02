@@ -48,6 +48,11 @@ void ACell::SetGridPointer(AGrid* newGrid)
 	Grid = newGrid;
 }
 
+void ACell::SetCharacterPointer(ACustomCharacter * newCharacter)
+{
+	Character = newCharacter;
+}
+
 FVector ACell::GetSizeOfMesh()
 {
 	return Floor->GetStaticMesh()->GetBounds().GetBox().GetSize();

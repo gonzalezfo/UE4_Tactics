@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "CustomCharacter.generated.h"
 
+class ACell;
+
+
 UCLASS()
 class TACTICS_API ACustomCharacter : public AActor
 {
@@ -23,4 +26,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void InitPlayer(ACell*);
+
+	//Pointer to the current character cell.
+	UPROPERTY(VisibleAnywhere, Category = "Cell")
+		ACell* current_cell_;
+
+	//Character static mesh.
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+		UStaticMeshComponent* mesh_;
 };
