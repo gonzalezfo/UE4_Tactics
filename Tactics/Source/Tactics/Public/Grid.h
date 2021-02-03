@@ -9,14 +9,6 @@
 
 class ACell;
 
-UENUM(BlueprintType)
-enum CellType {
-	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
-	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
-	kCellType_Normal = 2     UMETA(DisplayName = "NORMAL"),
-	kCellType_End = 3		UMETA(DisplayName = "END")
-};
-
 UCLASS()
 class TACTICS_API AGrid : public AActor
 {
@@ -70,11 +62,15 @@ public:
 		float SquareWidth;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-		int GridSizeX;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-		int GridSizeY;	
+		FIntPoint GridSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Grid)
 		TArray<ACell*> Cells;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
+		float ObstaclePercentaje; //between 0.0 and 1.0
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
+		FVector2D ObstacleDiffusion;
 };

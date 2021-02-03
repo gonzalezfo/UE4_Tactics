@@ -10,13 +10,13 @@ AGrid::AGrid()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GridSizeX = 5;
-	GridSizeY = 5;
+	GridSize.X = 5;
+	GridSize.Y = 5;
 
 	SquareWidth = 200.0f;
 
-	RoomLength = SquareWidth * GridSizeY;
-	RoomWidth = SquareWidth* GridSizeX;
+	RoomLength = SquareWidth * GridSize.Y;
+	RoomWidth = SquareWidth* GridSize.X;
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +42,7 @@ FVector AGrid::GetCellSize()
 
 bool AGrid::IsValidID(ACell* cell)
 {
-	if (cell->GetID() >= 0 && cell->GetID() < (GridSizeX * GridSizeY))
+	if (cell->GetID() >= 0 && cell->GetID() < (GridSize.X * GridSize.Y))
 	{
 		return true;
 	}
@@ -66,7 +66,7 @@ bool AGrid::isWall(ACell* cell)
 
 bool AGrid::IsValidRowCol(int row, int col)
 {
-	return (row >= 0 && row < GridSizeY && col >= 0 && col < GridSizeX);
+	return (row >= 0 && row < GridSize.Y && col >= 0 && col < GridSize.X);
 }
 
 int AGrid::North(ACell* origin)
@@ -76,7 +76,7 @@ int AGrid::North(ACell* origin)
 		return -1;
 	}
 
-	int const index = origin->GetID() - GridSizeX;
+	int const index = origin->GetID() - GridSize.X;
 
 	if (index < 0) {
 		return -1;
@@ -92,9 +92,9 @@ int AGrid::South(ACell* origin)
 		return -1;
 	}
 
-	int const index = origin->GetID() + GridSizeX;
+	int const index = origin->GetID() + GridSize.X;
 
-	if (index > GridSizeX * GridSizeY)
+	if (index > GridSize.X * GridSize.Y)
 	{
 		return -1;
 	}
@@ -112,7 +112,7 @@ int AGrid::East(ACell* origin)
 	int row, col = -1;
 	IndexToRowCol(&row, &col, origin);
 
-	if (col == GridSizeX - 1)
+	if (col == GridSize.X - 1)
 	{
 		return -1;
 	}
@@ -146,8 +146,8 @@ void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
 		return;
 	}
 
-	*row = origin->GetID() / GridSizeX;
-	*col = origin->GetID() % GridSizeX;
+	*row = origin->GetID() / GridSize.X;
+	*col = origin->GetID() % GridSize.X;
 }
 
 
@@ -158,20 +158,51 @@ AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 	return GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
 }
 
+static TArray<CellType> GenerateGridTypes(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
+	TArray<CellType> cell_types;
+	cell_types.Init(kCellType_Void, size.X * size.Y);
+
+	float pseudo_seed = FMath::FRandRange(-1.0f, 1.0f);
+
+	for (int i = 0; i < size.Y; ++i) {
+		for (int j = 0; j < size.X; ++j) {
+			int index = i * size.X + j;
+			FVector location = { i * obstacleDiffusion.X , j * obstacleDiffusion.Y ,  pseudo_seed };
+			float value = FMath::PerlinNoise3D(location) + 1.0f;
+			value = value / 2.0f; //renormalize between 0 and 1
+			if (value < obstaclePercentaje) {
+				cell_types[index] = kCellType_Wall;
+			}
+			else {
+				cell_types[index] = kCellType_Normal;
+			}
+
+		}
+	}
+
+
+	return cell_types;
+}
 
 void AGrid::CreateGrid()
 {
-	Cells.Init(nullptr, GridSizeY * GridSizeX);
+	Cells.Init(nullptr, GridSize.Y * GridSize.X);
 
-	for (int i = 0; i < GridSizeY; ++i)
+	TArray<CellType> cellTypes = GenerateGridTypes(GridSize, ObstaclePercentaje, ObstacleDiffusion);
+
+	for (int i = 0; i < GridSize.Y; ++i)
 	{
-		for (int j = 0; j < GridSizeX; ++j)
+		for (int j = 0; j < GridSize.X; ++j)
 		{
-			int index = j + GridSizeX * i;
+			int index = j + GridSize.X * i;
 			FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
 			Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
 			Cells[index]->Init(index, this);
-			Cells[index]->SetType(kCellType_Normal);
+			Cells[index]->SetType(cellTypes[index]);
+			if (cellTypes[index] == kCellType_Wall) {
+				FVector newPos = position + FVector(0.0f, 0.0f, 1.0f);
+				SpawnItem(ActorToInstantiate, newPos);
+			}
 		}
 	}
 }
