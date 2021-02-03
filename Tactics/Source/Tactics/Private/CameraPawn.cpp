@@ -24,9 +24,10 @@ ACameraPawn::ACameraPawn()
 	CameraComp->SetupAttachment(SpringArm);
 
 	// Initialize vars
-	Margin = 15;
+	Margin = 3;
 	CamSpeed = 15.0f;
-
+	ClampMin = -500.0f;
+	ClampMax = 500.0f;
 }
 
 // Called when the game starts or when spawned
@@ -44,11 +45,9 @@ void ACameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	PanDirection = GetCameraPanDirection() * CamSpeed;
-
-	PanMoveCamera(PanDirection);
-
 	PC->GetViewportSize(ScreenSizeX, ScreenSizeY);
+	PanDirection = GetCameraPanDirection() * CamSpeed;
+	PanMoveCamera(PanDirection);
 }
 
 // Called to bind functionality to input
@@ -81,7 +80,7 @@ FVector ACameraPawn::GetCameraPanDirection()
 		CamDirectionY = 1;
 	}
 
-	if (MousePosX >= ScreenSizeY - Margin)
+	if (MousePosY >= ScreenSizeY - Margin)
 	{
 		CamDirectionX = -1;
 	}
@@ -95,7 +94,13 @@ void ACameraPawn::PanMoveCamera(FVector& Direction)
 	{
 		return;
 	}
+	else {
+		AddActorWorldOffset(Direction);
+		FVector newPosition = GetActorLocation();
+		newPosition.X = FMath::Clamp(newPosition.X, ClampMin, ClampMax);
+		newPosition.Y = FMath::Clamp(newPosition.Y, ClampMin, ClampMax);
 
-	AddActorWorldOffset(Direction);
+		SetActorLocation(newPosition, false, nullptr, ETeleportType::None);
+	}
 }
 

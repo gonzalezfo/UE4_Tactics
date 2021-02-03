@@ -47,8 +47,6 @@ protected:
 
 	APlayerController* PC;
 
-	float Margin;
-
 	int32 ScreenSizeX;
 	
 	int32 ScreenSizeY;
@@ -56,5 +54,15 @@ protected:
 	FVector PanDirection;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
+		float Margin;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
 		float CamSpeed;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float ClampMin;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float ClampMax;
+
 };
