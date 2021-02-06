@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "CustomCharacter.generated.h"
 
 class ACell;
 
 
 UCLASS()
-class TACTICS_API ACustomCharacter : public AActor
+class TACTICS_API ACustomCharacter : public APawn
 {
 	GENERATED_BODY()
 	
@@ -25,6 +25,12 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	//INPUT
+	void Select();
 
 	void InitPlayer(ACell*);
 

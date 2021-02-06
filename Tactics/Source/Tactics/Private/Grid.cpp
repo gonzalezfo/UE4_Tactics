@@ -4,7 +4,6 @@
 #include "../Public/Grid.h"
 #include "../Public/Cell.h"
 #include "../Public/CustomCharacter.h"
-#include "DrawDebugHelpers.h"
 
 // Sets default values
 AGrid::AGrid()
@@ -33,7 +32,6 @@ void AGrid::BeginPlay()
 void AGrid::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 FVector AGrid::GetCellSize()
@@ -77,11 +75,15 @@ void AGrid::CreateGrid()
 		{
 			//New character position
 			FVector new_pos = Cells[spawn_position_]->GetActorLocation();
-			new_pos.Z += 50.0f;
+			new_pos.Z += 100.0f;
 
 			//Spawn character and set it's cell pointer
 			ACustomCharacter* cchar = Cast<ACustomCharacter>(SpawnItem(CharacterToInstantiate, new_pos));
-			cchar->InitPlayer(Cells[spawn_position_]);
+			if (cchar)
+			{
+				cchar->InitPlayer(Cells[spawn_position_]);
+			}
+			
 
 			//Set the character pointer on the character cell.
 			Cells[spawn_position_]->SetCharacterPointer(cchar);
