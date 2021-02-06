@@ -36,6 +36,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//INPUT
+	void Select();
 
 protected:
 	// References to classes and components

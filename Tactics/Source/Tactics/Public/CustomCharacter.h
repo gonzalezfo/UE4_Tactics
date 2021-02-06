@@ -3,15 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Pawn.h"
 #include "CustomCharacter.generated.h"
 
+class ACell;
+
+
 UCLASS()
-class TACTICS_API ACustomCharacter : public AActor
+class TACTICS_API ACustomCharacter : public APawn
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ACustomCharacter();
 
@@ -19,8 +22,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+	void InitPlayer(ACell*);
+
+	//Pointer to the current character cell.
+	UPROPERTY(VisibleAnywhere, Category = "Cell")
+		ACell* current_cell_;
+
+	//Character static mesh.
+	UPROPERTY(VisibleAnywhere, Category = "Mesh")
+		UStaticMeshComponent* mesh_;
 };

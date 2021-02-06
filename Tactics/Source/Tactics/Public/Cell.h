@@ -5,10 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../Public/Grid.h"
-
 #include "Cell.generated.h"
 
-
+class ACustomCharacter;
 
 UCLASS()
 class TACTICS_API ACell : public AActor
@@ -26,6 +25,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = References, meta = (AllowPrivateAccess = "true"))
 		AGrid* Grid;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = References, meta = (AllowPrivateAccess = "true"))
+		ACustomCharacter* Character;
 
 public:	
 	// Called every frame
@@ -36,6 +37,7 @@ public:
 	// Setters
 	void SetID(int newID);
 	void SetGridPointer(AGrid* newGrid);
+	void SetCharacterPointer(ACustomCharacter* newCharacter);
 	void SetType(CellType newType);
 
 

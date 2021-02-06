@@ -9,6 +9,7 @@
 
 class ACell;
 
+
 UENUM(BlueprintType)
 enum CellType {
 	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
@@ -57,6 +58,12 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AActor> CharacterToInstantiate;
+
+	UPROPERTY(EditAnywhere, Category = Instantiation)
+		int spawn_position_;
 
 	AActor* SpawnItem(UClass* ItemToSpawn, FVector& Position);
 	

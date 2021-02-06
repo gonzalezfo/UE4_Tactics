@@ -5,6 +5,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
+#include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "DrawDebugHelpers.h"
+
 
 // Sets default values
 ACameraPawn::ACameraPawn()
@@ -36,7 +40,8 @@ void ACameraPawn::BeginPlay()
 	Super::BeginPlay();
 
 	PC = Cast<APlayerController>(GetController());
-	PC->bShowMouseCursor = true;
+	if(PC)
+		PC->bShowMouseCursor = true;
 	
 }
 
@@ -44,8 +49,9 @@ void ACameraPawn::BeginPlay()
 void ACameraPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (PC)
+		PC->GetViewportSize(ScreenSizeX, ScreenSizeY);
 
-	PC->GetViewportSize(ScreenSizeX, ScreenSizeY);
 	PanDirection = GetCameraPanDirection() * CamSpeed;
 	PanMoveCamera(PanDirection);
 }
@@ -104,3 +110,35 @@ void ACameraPawn::PanMoveCamera(FVector& Direction)
 	}
 }
 
+void ACameraPawn::Select()
+{
+	if (PC == nullptr)
+	{
+		return;
+	}
+
+	// get mouse position
+	float mouseX;
+	float mouseY;
+	PC->GetMousePosition(mouseX, mouseY);
+
+	//UE_LOG(LogTemp, Warning, TEXT("X: %f, Y: %f"), mouseX, mouseY);
+
+	// get current camera location, rotation, direction
+	//FVector cameraLocation = PC->PlayerCameraManager->GetCameraLocation();
+	FRotator cameraRotation = PC->PlayerCameraManager->GetCameraRotation();
+	FVector cameraDirection = cameraRotation.Vector().GetSafeNormal();
+
+	FVector traceStartLocation;
+	FVector traceEndLocation;
+	PC->DeprojectScreenPositionToWorld(mouseX, mouseY, traceStartLocation, cameraDirection);
+	traceEndLocation = traceStartLocation + 10000 * cameraDirection;
+
+	FHitResult hit;
+	FCollisionQueryParams params;
+
+	//if (GetWorld()->LineTraceSingleByChannel(hit, traceStartLocation, traceEndLocation, ECC_Visibility, params))
+	//{
+		DrawDebugLine(GetWorld(), traceStartLocation, traceEndLocation, FColor::Red, true);
+	//}
+}

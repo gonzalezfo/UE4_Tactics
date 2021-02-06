@@ -2,7 +2,7 @@
 
 
 #include "../Public/Cell.h"
-#include "../Public/Grid.h"
+#include "../Public/CustomCharacter.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
@@ -47,6 +47,12 @@ void ACell::SetGridPointer(AGrid* newGrid)
 {
 	Grid = newGrid;
 }
+
+void ACell::SetCharacterPointer(ACustomCharacter* newCharacter)
+{
+	Character = newCharacter;
+}
+
 
 void ACell::SetType(CellType newType)
 {
