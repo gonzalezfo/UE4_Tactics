@@ -8,13 +8,14 @@
 
 
 class ACell;
+class ACustomCharacter;
 
 
 UENUM(BlueprintType)
 enum CellType {
 	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
 	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
-	kCellType_Normal = 2     UMETA(DisplayName = "NORMAL"),
+	kCellType_Normal = 2    UMETA(DisplayName = "NORMAL"),
 	kCellType_End = 3		UMETA(DisplayName = "END")
 };
 
@@ -53,9 +54,9 @@ public:
 	int East(ACell* origin);
 	int West(ACell* origin);
 
+	void MoveCharacterToCell(ACustomCharacter*, ACell*);
 
 private:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
 

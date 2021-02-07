@@ -38,3 +38,21 @@ void ACustomCharacter::InitPlayer(ACell* tmp)
 	current_cell_ = tmp;
 }
 
+ACell* ACustomCharacter::GetCell()
+{
+	return current_cell_;
+}
+
+void ACustomCharacter::SetCell(ACell* new_cell)
+{
+	if (new_cell)
+	{
+		current_cell_ = new_cell;
+
+		FVector new_position = new_cell->GetActorLocation();
+		new_position.Z += 100.0f;
+
+		SetActorLocation(new_position);
+	}
+}
+

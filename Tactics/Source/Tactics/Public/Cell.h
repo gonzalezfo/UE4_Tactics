@@ -45,6 +45,8 @@ public:
 	FVector GetSizeOfMesh();
 	int GetID();
 	CellType GetType();
+	AGrid* GetGridPointer();
+	ACustomCharacter* GetCharacterPointer();
 
 
 private:
