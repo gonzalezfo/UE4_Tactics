@@ -159,6 +159,9 @@ AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 }
 
 static TArray<CellType> GenerateGridTypes(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
+	TArray<float> cell_values_perlin;
+	cell_values_perlin.Init(0.0f, size.X * size.Y);
+
 	TArray<CellType> cell_types;
 	cell_types.Init(kCellType_Void, size.X * size.Y);
 
@@ -170,13 +173,34 @@ static TArray<CellType> GenerateGridTypes(FIntPoint size, float obstaclePercenta
 			FVector location = { i * obstacleDiffusion.X , j * obstacleDiffusion.Y ,  pseudo_seed };
 			float value = FMath::PerlinNoise3D(location) + 1.0f;
 			value = value / 2.0f; //renormalize between 0 and 1
-			if (value < obstaclePercentaje) {
+
+			cell_values_perlin[index] = value;
+
+		}
+	}
+	TArray<float> tmp_values(cell_values_perlin);
+	tmp_values.Sort();
+	int percentaje_position;
+	if (FMath::IsNearlyZero(obstaclePercentaje)) {
+		percentaje_position = 0;
+	}
+	else {
+		float ceiling = ceilf(obstaclePercentaje * tmp_values.Num());
+		percentaje_position = int(ceiling) - 1;
+	}
+	float updatedPercentaje = tmp_values[percentaje_position];
+	UE_LOG(LogTemp, Warning, TEXT("%f") , updatedPercentaje);
+
+	//float updatedPercentaje = 0.0f;
+	for (int i = 0; i < size.Y; ++i) {
+		for (int j = 0; j < size.X; ++j) {
+			int index = i * size.X + j;
+			if (cell_values_perlin[index] < updatedPercentaje) {
 				cell_types[index] = kCellType_Wall;
 			}
 			else {
 				cell_types[index] = kCellType_Normal;
 			}
-
 		}
 	}
 
