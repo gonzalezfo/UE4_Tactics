@@ -19,7 +19,6 @@ ACell::ACell()
 void ACell::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ACell::Init(int newID, AGrid* newGrid)
@@ -72,5 +71,15 @@ int ACell::GetID()
 CellType ACell::GetType()
 {
 	return type;
+}
+
+AGrid* ACell::GetGridPointer()
+{
+	return Grid;
+}
+
+ACustomCharacter* ACell::GetCharacterPointer()
+{
+	return Character;
 }
 

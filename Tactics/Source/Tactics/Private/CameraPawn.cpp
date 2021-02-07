@@ -7,6 +7,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "CustomCharacter.h"
+#include "Cell.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -110,22 +112,19 @@ void ACameraPawn::PanMoveCamera(FVector& Direction)
 	}
 }
 
-void ACameraPawn::Select()
+bool ACameraPawn::CheckCharacterSelected()
 {
-	if (PC == nullptr)
-	{
-		return;
-	}
+	return (character_ != nullptr);
+}
 
+AActor* ACameraPawn::DoLineTrace()
+{
 	// get mouse position
 	float mouseX;
 	float mouseY;
 	PC->GetMousePosition(mouseX, mouseY);
 
-	//UE_LOG(LogTemp, Warning, TEXT("X: %f, Y: %f"), mouseX, mouseY);
-
 	// get current camera location, rotation, direction
-	//FVector cameraLocation = PC->PlayerCameraManager->GetCameraLocation();
 	FRotator cameraRotation = PC->PlayerCameraManager->GetCameraRotation();
 	FVector cameraDirection = cameraRotation.Vector().GetSafeNormal();
 
@@ -137,8 +136,92 @@ void ACameraPawn::Select()
 	FHitResult hit;
 	FCollisionQueryParams params;
 
-	//if (GetWorld()->LineTraceSingleByChannel(hit, traceStartLocation, traceEndLocation, ECC_Visibility, params))
-	//{
-		DrawDebugLine(GetWorld(), traceStartLocation, traceEndLocation, FColor::Red, true);
-	//}
+	if (GetWorld()->LineTraceSingleByChannel(hit, traceStartLocation, traceEndLocation, ECC_Visibility, params))
+	{
+		return hit.GetActor();
+	}
+
+	return nullptr;
 }
+
+void ACameraPawn::SelectCharacter()
+{
+	AActor* hitResult = DoLineTrace();
+
+	ACustomCharacter* cchar = Cast<ACustomCharacter>(hitResult);
+
+	if (cchar)
+	{
+		character_ = cchar;
+		return;
+	}
+	
+	ACell* cell = Cast<ACell>(hitResult);
+
+	if (cell)
+	{
+		cchar = cell->GetCharacterPointer();
+
+		if (cchar)
+		{
+			character_ = cchar;
+		}
+	}
+}
+
+void ACameraPawn::SelectCell()
+{
+	ACell* cell = Cast<ACell>(DoLineTrace());
+
+	if (cell)
+	{
+		cell_ = cell;
+	}
+}
+
+void ACameraPawn::MoveCharacterToCell()
+{
+	if (cell_)
+	{
+		AGrid* grid = cell_->GetGridPointer();
+
+		if (grid)
+		{
+			if (character_)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("You are moving the character to the new cell"));
+				grid->MoveCharacterToCell(character_, cell_);
+			}	
+		}
+	}
+}
+
+void ACameraPawn::ResetSelection()
+{
+	character_ = nullptr;
+	cell_ = nullptr;
+}
+
+void ACameraPawn::Select()
+{
+	//Implement a solution to the user selecting the player current cell.
+	if (PC == nullptr)
+	{
+		return;
+	}
+
+	if (!CheckCharacterSelected())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("You are selecting the character"));
+		SelectCharacter();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("You are selecting the cell"));
+		SelectCell();
+		MoveCharacterToCell();
+		ResetSelection();
+	}
+}
+
+

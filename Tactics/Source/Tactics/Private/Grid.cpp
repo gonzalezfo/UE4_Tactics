@@ -139,6 +139,22 @@ int AGrid::West(ACell* origin)
 	return origin->GetID() - 1;
 }
 
+void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
+{
+	if (character && new_cell)
+	{
+		ACell* tmp = character->GetCell();
+
+		if (tmp)
+		{
+			tmp->SetCharacterPointer(nullptr);
+		}
+
+		character->SetCell(new_cell);
+		new_cell->SetCharacterPointer(character);
+	}
+}
+
 
 void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
 {

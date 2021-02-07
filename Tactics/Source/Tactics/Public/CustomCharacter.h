@@ -22,6 +22,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//Pointer to the current character cell.
+	UPROPERTY(VisibleAnywhere, Category = "Cell")
+		ACell* current_cell_;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -29,9 +33,11 @@ public:
 
 	void InitPlayer(ACell*);
 
-	//Pointer to the current character cell.
-	UPROPERTY(VisibleAnywhere, Category = "Cell")
-		ACell* current_cell_;
+	//Getters
+	ACell* GetCell();
+
+	//Setters
+	void SetCell(ACell*);
 
 	//Character static mesh.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")

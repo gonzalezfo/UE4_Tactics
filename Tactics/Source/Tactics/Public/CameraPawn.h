@@ -10,6 +10,8 @@
 class USpringArmComponent;
 class UCameraComponent;
 class APlayerController;
+class ACustomCharacter;
+class ACell;
 
 
 UCLASS()
@@ -36,8 +38,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	AActor* DoLineTrace();
+
 	//INPUT
 	void Select();
+
+	bool CheckCharacterSelected();
+	void SelectCharacter();
+	void SelectCell();
+	void MoveCharacterToCell();
+	void ResetSelection();
 
 protected:
 	// References to classes and components
@@ -48,6 +58,9 @@ protected:
 	UCameraComponent* CameraComp;
 
 	APlayerController* PC;
+
+	ACustomCharacter* character_;
+	ACell* cell_;
 
 	int32 ScreenSizeX;
 	
