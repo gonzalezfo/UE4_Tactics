@@ -48,6 +48,7 @@ public:
 	void SelectCell();
 	void MoveCharacterToCell();
 	void ResetSelection();
+	void Zoom(float axis);
 
 protected:
 	// References to classes and components
@@ -68,6 +69,7 @@ protected:
 
 	FVector PanDirection;
 
+
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float Margin;
 
@@ -80,4 +82,15 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float ClampMax;
 
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float SpringArmLength;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float ZoomModifier;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float ZoomOut;
+
+	UPROPERTY(EditAnywhere, Category = Cam)
+		float ZoomIn;
 };

@@ -21,4 +21,5 @@ private:
 	ACameraPawn* CustomCamera;
 
 	void Select();
+	void Zoom(float axis);
 };
