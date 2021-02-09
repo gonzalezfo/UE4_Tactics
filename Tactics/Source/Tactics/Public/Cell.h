@@ -9,6 +9,16 @@
 
 class ACustomCharacter;
 
+
+UENUM(BlueprintType)
+enum CellType {
+	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
+	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
+	kCellType_Normal = 2    UMETA(DisplayName = "NORMAL"),
+	kCellType_End = 3		UMETA(DisplayName = "END")
+};
+
+
 UCLASS()
 class TACTICS_API ACell : public AActor
 {

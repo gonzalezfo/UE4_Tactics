@@ -11,13 +11,12 @@ AGrid::AGrid()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	GridSizeX = 5;
-	GridSizeY = 5;
+	GridSize = FIntPoint(5, 5);
 
 	SquareWidth = 200.0f;
 
-	RoomLength = SquareWidth * GridSizeY;
-	RoomWidth = SquareWidth* GridSizeX;
+	RoomLength = SquareWidth * GridSize.Y;
+	RoomWidth = SquareWidth* GridSize.X;
 }
 
 // Called when the game starts or when spawned
@@ -43,7 +42,7 @@ FVector AGrid::GetCellSize()
 
 bool AGrid::IsValidID(ACell* cell)
 {
-	if (cell->GetID() >= 0 && cell->GetID() < (GridSizeX * GridSizeY))
+	if (cell->GetID() >= 0 && cell->GetID() < (GridSize.X * GridSize.Y))
 	{
 		return true;
 	}
@@ -67,7 +66,7 @@ bool AGrid::isWall(ACell* cell)
 
 bool AGrid::IsValidRowCol(int row, int col)
 {
-	return (row >= 0 && row < GridSizeY && col >= 0 && col < GridSizeX);
+	return (row >= 0 && row < GridSize.Y && col >= 0 && col < GridSize.X);
 }
 
 int AGrid::North(ACell* origin)
@@ -77,7 +76,7 @@ int AGrid::North(ACell* origin)
 		return -1;
 	}
 
-	int const index = origin->GetID() - GridSizeX;
+	int const index = origin->GetID() - GridSize.X;
 
 	if (index < 0) {
 		return -1;
@@ -93,9 +92,9 @@ int AGrid::South(ACell* origin)
 		return -1;
 	}
 
-	int const index = origin->GetID() + GridSizeX;
+	int const index = origin->GetID() + GridSize.X;
 
-	if (index > GridSizeX * GridSizeY)
+	if (index > GridSize.X * GridSize.Y)
 	{
 		return -1;
 	}
@@ -113,7 +112,7 @@ int AGrid::East(ACell* origin)
 	int row, col = -1;
 	IndexToRowCol(&row, &col, origin);
 
-	if (col == GridSizeX - 1)
+	if (col == GridSize.X - 1)
 	{
 		return -1;
 	}
@@ -163,8 +162,8 @@ void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
 		return;
 	}
 
-	*row = origin->GetID() / GridSizeX;
-	*col = origin->GetID() % GridSizeX;
+	*row = origin->GetID() / GridSize.X;
+	*col = origin->GetID() % GridSize.Y;
 }
 
 
@@ -176,21 +175,143 @@ AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 }
 
 
+static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, int iterations) {
+	//Set CellType Array
+	TArray<CellType> cell_types;
+	cell_types.Init(kCellType_Wall, gridSize.X * gridSize.Y);
+
+	//Set walkers. (Maybe turn this into a struct)
+	TArray<FIntPoint> grid_walkers_positions;
+	grid_walkers_positions.Init(FIntPoint(0, 0), walkersNum);
+
+	TArray<int> grid_walkers_directions;
+	grid_walkers_directions.Init(0, walkersNum);
+
+	for (int i = 0; i < walkersNum; i++) {
+		grid_walkers_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X - 1), FMath::RandRange(1, gridSize.Y - 1));
+		grid_walkers_directions[i] = FMath::RandRange(0, 3);
+		cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+	}
+
+	int iterator = 0;
+	//Path Generation Loop.
+	while (iterator < iterations) {
+		//Check walkers valid direction & move them | change direction.
+		for (int i = 0; i < grid_walkers_positions.Num(); i++) {
+			bool is_valid_dir = false;
+			FIntPoint new_position = grid_walkers_positions[i];
+			switch (grid_walkers_directions[i])
+			{
+			case 0:
+				new_position.Y += 1;
+				break;
+			case 1:
+				new_position.X += 1;
+				break;
+			case 2:
+				new_position.Y -= 1;
+				break;
+			case 3:
+				new_position.X -= 1;
+				break;
+			}
+			is_valid_dir = (new_position.Y >= 0 && new_position.Y < gridSize.Y &&
+				new_position.X >= 0 && new_position.X < gridSize.X);
+			if (is_valid_dir) {
+				grid_walkers_positions[i] = new_position;
+			}
+			cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+			grid_walkers_directions[i] = FMath::RandRange(0, 3);
+
+		}
+		iterator++;
+	}
+
+	return cell_types;
+}
+
+
+
+static TArray<CellType> GenerateGridPerlin(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
+	TArray<float> cell_values_perlin;
+	cell_values_perlin.Init(0.0f, size.X * size.Y);
+
+	TArray<CellType> cell_types;
+	cell_types.Init(kCellType_Void, size.X * size.Y);
+
+	float pseudo_seed = FMath::FRandRange(-1.0f, 1.0f);
+
+	for (int i = 0; i < size.Y; ++i) {
+		for (int j = 0; j < size.X; ++j) {
+			int index = i * size.X + j;
+			FVector location = { i * obstacleDiffusion.X , j * obstacleDiffusion.Y ,  pseudo_seed };
+			float value = FMath::PerlinNoise3D(location) + 1.0f;
+			value = value / 2.0f; //renormalize between 0 and 1
+
+			cell_values_perlin[index] = value;
+
+		}
+	}
+	TArray<float> tmp_values(cell_values_perlin);
+	tmp_values.Sort();
+	int percentaje_position;
+	if (FMath::IsNearlyZero(obstaclePercentaje)) {
+		percentaje_position = 0;
+	}
+	else {
+		float ceiling = ceilf(obstaclePercentaje * tmp_values.Num());
+		percentaje_position = int(ceiling) - 1;
+	}
+	float updatedPercentaje = tmp_values[percentaje_position];
+	UE_LOG(LogTemp, Warning, TEXT("%f"), updatedPercentaje);
+
+	//float updatedPercentaje = 0.0f;
+	for (int i = 0; i < size.Y; ++i) {
+		for (int j = 0; j < size.X; ++j) {
+			int index = i * size.X + j;
+			if (cell_values_perlin[index] < updatedPercentaje) {
+				cell_types[index] = kCellType_Wall;
+			}
+			else {
+				cell_types[index] = kCellType_Normal;
+			}
+		}
+	}
+
+
+	return cell_types;
+}
+
+
+
 void AGrid::CreateGrid()
 {
-	Cells.Init(nullptr, GridSizeY * GridSizeX);
+	Cells.Init(nullptr, GridSize.Y * GridSize.X);
+
+	TArray<CellType> cellTypes; 
+	if (!PerlinORWalker)
+	{
+		cellTypes = GenerateGridWalkers(GridSize, NumberOfWalkers, NumberOfIterations);
+	}
+	else
+	{
+		cellTypes = GenerateGridPerlin(GridSize, ObstaclePercentaje, ObstacleDiffusion);
+	}
 
 	if (ActorToInstantiate)
 	{
-		for (int i = 0; i < GridSizeY; ++i)
+		for (int i = 0; i < GridSize.Y; ++i)
 		{
-			for (int j = 0; j < GridSizeX; ++j)
+			for (int j = 0; j < GridSize.X; ++j)
 			{
-				int index = j + GridSizeX * i;
+				int index = j + GridSize.X * i;
 				FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
 				Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
 				Cells[index]->Init(index, this);
-				Cells[index]->SetType(kCellType_Normal);
+				Cells[index]->SetType(cellTypes[index]);
+				if (cellTypes[index] == kCellType_Wall) {
+					Cells[index]->SetActorHiddenInGame(true);
+				}
 			}
 		}
 	}
