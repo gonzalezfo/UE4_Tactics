@@ -18,6 +18,17 @@ ACameraPawn::ACameraPawn()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	// Initialize vars
+	Margin = 3;
+	CamSpeed = 15.0f;
+	ClampMin = -500.0f;
+	ClampMax = 500.0f;
+	SpringArmLength = 150.0f;
+	ZoomModifier = 50.0f;
+	ZoomOut = 1000.0f;
+	ZoomIn = 150.0f;
+	
+
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	SetRootComponent(Root);
 
@@ -25,15 +36,11 @@ ACameraPawn::ACameraPawn()
 	SpringArm->SetupAttachment(Root);
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->SetRelativeRotation(FRotator(-50.0f, 0.0f, 0.0f));
+	SpringArm->TargetArmLength = SpringArmLength;
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComp->SetupAttachment(SpringArm);
 
-	// Initialize vars
-	Margin = 3;
-	CamSpeed = 15.0f;
-	ClampMin = -500.0f;
-	ClampMax = 500.0f;
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +52,7 @@ void ACameraPawn::BeginPlay()
 	if(PC)
 		PC->bShowMouseCursor = true;
 	
+	ZoomIn *= -1; // To put positive values in the Editor
 }
 
 // Called every frame
@@ -200,6 +208,22 @@ void ACameraPawn::ResetSelection()
 {
 	character_ = nullptr;
 	cell_ = nullptr;
+}
+
+void ACameraPawn::Zoom(float axis)
+{
+	SpringArmLength -= (axis * ZoomModifier);
+
+	if (SpringArmLength > ZoomOut)
+	{
+		SpringArmLength = ZoomOut;
+	}
+	else if (SpringArmLength < ZoomIn)
+	{
+		SpringArmLength = ZoomIn;
+	}
+
+	SpringArm->TargetArmLength = SpringArmLength;
 }
 
 void ACameraPawn::Select()
