@@ -79,11 +79,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = GridGeneration)
 		bool PerlinORWalker; //true Perlin - false Walker
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Procedural)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
 		int NumberOfWalkers;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Procedural)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
 		int NumberOfIterations;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
+		int SpawnSize;	//Number of cells that need to be spawn per Walker.
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
 		float ObstaclePercentaje; //between 0.0 and 1.0

@@ -175,7 +175,10 @@ AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 }
 
 
-static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, int iterations) {
+static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, int iterations, int spawnSize) {
+	//SpawnSize Check
+	if (spawnSize <= 0 || spawnSize > gridSize.X || spawnSize > gridSize.Y) spawnSize = 1;
+
 	//Set CellType Array
 	TArray<CellType> cell_types;
 	cell_types.Init(kCellType_Wall, gridSize.X * gridSize.Y);
@@ -187,9 +190,94 @@ static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, 
 	TArray<int> grid_walkers_directions;
 	grid_walkers_directions.Init(0, walkersNum);
 
+	//Init Walkers and set Spawners.
 	for (int i = 0; i < walkersNum; i++) {
 		grid_walkers_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X - 1), FMath::RandRange(1, gridSize.Y - 1));
 		grid_walkers_directions[i] = FMath::RandRange(0, 3);
+		//Spawn Generation.
+		for (int j = 0; j < spawnSize; j++) {
+			cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Spawn;
+			bool is_valid_spawn = false;
+			while (is_valid_spawn == false) {
+				bool is_valid_dir = false;
+				//Check New Position for the walker
+				FIntPoint new_position = grid_walkers_positions[i];
+				switch (grid_walkers_directions[i])
+				{
+				case 0:
+					new_position.Y += 1;
+					break;
+				case 1:
+					new_position.X += 1;
+					break;
+				case 2:
+					new_position.Y -= 1;
+					break;
+				case 3:
+					new_position.X -= 1;
+					break;
+				}
+				is_valid_dir = (new_position.Y >= 0 && new_position.Y < gridSize.Y&&
+					new_position.X >= 0 && new_position.X < gridSize.X);
+				//If valid, change direction if possible. 
+				if (is_valid_dir) {
+					grid_walkers_positions[i] = new_position;
+					if (!(cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] == kCellType_Spawn)) {
+						switch (grid_walkers_directions[i])
+						{
+						case 0:
+							new_position.X += 1;
+							break;
+						case 1:
+							new_position.Y -= 1;
+							break;
+						case 2:
+							new_position.X -= 1;
+							break;
+						case 3:
+							new_position.Y += 1;
+							break;
+						}
+						if (!(cell_types[new_position.Y * gridSize.X + new_position.X] == kCellType_Spawn)) {
+							switch (grid_walkers_directions[i])
+							{
+							case 0:
+								grid_walkers_directions[i] = 1;
+								break;
+							case 1:
+								grid_walkers_directions[i] = 2;
+								break;
+							case 2:
+								grid_walkers_directions[i] = 3;
+								break;
+							case 3:
+								grid_walkers_directions[i] = 0;
+								break;
+							}
+						}
+						is_valid_spawn = true;
+					}
+					//If not valid, change direction to allow walker to move.
+				}
+				else {
+					switch (grid_walkers_directions[i])
+					{
+					case 0:
+						grid_walkers_directions[i] = 1;
+						break;
+					case 1:
+						grid_walkers_directions[i] = 2;
+						break;
+					case 2:
+						grid_walkers_directions[i] = 3;
+						break;
+					case 3:
+						grid_walkers_directions[i] = 0;
+						break;
+					}
+				}
+			}
+		}
 		cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
 	}
 
@@ -220,13 +308,15 @@ static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, 
 			if (is_valid_dir) {
 				grid_walkers_positions[i] = new_position;
 			}
-			cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+			if (cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] != kCellType_Spawn) {
+				cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+			}
 			grid_walkers_directions[i] = FMath::RandRange(0, 3);
 
 		}
 		iterator++;
 	}
-
+	//
 	return cell_types;
 }
 
@@ -291,7 +381,7 @@ void AGrid::CreateGrid()
 	TArray<CellType> cellTypes; 
 	if (!PerlinORWalker)
 	{
-		cellTypes = GenerateGridWalkers(GridSize, NumberOfWalkers, NumberOfIterations);
+		cellTypes = GenerateGridWalkers(GridSize, NumberOfWalkers, NumberOfIterations, SpawnSize);
 	}
 	else
 	{

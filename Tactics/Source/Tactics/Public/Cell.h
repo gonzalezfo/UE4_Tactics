@@ -15,7 +15,8 @@ enum CellType {
 	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
 	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
 	kCellType_Normal = 2    UMETA(DisplayName = "NORMAL"),
-	kCellType_End = 3		UMETA(DisplayName = "END")
+	kCellType_Spawn = 3     UMETA(DisplayName = "SPAWN"),
+	kCellType_End = 4		UMETA(DisplayName = "END")
 };
 
 
@@ -67,5 +68,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	TEnumAsByte<CellType> type;
+
+	//
+	UPROPERTY(EditAnywhere)
+		UMaterial* SpawnMaterial;
 
 };
