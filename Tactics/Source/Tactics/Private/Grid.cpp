@@ -4,6 +4,7 @@
 #include "Cell.h"
 #include "CustomCharacter.h"
 #include "DrawDebugHelpers.h"
+#include "Containers/Array.h"
 
 // Sets default values
 AGrid::AGrid()
@@ -22,9 +23,10 @@ AGrid::AGrid()
 // Called when the game starts or when spawned
 void AGrid::BeginPlay()
 {
-	Super::BeginPlay();	
+	Super::BeginPlay();
 
 	CreateGrid();
+	ConnectCells();
 }
 
 // Called every frame
@@ -336,6 +338,25 @@ void AGrid::CreateGrid()
 
 			//Set the character pointer on the character cell.
 			Cells[spawn_position_]->SetCharacterPointer(cchar);
+		}
+	}
+}
+
+void AGrid::ConnectCells()
+{
+	for (int x = 0; x < GridSize.X; x++)
+	{
+		for (int y = 0; y < GridSize.Y; y++)
+		{
+			// Make sure that the cells are inside the bounds
+			if (y > 0)
+				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y - 1) * GridSize.X + (x + 0)]);
+			if (y < GridSize.Y - 1)
+				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 1) * GridSize.X + (x + 0)]);
+			if (x > 0)
+				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 0) * GridSize.X + (x - 1)]);
+			if (x < GridSize.X - 1)
+				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 0) * GridSize.X + (x + 1)]);
 		}
 	}
 }
