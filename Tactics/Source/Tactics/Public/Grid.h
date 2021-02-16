@@ -85,13 +85,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
 		int NumberOfIterations;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
-		int SpawnSize;	//Number of cells that need to be spawn per Walker.
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
 		float ObstaclePercentaje; //between 0.0 and 1.0
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
 		FVector2D ObstacleDiffusion;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int NumberOfSpawns;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int SpawnSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int SpawnMinDistance;
 };
