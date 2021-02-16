@@ -5,6 +5,8 @@
 #include "CustomCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "Containers/Array.h"
+#include "..\Public\Grid.h"
+#include <list>
 
 // Sets default values
 AGrid::AGrid()
@@ -154,6 +156,80 @@ void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
 		character->SetCell(new_cell);
 		new_cell->SetCharacterPointer(character);
 	}
+}
+
+TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
+{
+	auto distance = [](ACell* a, ACell* b)
+	{
+		return sqrtf((float)((a->col - b->col) * (a->col - b->col) + (a->row - b->row) * (a->row - b->row)));
+	};
+
+	// Puts the start cell with initial values and sets as current
+	start->localGoal = 0.0f;
+	start->globalGoal = distance(start, finish);
+	ACell* cellCurrent = start;
+
+	// Creation of the list to push all the non-visited cells
+	std::list<ACell*> notTestedCells;
+	notTestedCells.push_back(start);
+
+
+	while (!notTestedCells.empty())
+	{
+		// Sort the non-visited cells by global param
+		notTestedCells.sort([](const ACell* c1, const ACell* c2) { return c1->globalGoal < c2->globalGoal; });
+
+		while (!notTestedCells.empty() != 0 && notTestedCells.front()->bvisited)
+			notTestedCells.pop_front();
+
+		// breaks the while if there are not cells left
+		if (notTestedCells.empty())
+			break;
+
+		cellCurrent = notTestedCells.front();
+		cellCurrent->bvisited = true; // sets the cell as visited, not to consider it again
+
+		// Checks all the neighbour nodes of the current node
+		for (auto cellNeighbour : cellCurrent->neighbours)
+		{
+			if (!cellNeighbour->bvisited && cellNeighbour->type != kCellType_Wall)
+			{
+				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
+
+				// The potential lowest distance
+				float fPossiblyLowerGoal = cellCurrent->localGoal + distance(cellCurrent, cellNeighbour);
+
+				// Sets the path if the potential distance is smaller than the neighbours'
+				if (fPossiblyLowerGoal < cellNeighbour->localGoal)
+				{
+					cellNeighbour->parent = cellCurrent;
+					cellNeighbour->localGoal = fPossiblyLowerGoal;
+
+					// updates the neighbour score as the path length has been changed
+					cellNeighbour->globalGoal = cellNeighbour->localGoal + distance(cellNeighbour, finish);
+				}
+			}
+		}
+	}
+
+	TArray<ACell*> cellPath;
+
+	if (finish->parent != nullptr)
+	{
+		if (finish != nullptr)
+		{
+			ACell* cell = finish;
+			while (cell->parent != nullptr)
+			{
+				cellPath.Push(cell);
+				
+				cell = cell->parent;
+			}
+		}
+	}
+
+	return cellPath;
 }
 
 
