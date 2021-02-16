@@ -304,7 +304,7 @@ static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int n
 		do {
 			valid_spawn_positions = true;
 			for (int i = 0; i < numSpawns; i++) {
-				spawn_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X - 1), FMath::RandRange(1, gridSize.Y - 1));
+				spawn_positions[i] = FIntPoint(FMath::RandRange(1, gridSize.X - 2), FMath::RandRange(1, gridSize.Y - 2));
 				spawn_directions[i] = FMath::RandRange(0, 3);
 				if (grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] != kCellType_Normal) valid_spawn_positions = false;
 			}
@@ -348,8 +348,8 @@ static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int n
 					new_position.X -= 1;
 					break;
 				}
-				is_valid_dir = (new_position.Y >= 0 && new_position.Y < gridSize.Y&&
-					new_position.X >= 0 && new_position.X < gridSize.X);
+				is_valid_dir = (new_position.Y > 0 && new_position.Y < (gridSize.Y - 1) &&
+					new_position.X > 0 && new_position.X < (gridSize.X - 1));
 				//If valid, change direction if possible. 
 				if (is_valid_dir) {
 					spawn_positions[i] = new_position;
