@@ -49,6 +49,8 @@ public:
 
 	void MoveCharacterToCell(ACustomCharacter*, ACell*);
 
+	TArray<ACell*> FindPath(ACell* start, ACell* finish);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
