@@ -58,6 +58,20 @@ public:
 	AGrid* GetGridPointer();
 	ACustomCharacter* GetCharacterPointer();
 
+	UPROPERTY(VisibleAnywhere)
+	TEnumAsByte<CellType> type;
+	
+	bool bvisited = false;				// Is this cell have been searched already?
+	float globalGoal;					// Distance to Goal so far
+	float localGoal;					// Distance to Goal if we took an alternative path
+	int col;
+	int row;
+
+	UPROPERTY(VisibleAnywhere)
+	TArray<ACell*> neighbours;			// Vector to store each of its neighbours
+	
+	ACell* parent;
+
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Room, meta = (AllowPrivateAccess = "true"))
@@ -65,7 +79,5 @@ private:
 
 	int Id;
 
-	UPROPERTY(VisibleAnywhere)
-	TEnumAsByte<CellType> type;
 
 };

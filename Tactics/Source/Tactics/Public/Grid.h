@@ -63,6 +63,9 @@ private:
 	
 	void CreateGrid();
 
+	/* Each cell connects with their neighbours via the vector */
+	void ConnectCells();
+
 	float RoomLength;
 	float RoomWidth;
 
