@@ -82,10 +82,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = GridGeneration)
 		bool PerlinORWalker; //true Perlin - false Walker
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Procedural)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
 		int NumberOfWalkers;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Procedural)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
 		int NumberOfIterations;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
@@ -94,4 +94,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
 		FVector2D ObstacleDiffusion;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int NumberOfSpawns;	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int SpawnSize;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+		int SpawnMinDistance;
 };

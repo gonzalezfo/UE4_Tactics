@@ -56,6 +56,9 @@ void ACell::SetCharacterPointer(ACustomCharacter* newCharacter)
 void ACell::SetType(CellType newType)
 {
 	type = newType;
+	if (newType == kCellType_Spawn) {
+		Floor->SetMaterial(0, SpawnMaterial);
+	}
 }
 
 FVector ACell::GetSizeOfMesh()

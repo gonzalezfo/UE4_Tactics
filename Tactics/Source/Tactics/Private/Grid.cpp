@@ -176,8 +176,8 @@ AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
 	return GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
 }
 
-
 static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, int iterations) {
+	
 	//Set CellType Array
 	TArray<CellType> cell_types;
 	cell_types.Init(kCellType_Wall, gridSize.X * gridSize.Y);
@@ -189,14 +189,14 @@ static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, 
 	TArray<int> grid_walkers_directions;
 	grid_walkers_directions.Init(0, walkersNum);
 
+	// Spawn Walkers in our grid. Init their values.
 	for (int i = 0; i < walkersNum; i++) {
 		grid_walkers_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X - 1), FMath::RandRange(1, gridSize.Y - 1));
 		grid_walkers_directions[i] = FMath::RandRange(0, 3);
-		cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
 	}
-
-	int iterator = 0;
+	
 	//Path Generation Loop.
+	int iterator = 0;
 	while (iterator < iterations) {
 		//Check walkers valid direction & move them | change direction.
 		for (int i = 0; i < grid_walkers_positions.Num(); i++) {
@@ -222,17 +222,17 @@ static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, 
 			if (is_valid_dir) {
 				grid_walkers_positions[i] = new_position;
 			}
-			cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+			if (cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] != kCellType_Spawn) {
+				cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
+			}
 			grid_walkers_directions[i] = FMath::RandRange(0, 3);
 
 		}
 		iterator++;
 	}
-
+	//
 	return cell_types;
 }
-
-
 
 static TArray<CellType> GenerateGridPerlin(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
 	TArray<float> cell_values_perlin;
@@ -284,7 +284,135 @@ static TArray<CellType> GenerateGridPerlin(FIntPoint size, float obstaclePercent
 	return cell_types;
 }
 
+static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int numSpawns, int spawnSize, int spawnMinDistance) {
+	//SpawnSize Check
+	if (spawnSize <= 0 || spawnSize > gridSize.X || spawnSize > gridSize.Y) spawnSize = 1;
 
+	//SpawnMinDistance Check.
+	if (spawnMinDistance <= 0 || spawnMinDistance > gridSize.X || spawnMinDistance > gridSize.Y) spawnMinDistance = (gridSize.X + gridSize.Y) / 2;
+
+	//Set walkers. (Maybe turn this into a struct)
+	TArray<FIntPoint> spawn_positions;
+	spawn_positions.Init(FIntPoint(0, 0), numSpawns);
+	TArray<int> spawn_directions;
+	spawn_directions.Init(0, numSpawns);
+
+	bool valid_spawn_positions = true;
+	bool valid_spawn_distances = true;
+
+	do {
+		valid_spawn_distances = true;
+		// Spawn Spawns in our grid. Init their values.
+		do {
+			valid_spawn_positions = true;
+			for (int i = 0; i < numSpawns; i++) {
+				spawn_positions[i] = FIntPoint(FMath::RandRange(1, gridSize.X - 2), FMath::RandRange(1, gridSize.Y - 2));
+				spawn_directions[i] = FMath::RandRange(0, 3);
+				if (grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] != kCellType_Normal) valid_spawn_positions = false;
+			}
+		} while (valid_spawn_positions == false);
+
+		//Check Spawns Distances
+		for (int a = 0; a < numSpawns; a++) {
+			for (int b = 0; b < numSpawns; b++) {
+				if (a != b) {
+					//squared_distance=((b.x-a.x)²+(b.y-a.y)²)
+					int squared_distance = (spawn_positions[b].X - spawn_positions[a].X) * (spawn_positions[b].X - spawn_positions[a].X);
+					squared_distance += (spawn_positions[b].Y - spawn_positions[a].Y) * (spawn_positions[b].Y - spawn_positions[a].Y);
+					if (squared_distance < (spawnMinDistance * spawnMinDistance)) valid_spawn_distances = false;
+				}
+			}
+		}
+	} while (valid_spawn_distances == false);
+
+	//Set Spawners for each walker.
+	for (int i = 0; i < numSpawns; i++) {
+		//Spawn Generation.
+		for (int j = 0; j < spawnSize; j++) {
+			grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] = kCellType_Spawn;
+			bool is_valid_spawn = false;
+			while (is_valid_spawn == false) {
+				bool is_valid_dir = false;
+				//Check New Position for the walker
+				FIntPoint new_position = spawn_positions[i];
+				switch (spawn_directions[i])
+				{
+				case 0:
+					new_position.Y += 1;
+					break;
+				case 1:
+					new_position.X += 1;
+					break;
+				case 2:
+					new_position.Y -= 1;
+					break;
+				case 3:
+					new_position.X -= 1;
+					break;
+				}
+				is_valid_dir = (new_position.Y > 0 && new_position.Y < (gridSize.Y - 1) &&
+					new_position.X > 0 && new_position.X < (gridSize.X - 1));
+				//If valid, change direction if possible. 
+				if (is_valid_dir) {
+					spawn_positions[i] = new_position;
+					if (!(grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] == kCellType_Spawn)) {
+						switch (spawn_directions[i])
+						{
+						case 0:
+							new_position.X += 1;
+							break;
+						case 1:
+							new_position.Y -= 1;
+							break;
+						case 2:
+							new_position.X -= 1;
+							break;
+						case 3:
+							new_position.Y += 1;
+							break;
+						}
+						if (!(grid[new_position.Y * gridSize.X + new_position.X] == kCellType_Spawn)) {
+							switch (spawn_directions[i])
+							{
+							case 0:
+								spawn_directions[i] = 1;
+								break;
+							case 1:
+								spawn_directions[i] = 2;
+								break;
+							case 2:
+								spawn_directions[i] = 3;
+								break;
+							case 3:
+								spawn_directions[i] = 0;
+								break;
+							}
+						}
+						is_valid_spawn = true;
+					}
+					//If not valid, change direction to allow walker to move.
+				}
+				else {
+					switch (spawn_directions[i])
+					{
+					case 0:
+						spawn_directions[i] = 1;
+						break;
+					case 1:
+						spawn_directions[i] = 2;
+						break;
+					case 2:
+						spawn_directions[i] = 3;
+						break;
+					case 3:
+						spawn_directions[i] = 0;
+						break;
+					}
+				}
+			}
+		}
+	}
+};
 
 void AGrid::CreateGrid()
 {
@@ -299,6 +427,8 @@ void AGrid::CreateGrid()
 	{
 		cellTypes = GenerateGridPerlin(GridSize, ObstaclePercentaje, ObstacleDiffusion);
 	}
+
+	GenerateGridSpawns(cellTypes, GridSize, NumberOfSpawns, SpawnSize, SpawnMinDistance);
 
 	if (ActorToInstantiate)
 	{
