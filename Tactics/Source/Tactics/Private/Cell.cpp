@@ -13,6 +13,9 @@ ACell::ACell()
 
 	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorComponent"));
 	SetRootComponent(Floor);
+
+	localGoal = INFINITY;
+	globalGoal = INFINITY;
 }
 
 // Called when the game starts or when spawned
