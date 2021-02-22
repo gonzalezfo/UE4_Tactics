@@ -567,5 +567,56 @@ void AGrid::ConnectCells()
 	}
 }
 
+void AGrid::HighlightCells(ACustomCharacter* character)
+{
+	if (character)
+	{
+		int range = character->range_;
+
+		int ID = character->GetCell()->GetID() - (range * GridSize.Y);
+
+		if (ID >= 0)
+		{
+			ACell* tmp = Cells[ID];
+
+			//First Loop
+			//  *
+			// **
+			//**X
+			// **
+			//  *
+			for (int i = 1; i <= range + 1; ++i)
+			{
+				for (int j = 1; j <= (2 * i) - 1; ++j)
+				{
+					tmp->HighlightCell();
+					tmp = Cells[tmp->GetID() + 1];
+				}
+
+				tmp = Cells[(character->GetCell()->GetID() - (GridSize.Y * (range - i))) - i];
+			}
+
+			tmp = Cells[character->GetCell()->GetID() + (range * GridSize.Y)];
+
+			//Second loop
+			//   
+			//   *
+			//   **
+			//   *
+			//   
+			for (int i = 1; i <= range; ++i)
+			{
+				for (int j = 1; j <= (2 * i) - 1; ++j)
+				{
+					tmp->HighlightCell();
+					tmp = Cells[tmp->GetID() + 1];
+				}
+
+				tmp = Cells[(character->GetCell()->GetID() + (GridSize.Y * (range - i))) - i];
+			}
+		}
+	}
+}
+
 
 

@@ -33,6 +33,19 @@ void ACell::Init(int newID, AGrid* newGrid)
 	SetActorRelativeScale3D(Grid->GetCellSize() / GetSizeOfMesh());
 }
 
+void ACell::ChangeMaterial(UMaterial* new_material)
+{
+	if (new_material)
+	{
+		Floor->SetMaterial(0, new_material);
+	}
+}
+
+void ACell::HighlightCell()
+{
+	ChangeMaterial(HighlightMaterial);
+}
+
 // Called every frame
 void ACell::Tick(float DeltaTime)
 {

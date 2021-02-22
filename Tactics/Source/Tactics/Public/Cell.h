@@ -8,6 +8,7 @@
 #include "Cell.generated.h"
 
 class ACustomCharacter;
+class UMaterial;
 
 
 UENUM(BlueprintType)
@@ -44,6 +45,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Init(int newID, AGrid* newGrid);
+
+	void ChangeMaterial(UMaterial*);
+
+	void HighlightCell();
 
 	// Setters
 	void SetID(int newID);
@@ -85,4 +90,6 @@ private:
 	UPROPERTY(EditAnywhere)
 		UMaterial* SpawnMaterial;
 
+	UPROPERTY(EditAnywhere)
+		UMaterial* HighlightMaterial;
 };

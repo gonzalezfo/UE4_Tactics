@@ -42,4 +42,7 @@ public:
 	//Character static mesh.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 		UStaticMeshComponent* mesh_;
+
+	UPROPERTY(EditAnywhere, Category = "Properties")
+		float range_;
 };

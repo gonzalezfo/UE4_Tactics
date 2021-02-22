@@ -161,6 +161,14 @@ void ACameraPawn::SelectCharacter()
 	if (cchar)
 	{
 		character_ = cchar;
+
+		AGrid* grid = character_->GetCell()->GetGridPointer();
+
+		if (grid)
+		{
+			grid->HighlightCells(character_);
+		}
+
 		return;
 	}
 	

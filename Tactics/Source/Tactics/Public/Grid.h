@@ -51,6 +51,8 @@ public:
 
 	TArray<ACell*> FindPath(ACell* start, ACell* finish);
 
+	void HighlightCells(ACustomCharacter*);
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> ActorToInstantiate;
