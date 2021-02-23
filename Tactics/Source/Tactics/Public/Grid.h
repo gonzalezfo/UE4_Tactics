@@ -34,6 +34,7 @@ public:
 
 	// Checkers
 	bool IsValidID(ACell* cell);
+	bool IsValidID(int id);
 	bool isWall(ACell* cell);
 	bool IsValidRowCol(int row, int col);
 
@@ -51,7 +52,10 @@ public:
 
 	TArray<ACell*> FindPath(ACell* start, ACell* finish);
 
-	void HighlightCells(ACustomCharacter*);
+	void HighlightCells(TArray<ACell*>);
+	void UnhighlightCells(TArray<ACell*>);
+
+	ACell* GetCellByID(int id);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))

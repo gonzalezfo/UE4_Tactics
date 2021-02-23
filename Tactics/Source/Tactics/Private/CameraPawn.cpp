@@ -125,6 +125,11 @@ bool ACameraPawn::CheckCharacterSelected()
 	return (character_ != nullptr);
 }
 
+bool ACameraPawn::CheckCellSelected()
+{
+	return (cell_ != nullptr);
+}
+
 AActor* ACameraPawn::DoLineTrace()
 {
 	// get mouse position
@@ -162,12 +167,15 @@ void ACameraPawn::SelectCharacter()
 	{
 		character_ = cchar;
 
-		AGrid* grid = character_->GetCell()->GetGridPointer();
+		character_->Selected();
+		UE_LOG(LogTemp, Warning, TEXT("Select Character"));
 
-		if (grid)
-		{
-			grid->HighlightCells(character_);
-		}
+		//AGrid* grid = character_->GetCell()->GetGridPointer();
+
+		//if (grid)
+		//{
+		//	grid->HighlightCells(character_);
+		//}
 
 		return;
 	}
@@ -180,6 +188,8 @@ void ACameraPawn::SelectCharacter()
 
 		if (cchar)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Select Character Through Cell"));
+
 			character_ = cchar;
 		}
 	}
@@ -197,17 +207,19 @@ void ACameraPawn::SelectCell()
 
 void ACameraPawn::MoveCharacterToCell()
 {
-	if (cell_)
+	if (cell_ && character_)
 	{
-		AGrid* grid = cell_->GetGridPointer();
+		if (character_->GetSelectableCells().Contains(cell_)) {
+			AGrid* grid = cell_->GetGridPointer();
 
-		if (grid)
-		{
-			if (character_)
+			if (grid)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("You are moving the character to the new cell"));
+				//UE_LOG(LogTemp, Warning, TEXT("You are moving the character to the new cell"));
+				character_->Unselected();
 				grid->MoveCharacterToCell(character_, cell_);
-			}	
+				ResetSelection();
+			}
+
 		}
 	}
 }
@@ -251,8 +263,10 @@ void ACameraPawn::Select()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("You are selecting the cell"));
 		SelectCell();
-		MoveCharacterToCell();
-		ResetSelection();
+		if (CheckCellSelected()) {
+			MoveCharacterToCell();
+		}
+
 	}
 }
 

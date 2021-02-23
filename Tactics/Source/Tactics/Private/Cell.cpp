@@ -35,15 +35,17 @@ void ACell::Init(int newID, AGrid* newGrid)
 
 void ACell::ChangeMaterial(UMaterial* new_material)
 {
-	if (new_material)
-	{
-		Floor->SetMaterial(0, new_material);
-	}
+	Floor->SetMaterial(0, new_material);
 }
 
 void ACell::HighlightCell()
 {
 	ChangeMaterial(HighlightMaterial);
+}
+
+void ACell::UnhighlightCell()
+{
+	ChangeMaterial(nullptr);
 }
 
 // Called every frame
@@ -75,6 +77,11 @@ void ACell::SetType(CellType newType)
 	if (newType == kCellType_Spawn) {
 		Floor->SetMaterial(0, SpawnMaterial);
 	}
+}
+
+bool ACell::IsWalkable()
+{
+	return (type.GetValue() != kCellType_Void) && (type.GetValue() != kCellType_Wall);
 }
 
 FVector ACell::GetSizeOfMesh()

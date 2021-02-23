@@ -49,6 +49,7 @@ public:
 	void ChangeMaterial(UMaterial*);
 
 	void HighlightCell();
+	void UnhighlightCell();
 
 	// Setters
 	void SetID(int newID);
@@ -56,6 +57,7 @@ public:
 	void SetCharacterPointer(ACustomCharacter* newCharacter);
 	void SetType(CellType newType);
 
+	bool IsWalkable();
 
 	// Getters
 	FVector GetSizeOfMesh();

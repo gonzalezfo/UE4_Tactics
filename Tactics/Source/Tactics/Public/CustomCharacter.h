@@ -31,7 +31,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
+	void Selected();
+	void Unselected();
+
+
 	void InitPlayer(ACell*);
+	TArray<ACell*> GetSelectableCells();
 
 	//Getters
 	ACell* GetCell();
@@ -44,5 +49,5 @@ public:
 		UStaticMeshComponent* mesh_;
 
 	UPROPERTY(EditAnywhere, Category = "Properties")
-		float range_;
+		int range_;
 };

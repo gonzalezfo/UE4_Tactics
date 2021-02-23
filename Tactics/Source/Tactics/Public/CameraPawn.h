@@ -44,6 +44,7 @@ public:
 	void Select();
 
 	bool CheckCharacterSelected();
+	bool CheckCellSelected();
 	void SelectCharacter();
 	void SelectCell();
 	void MoveCharacterToCell();

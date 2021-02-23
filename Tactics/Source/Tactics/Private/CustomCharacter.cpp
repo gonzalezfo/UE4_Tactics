@@ -30,12 +30,84 @@ void ACustomCharacter::Tick(float DeltaTime)
 
 }
 
-
-
-
 void ACustomCharacter::InitPlayer(ACell* tmp)
 {
 	current_cell_ = tmp;
+}
+
+static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
+	if (start) {
+		cell_array.AddUnique(start);
+
+		AGrid* grid = start->GetGridPointer();
+
+		ACell* target;
+		int target_id;
+
+		if (range > 0 && grid) {
+			//north
+			target_id = grid->North(start);
+			target = grid->GetCellByID(target_id);
+			if (target) {
+				if (target->IsWalkable()) {
+					AddCells(cell_array, target, range - 1);
+				}
+			}
+
+			//south
+			target_id = grid->South(start);
+			target = grid->GetCellByID(target_id);
+			if (target) {
+				if (target->IsWalkable()) {
+					AddCells(cell_array, target, range - 1);
+				}
+			}
+
+			//east
+			target_id = grid->East(start);
+			target = grid->GetCellByID(target_id);
+			if (target) {
+				if (target->IsWalkable()) {
+					AddCells(cell_array, target, range - 1);
+				}
+			}
+
+			//west
+			target_id = grid->West(start);
+			target = grid->GetCellByID(target_id);
+			if (target) {
+				if (target->IsWalkable()) {
+					AddCells(cell_array, target, range - 1);
+				}
+			}
+		}
+	}
+	
+}
+
+TArray<ACell*> ACustomCharacter::GetSelectableCells()
+{
+	TArray<ACell*> cells;
+	if (current_cell_) {
+		cells.AddUnique(current_cell_);
+
+		AGrid* grid = current_cell_->GetGridPointer();
+		if (grid) {
+			AddCells(cells, current_cell_, range_);
+		}
+	}
+
+	return cells;
+}
+
+void ACustomCharacter::Selected()
+{
+	GetCell()->GetGridPointer()->HighlightCells(GetSelectableCells());
+}
+
+void ACustomCharacter::Unselected()
+{
+	GetCell()->GetGridPointer()->UnhighlightCells(GetSelectableCells());
 }
 
 ACell* ACustomCharacter::GetCell()
@@ -50,7 +122,7 @@ void ACustomCharacter::SetCell(ACell* new_cell)
 		current_cell_ = new_cell;
 
 		FVector new_position = new_cell->GetActorLocation();
-		new_position.Z += 100.0f;
+		new_position.Z += 50.0f;
 
 		SetActorLocation(new_position);
 	}

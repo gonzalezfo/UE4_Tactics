@@ -46,7 +46,16 @@ FVector AGrid::GetCellSize()
 
 bool AGrid::IsValidID(ACell* cell)
 {
-	if (cell->GetID() >= 0 && cell->GetID() < (GridSize.X * GridSize.Y))
+	if (cell) {
+		return IsValidID(cell->GetID());
+	}
+
+	return false;
+}
+
+bool AGrid::IsValidID(int id)
+{
+	if (id >= 0 && id < (GridSize.X * GridSize.Y))
 	{
 		return true;
 	}
@@ -532,7 +541,7 @@ void AGrid::CreateGrid()
 		{
 			//New character position
 			FVector new_pos = Cells[spawn_position_]->GetActorLocation();
-			new_pos.Z += 100.0f;
+			new_pos.Z += 50.0f;
 
 			//Spawn character and set it's cell pointer
 			ACustomCharacter* cchar = Cast<ACustomCharacter>(SpawnItem(CharacterToInstantiate, new_pos));
@@ -567,56 +576,26 @@ void AGrid::ConnectCells()
 	}
 }
 
-void AGrid::HighlightCells(ACustomCharacter* character)
+void AGrid::HighlightCells(TArray<ACell*> cell_array)
 {
-	if (character)
-	{
-		int range = character->range_;
-
-		int ID = character->GetCell()->GetID() - (range * GridSize.Y);
-
-		if (ID >= 0)
-		{
-			ACell* tmp = Cells[ID];
-
-			//First Loop
-			//  *
-			// **
-			//**X
-			// **
-			//  *
-			for (int i = 1; i <= range + 1; ++i)
-			{
-				for (int j = 1; j <= (2 * i) - 1; ++j)
-				{
-					tmp->HighlightCell();
-					tmp = Cells[tmp->GetID() + 1];
-				}
-
-				tmp = Cells[(character->GetCell()->GetID() - (GridSize.Y * (range - i))) - i];
-			}
-
-			tmp = Cells[character->GetCell()->GetID() + (range * GridSize.Y)];
-
-			//Second loop
-			//   
-			//   *
-			//   **
-			//   *
-			//   
-			for (int i = 1; i <= range; ++i)
-			{
-				for (int j = 1; j <= (2 * i) - 1; ++j)
-				{
-					tmp->HighlightCell();
-					tmp = Cells[tmp->GetID() + 1];
-				}
-
-				tmp = Cells[(character->GetCell()->GetID() + (GridSize.Y * (range - i))) - i];
-			}
-		}
+	for (auto c : cell_array) {
+		c->HighlightCell();
 	}
 }
 
+void AGrid::UnhighlightCells(TArray<ACell*> cell_array)
+{
+	for (auto c : cell_array) {
+		c->UnhighlightCell();
+	}
+}
+
+ACell * AGrid::GetCellByID(int id)
+{
+	if (IsValidID(id)) {
+		return Cells[id];
+	}
+	return nullptr;
+}
 
 
