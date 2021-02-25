@@ -1,18 +1,21 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "../Public/Cell.h"
 #include "../Public/CustomCharacter.h"
+
+#include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 
 // Sets default values
 ACell::ACell()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	CellRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Cell Root Component"));
+	SetRootComponent(CellRootComponent);
 
-	Floor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FloorComponent"));
-	SetRootComponent(Floor);
+	CellMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cell Mesh Component"));
+	CellMeshComponent->SetupAttachment(RootComponent);
+
+	SetID(0);
+	SetGridPointer(nullptr);
+	SetType(CellType::kCellType_Void);
 
 	localGoal = INFINITY;
 	globalGoal = INFINITY;
@@ -26,38 +29,28 @@ void ACell::BeginPlay()
 
 void ACell::Init(int newID, AGrid* newGrid)
 {
-	SetGridPointer(newGrid);
-
 	SetID(newID);
 
-	SetActorRelativeScale3D(Grid->GetCellSize() / GetSizeOfMesh());
-}
+	if (newGrid != nullptr) {
+		SetGridPointer(newGrid);
+		SetMeshSize(newGrid->GetCellSize());
+	}
 
-void ACell::ChangeMaterial(UMaterial* new_material)
-{
-	Floor->SetMaterial(0, new_material);
-}
+} 
 
-void ACell::HighlightCell()
-{
-	ChangeMaterial(HighlightMaterial);
-}
-
-void ACell::UnhighlightCell()
-{
-	ChangeMaterial(nullptr);
-}
-
-// Called every frame
-void ACell::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
 
 void ACell::SetID(int newID)
 {
-	Id = newID;
+	if (Grid == nullptr) {
+		id = newID;
+		row = 0;
+		col = 0;
+	}
+	else {
+		id = newID;
+		row = newID / Grid->GridSize.X;
+		col = newID % Grid->GridSize.X;
+	}
 }
 
 void ACell::SetGridPointer(AGrid* newGrid)
@@ -74,24 +67,47 @@ void ACell::SetCharacterPointer(ACustomCharacter* newCharacter)
 void ACell::SetType(CellType newType)
 {
 	type = newType;
-	if (newType == kCellType_Spawn) {
-		Floor->SetMaterial(0, SpawnMaterial);
-	}
 }
+
+void  ACell::SetMeshSize(float newSize) {
+	FVector mesh_size = CellMeshComponent->GetStaticMesh()->GetBounds().GetBox().GetSize();
+
+	//Check Mesh Size Value to avoid dividing by 0.
+	if ((int)(mesh_size.X) == 0) mesh_size.X = newSize;
+	if ((int)(mesh_size.Y) == 0) mesh_size.Y = newSize;
+	if ((int)(mesh_size.Z) == 0) mesh_size.Z = newSize;
+
+	FVector value = FVector(newSize) / mesh_size;
+	CellMeshComponent->SetRelativeScale3D(value);
+}
+
+void ACell::SetParent(ACell* newParent) {
+	parent = newParent;
+}
+
+void ACell::SetNeighbours(TArray<ACell*> newNeighbours) {
+	neighbours = newNeighbours;
+}
+
 
 bool ACell::IsWalkable()
 {
 	return (type.GetValue() != kCellType_Void) && (type.GetValue() != kCellType_Wall);
 }
 
-FVector ACell::GetSizeOfMesh()
-{
-	return Floor->GetStaticMesh()->GetBounds().GetBox().GetSize();
-}
-
 int ACell::GetID()
 {
-	return Id;
+	return id;
+}
+
+int ACell::GetRow()
+{
+	return row;
+}
+
+int ACell::GetColumn()
+{
+	return col;
 }
 
 CellType ACell::GetType()
@@ -107,5 +123,48 @@ AGrid* ACell::GetGridPointer()
 ACustomCharacter* ACell::GetCharacterPointer()
 {
 	return Character;
+}
+
+ACell* ACell::GetParent()
+{
+	return parent;
+}
+
+
+TArray<ACell*> ACell::GetNeighbours()
+{
+	return neighbours;
+}
+
+void ACell::UpdateMaterial() {
+	if (CellMeshMaterials.Num() > 0) {
+		switch (type)
+		{
+		case kCellType_Void:
+			if (CellMeshMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[0]);
+			break;
+		case kCellType_Wall:
+			if (CellMeshMaterials[1] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[1]);
+			break;
+		case kCellType_Normal:
+			if (CellMeshMaterials[2] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[2]);
+			break;
+		case kCellType_Spawn:
+			if (CellMeshMaterials[3] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[3]);
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+
+void ACell::HighlightCell(bool bHighlight) {
+	if (bHighlight) {
+		CellMeshComponent->SetMaterial(0, CellMeshMaterials[CellMeshMaterials.Num() - 1]);
+	}
+	else { 
+		UpdateMaterial();
+	}
 }
 

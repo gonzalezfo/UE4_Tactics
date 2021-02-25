@@ -11,15 +11,7 @@
 // Sets default values
 AGrid::AGrid()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
 
-	GridSize = FIntPoint(5, 5);
-
-	SquareWidth = 200.0f;
-
-	RoomLength = SquareWidth * GridSize.Y;
-	RoomWidth = SquareWidth* GridSize.X;
 }
 
 // Called when the game starts or when spawned
@@ -27,21 +19,15 @@ void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CreateGrid();
+	InitGrid();
 	ConnectCells();
+	GenerateObstacles();
+	SpawnCharacter();
 }
 
-// Called every frame
-void AGrid::Tick(float DeltaTime)
+float AGrid::GetCellSize()
 {
-	Super::Tick(DeltaTime);
-}
-
-FVector AGrid::GetCellSize()
-{
-	FVector tmp(SquareWidth, SquareWidth, 1.0f);
-
-	return tmp;
+	return CellSize;
 }
 
 bool AGrid::IsValidID(ACell* cell)
@@ -171,7 +157,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 {
 	auto distance = [](ACell* a, ACell* b)
 	{
-		return sqrtf((float)((a->col - b->col) * (a->col - b->col) + (a->row - b->row) * (a->row - b->row)));
+		return sqrtf((float)((a->GetColumn() - b->GetColumn()) * (a->GetColumn() - b->GetColumn()) + (a->GetRow() - b->GetRow()) * (a->GetRow() - b->GetRow())));
 	};
 
 	// Puts the start cell with initial values and sets as current
@@ -200,9 +186,9 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		cellCurrent->bvisited = true; // sets the cell as visited, not to consider it again
 
 		// Checks all the neighbour nodes of the current node
-		for (auto cellNeighbour : cellCurrent->neighbours)
+		for (auto cellNeighbour : cellCurrent->GetNeighbours())
 		{
-			if (!cellNeighbour->bvisited && cellNeighbour->type != kCellType_Wall)
+			if (!cellNeighbour->bvisited && cellNeighbour->GetType() != kCellType_Wall)
 			{
 				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
 
@@ -212,7 +198,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 				// Sets the path if the potential distance is smaller than the neighbours'
 				if (fPossiblyLowerGoal < cellNeighbour->localGoal)
 				{
-					cellNeighbour->parent = cellCurrent;
+					cellNeighbour->SetParent(cellCurrent);
 					cellNeighbour->localGoal = fPossiblyLowerGoal;
 
 					// updates the neighbour score as the path length has been changed
@@ -224,23 +210,22 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 
 	TArray<ACell*> cellPath;
 
-	if (finish->parent != nullptr)
+	if (finish->GetParent() != nullptr)
 	{
 		if (finish != nullptr)
 		{
 			ACell* cell = finish;
-			while (cell->parent != nullptr)
+			while (cell->GetParent() != nullptr)
 			{
 				cellPath.Push(cell);
 				
-				cell = cell->parent;
+				cell = cell->GetParent();
 			}
 		}
 	}
 
 	return cellPath;
 }
-
 
 void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
 {
@@ -253,19 +238,112 @@ void AGrid::IndexToRowCol(int* row, int* col, ACell* origin)
 	*col = origin->GetID() % GridSize.Y;
 }
 
+static TArray<CellType> GenerateObstacles_CellularAutomata(FIntPoint grid_size, float obstacle_percentage, int neighbours_conversion_ratio, int iterations) {
 
-AActor* AGrid::SpawnItem(UClass* ItemToSpawn, FVector& Position)
-{
-	FRotator rotation (0.0f);
+	// Init CellType Values. 
+	TArray<CellType> cell_types;
+	cell_types.Init(kCellType_Void, grid_size.X * grid_size.Y);
 
-	return GetWorld()->SpawnActor<AActor>(ItemToSpawn, Position, rotation);
+	//Temporal Array to check different Grid Generations.
+	TArray<CellType> new_cell_types;
+	new_cell_types.Init(kCellType_Void, grid_size.X * grid_size.Y);
+
+	float random_value = 0.0f;
+
+	for (int value = 0; value < (grid_size.Y * grid_size.X); ++value) {
+		random_value = FMath::FRandRange(0.0f, 1.0f);
+		if (random_value > obstacle_percentage) {
+			cell_types[value] = CellType::kCellType_Normal;
+		}
+		else {
+			cell_types[value] = CellType::kCellType_Wall;
+		}
+	}
+
+	for (int value = 0; value < iterations; ++value) {
+		//Count Number of Obstacles around each Cell.
+		for (int r = 0; r < grid_size.Y; ++r) {
+			for (int c = 0; c < grid_size.X; ++c) {
+				int neighbours_obstacle_counter = 0;
+				int index = c + grid_size.X * r;
+				//North
+				if (r == grid_size.Y - 1) {
+					neighbours_obstacle_counter += 3;
+				}
+				else {
+					if (cell_types[index + grid_size.X] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					//NorthWest
+					if (c == 0) {
+						neighbours_obstacle_counter++;
+					}
+					else {
+						if (cell_types[index + grid_size.X - 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					}
+					//NorthEast
+					if (c == grid_size.X - 1) {
+						neighbours_obstacle_counter++;
+					}
+					else {
+						if (cell_types[index + grid_size.X + 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					}
+				}
+				//South
+				if (r == 0) {
+					neighbours_obstacle_counter += 3;
+				}
+				else {
+					if (cell_types[index - grid_size.X] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					//SouthWest
+					if (c == 0) {
+						neighbours_obstacle_counter++;
+					}
+					else {
+						if (cell_types[index - grid_size.X - 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					}
+					//SouthEast
+					if (c == grid_size.X - 1) {
+						neighbours_obstacle_counter++;
+					}
+					else {
+						if (cell_types[index - grid_size.X + 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+					}
+				}
+				//West
+				if (c == 0) {
+					neighbours_obstacle_counter++;
+				}
+				else {
+					if (cell_types[index - 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+				}
+				//East
+				if (c == grid_size.X - 1) {
+					neighbours_obstacle_counter++;
+				}
+				else {
+					if (cell_types[index + 1] == CellType::kCellType_Wall)neighbours_obstacle_counter++;
+				}
+
+				new_cell_types[index] = cell_types[index];
+				//Here you should have all the neighbours calculated.
+				if (neighbours_obstacle_counter < neighbours_conversion_ratio) {
+					new_cell_types[index] = CellType::kCellType_Normal;
+				}
+				if (neighbours_obstacle_counter > neighbours_conversion_ratio) {
+					new_cell_types[index] = CellType::kCellType_Wall;
+				}
+			}
+		}
+		cell_types = new_cell_types;
+	}
+
+	return cell_types;
 }
 
-static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, int iterations) {
+static TArray<CellType> GenerateObstacles_Walkers(FIntPoint gridSize, int walkersNum, int iterations) {
 	
 	//Set CellType Array
 	TArray<CellType> cell_types;
-	cell_types.Init(kCellType_Wall, gridSize.X * gridSize.Y);
+	cell_types.Init(CellType::kCellType_Wall, gridSize.X * gridSize.Y);
 
 	//Set walkers. (Maybe turn this into a struct)
 	TArray<FIntPoint> grid_walkers_positions;
@@ -319,7 +397,7 @@ static TArray<CellType> GenerateGridWalkers(FIntPoint gridSize, int walkersNum, 
 	return cell_types;
 }
 
-static TArray<CellType> GenerateGridPerlin(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
+static TArray<CellType> GenerateObstacles_Perlin(FIntPoint size, float obstaclePercentaje, FVector2D obstacleDiffusion) {
 	TArray<float> cell_values_perlin;
 	cell_values_perlin.Init(0.0f, size.X * size.Y);
 
@@ -369,6 +447,86 @@ static TArray<CellType> GenerateGridPerlin(FIntPoint size, float obstaclePercent
 	return cell_types;
 }
 
+//Return all conected (This could be way easier if we worked with the cells instead, but I wanted to complicate things for myself.)
+static TArray<int> GetWalkableAreaIndices(TArray<CellType> cell_types, TArray<bool>& checks, int cell_index, FIntPoint grid_size) {
+
+	TArray<int> area_values;
+	if (cell_types[cell_index] == CellType::kCellType_Normal && checks[cell_index] == false)
+	{
+		area_values.Push(cell_index);
+		checks[cell_index] = true;
+	}
+
+	int row = cell_index / grid_size.X;
+	int col = cell_index % grid_size.X;
+
+	//North
+	if (row < (grid_size.X - 1)) {
+		if (cell_types[cell_index + grid_size.X] == CellType::kCellType_Normal && checks[cell_index + grid_size.X] == false) {
+			area_values.Append(GetWalkableAreaIndices(cell_types, checks, cell_index + grid_size.X, grid_size));
+		}
+	}
+
+	//South
+	if (row > 0) {
+		if (cell_types[cell_index - grid_size.X] == CellType::kCellType_Normal && checks[cell_index - grid_size.X] == false) {
+			area_values.Append(GetWalkableAreaIndices(cell_types, checks, cell_index - grid_size.X, grid_size));
+		}
+	}
+
+	//East
+	if (col < (grid_size.Y - 1)) {
+		if (cell_types[cell_index + 1] == CellType::kCellType_Normal && checks[cell_index + 1] == false) {
+			area_values.Append(GetWalkableAreaIndices(cell_types, checks, cell_index + 1, grid_size));
+		}
+	}
+
+	//West
+	if (col > 0) {
+		if (cell_types[cell_index - 1] == CellType::kCellType_Normal && checks[cell_index - 1] == false) {
+			area_values.Append(GetWalkableAreaIndices(cell_types, checks, cell_index - 1, grid_size));
+		}
+	}
+	return area_values;
+}
+
+static void RemoveUnconnectedAreas(TArray<CellType>& cell_types, FIntPoint grid_size) {
+
+	TArray<bool> cell_area_check;
+	TArray<TArray<int>> cell_areas;
+
+	cell_area_check.Init(false, grid_size.X * grid_size.Y);
+
+	for (int idx = 0; idx < grid_size.X * grid_size.Y; idx++) {
+		if (cell_types[idx] == CellType::kCellType_Wall) {
+			cell_area_check[idx] = true;
+		}
+		else {
+			if (cell_area_check[idx] == false) {
+				TArray<int> area_values;
+				area_values = GetWalkableAreaIndices(cell_types, cell_area_check, idx, grid_size);
+				cell_areas.Push(area_values);
+			}
+		}
+	}
+
+	int biggest_area_index = 0;
+	int biggest_area_size = 0;
+
+	for (int i = 0; i < cell_areas.Num(); i++) {
+		if (cell_areas[i].Num() > biggest_area_size) {
+			biggest_area_index = i;
+			biggest_area_size = cell_areas[i].Num();
+		}
+	}
+
+	for (int area = 0; area < cell_areas.Num(); area++) {
+		for (int idx = 0; idx < cell_areas[area].Num(); idx++) {
+			if (area != biggest_area_index) cell_types[(cell_areas[area])[idx]] = CellType::kCellType_Void;
+		}
+	}
+};
+
 static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int numSpawns, int spawnSize, int spawnMinDistance) {
 	//SpawnSize Check
 	if (spawnSize <= 0 || spawnSize > gridSize.X || spawnSize > gridSize.Y) spawnSize = 1;
@@ -391,7 +549,7 @@ static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int n
 		do {
 			valid_spawn_positions = true;
 			for (int i = 0; i < numSpawns; i++) {
-				spawn_positions[i] = FIntPoint(FMath::RandRange(1, gridSize.X - 2), FMath::RandRange(1, gridSize.Y - 2));
+				spawn_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X -1), FMath::RandRange(0, gridSize.Y - 1));
 				spawn_directions[i] = FMath::RandRange(0, 3);
 				if (grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] != kCellType_Normal) valid_spawn_positions = false;
 			}
@@ -436,7 +594,7 @@ static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int n
 					break;
 				}
 				is_valid_dir = (new_position.Y > 0 && new_position.Y < (gridSize.Y - 1) &&
-					new_position.X > 0 && new_position.X < (gridSize.X - 1));
+								new_position.X > 0 && new_position.X < (gridSize.X - 1)		);
 				//If valid, change direction if possible. 
 				if (is_valid_dir) {
 					spawn_positions[i] = new_position;
@@ -499,61 +657,56 @@ static void GenerateGridSpawns(TArray<CellType> &grid, FIntPoint gridSize, int n
 	}
 };
 
-void AGrid::CreateGrid()
-{
+void AGrid::InitGrid() {
+
 	Cells.Init(nullptr, GridSize.Y * GridSize.X);
 
-	TArray<CellType> cellTypes; 
-	if (!PerlinORWalker)
-	{
-		cellTypes = GenerateGridWalkers(GridSize, NumberOfWalkers, NumberOfIterations);
+	for (int r = 0; r < GridSize.Y; ++r) {
+		for (int c = 0; c < GridSize.X; ++c) {
+
+			int cell_index = c + GridSize.X * r;
+			FVector cell_position = FVector(c * CellSize, r * CellSize, 0.0f);
+			FRotator cell_rotation = FRotator(0.0f);
+
+			Cells[cell_index] = Cast<ACell>(GetWorld()->SpawnActor<AActor>(CellToInstantiate, cell_position, cell_rotation));
+
+			Cells[cell_index]->SetGridPointer(this);
+			Cells[cell_index]->SetID(cell_index);
+			Cells[cell_index]->SetMeshSize(CellSize);
+		}
 	}
-	else
+}
+
+void AGrid::GenerateObstacles()
+{
+	TArray<CellType> cellTypes;
+
+	switch (GridGenerationMethod)
 	{
-		cellTypes = GenerateGridPerlin(GridSize, ObstaclePercentaje, ObstacleDiffusion);
+	case kGridGeneration_None:
+		cellTypes.Init(kCellType_Void, GridSize.X * GridSize.Y);
+		break;
+	case kGridGeneration_CelularAutomata:
+		cellTypes = GenerateObstacles_CellularAutomata(GridSize, InitialObstaclePercentaje, NeighboursToTileConvertion, NumberOfTransitions);
+		break;
+	case kGridGeneration_PerlinNoise:
+		cellTypes = GenerateObstacles_Perlin(GridSize, ObstaclePercentaje, ObstacleDiffusion);
+		break;
+	case kGridGeneration_Walkers:
+		cellTypes = GenerateObstacles_Walkers(GridSize, NumberOfWalkers, IterationsPerWalker);
+		break;
+	default:
+		cellTypes.Init(kCellType_Void, GridSize.X * GridSize.Y);
+		break;
 	}
+
+	RemoveUnconnectedAreas(cellTypes, GridSize);
 
 	GenerateGridSpawns(cellTypes, GridSize, NumberOfSpawns, SpawnSize, SpawnMinDistance);
 
-	if (ActorToInstantiate)
-	{
-		for (int i = 0; i < GridSize.Y; ++i)
-		{
-			for (int j = 0; j < GridSize.X; ++j)
-			{
-				int index = j + GridSize.X * i;
-				FVector position(j * SquareWidth, i * SquareWidth, 0.0f);
-				Cells[index] = Cast<ACell>(SpawnItem(ActorToInstantiate, position));
-				Cells[index]->Init(index, this);
-				Cells[index]->SetType(cellTypes[index]);
-				if (cellTypes[index] == kCellType_Wall) {
-					Cells[index]->SetActorHiddenInGame(true);
-				}
-			}
-		}
-	}
-
-	//Checks if not null
-	if (CharacterToInstantiate)
-	{
-		//Checks if the position is less than the array size
-		if (spawn_position_ < Cells.Num())
-		{
-			//New character position
-			FVector new_pos = Cells[spawn_position_]->GetActorLocation();
-			new_pos.Z += 50.0f;
-
-			//Spawn character and set it's cell pointer
-			ACustomCharacter* cchar = Cast<ACustomCharacter>(SpawnItem(CharacterToInstantiate, new_pos));
-			if (cchar)
-			{
-				cchar->InitPlayer(Cells[spawn_position_]);
-			}
-
-
-			//Set the character pointer on the character cell.
-			Cells[spawn_position_]->SetCharacterPointer(cchar);
-		}
+	for (int value = 0; value < Cells.Num(); value++) {
+		Cells[value]->SetType(cellTypes[value]);
+		Cells[value]->UpdateMaterial();
 	}
 }
 
@@ -563,30 +716,68 @@ void AGrid::ConnectCells()
 	{
 		for (int y = 0; y < GridSize.Y; y++)
 		{
+			TArray<ACell*> cell_neighbours;
 			// Make sure that the cells are inside the bounds
 			if (y > 0)
-				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y - 1) * GridSize.X + (x + 0)]);
+				cell_neighbours.Push(Cells[(y - 1) * GridSize.X + (x + 0)]);
 			if (y < GridSize.Y - 1)
-				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 1) * GridSize.X + (x + 0)]);
+				cell_neighbours.Push(Cells[(y + 1) * GridSize.X + (x + 0)]);
 			if (x > 0)
-				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 0) * GridSize.X + (x - 1)]);
+				cell_neighbours.Push(Cells[(y + 0) * GridSize.X + (x - 1)]);
 			if (x < GridSize.X - 1)
-				Cells[y * GridSize.X + x]->neighbours.Push(Cells[(y + 0) * GridSize.X + (x + 1)]);
+				cell_neighbours.Push(Cells[(y + 0) * GridSize.X + (x + 1)]);
+
+			Cells[y * GridSize.X + x]->SetNeighbours(cell_neighbours);
 		}
+	}
+}
+
+void AGrid::SpawnCharacter() {
+
+	//Checks if not null
+	if (CharacterToInstantiate != nullptr) {
+		//Set a proper position for our character.
+		int character_index = FMath::FRandRange(0, Cells.Num() - 1);
+		bool valid_position = false;
+	
+		int repetitions = 0;
+
+		while (valid_position == false || repetitions > (Cells.Num()*2)) {
+			if (Cells[character_index]->GetType() == CellType::kCellType_Normal || Cells[character_index]->GetType() == CellType::kCellType_Spawn) {
+				valid_position = true;
+			} else {
+				character_index = FMath::FRandRange(0, Cells.Num() - 1);
+			}
+		}
+
+		//New character position
+		FVector new_pos = Cells[character_index]->GetActorLocation();
+		new_pos.Z += 50.0f;
+		FRotator character_rotation = FRotator(0.0f);
+
+
+		//Spawn character and set it's cell pointer
+		ACustomCharacter* cchar = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, new_pos, character_rotation));
+		if (cchar)
+		{
+			cchar->InitPlayer(Cells[character_index]);
+		}
+		//Set the character pointer on the character cell.
+		Cells[character_index]->SetCharacterPointer(cchar);
 	}
 }
 
 void AGrid::HighlightCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {
-		c->HighlightCell();
+		c->HighlightCell(true); 
 	}
 }
 
 void AGrid::UnhighlightCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {
-		c->UnhighlightCell();
+		c->HighlightCell(false);
 	}
 }
 

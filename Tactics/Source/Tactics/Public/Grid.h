@@ -1,16 +1,19 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid.generated.h"
 
-
 class ACell;
 class ACustomCharacter;
 
-
+UENUM(BlueprintType)
+enum GridGenerationType {
+	kGridGeneration_None = 0				UMETA(DisplayName = "None"),
+	kGridGeneration_CelularAutomata = 1		UMETA(DisplayName = "Celular Automata"),
+	kGridGeneration_PerlinNoise = 2			UMETA(DisplayName = "Perlin Noise"),
+	kGridGeneration_Walkers = 3				UMETA(DisplayName = "Walkers"),
+};
 
 UCLASS()
 class TACTICS_API AGrid : public AActor
@@ -26,11 +29,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 	// Returns the size of the cell
-	FVector GetCellSize();
+	float GetCellSize();
 
 	// Checkers
 	bool IsValidID(ACell* cell);
@@ -58,56 +59,59 @@ public:
 	ACell* GetCellByID(int id);
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AActor> ActorToInstantiate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Instantiation, meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<AActor> CharacterToInstantiate;
-
-	UPROPERTY(EditAnywhere, Category = Instantiation)
-		int spawn_position_;
-
-	AActor* SpawnItem(UClass* ItemToSpawn, FVector& Position);
-	
-	void CreateGrid();
-
-	/* Each cell connects with their neighbours via the vector */
+	void InitGrid();
 	void ConnectCells();
-
-	float RoomLength;
-	float RoomWidth;
+	void GenerateObstacles();
+	void SpawnCharacter();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
-		float SquareWidth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Size)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<ACell> CellToInstantiate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid", meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<AActor> CharacterToInstantiate;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		FIntPoint GridSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Grid)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid", meta = (ClampMin = "1"))
+		int CellSize = 100;
+
+	UPROPERTY()
 		TArray<ACell*> Cells;
 
-	UPROPERTY(EditAnywhere, Category = GridGeneration)
-		bool PerlinORWalker; //true Perlin - false Walker
+	UPROPERTY(EditAnywhere, Category = "Grid")
+		TEnumAsByte<GridGenerationType> GridGenerationMethod;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
-		int NumberOfWalkers;
+	UPROPERTY(EditAnywhere, Category = "Grid|Celular Automata Generation", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+		float InitialObstaclePercentaje;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ProceduralWalkers)
-		int NumberOfIterations;
+	UPROPERTY(EditAnywhere, Category = "Grid|Celular Automata Generation", meta = (ClampMin = "0", ClampMax = "8"))
+		int NeighboursToTileConvertion;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
-		float ObstaclePercentaje; //between 0.0 and 1.0
+	UPROPERTY(EditAnywhere, Category = "Grid|Celular Automata Generation", meta = (ClampMin = "1"))
+		int NumberOfTransitions = 1;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Obstacles)
+	UPROPERTY(EditAnywhere, Category = "Grid|Perlin Noise Generation", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+		float ObstaclePercentaje;
+
+	UPROPERTY(EditAnywhere, Category = "Grid|Perlin Noise Generation", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 		FVector2D ObstacleDiffusion;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	UPROPERTY(EditAnywhere, Category = "Grid|Walkers Generation", meta = (ClampMin = "0"))
+		int NumberOfWalkers = 1;
+
+	UPROPERTY(EditAnywhere, Category = "Grid|Walkers Generation", meta = (ClampMin = "0"))
+		int IterationsPerWalker = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid|Spawns", meta = (ClampMin = "0", ClampMax = "10"))
 		int NumberOfSpawns;	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid|Spawns", meta = (ClampMin = "0", ClampMax = "10"))
 		int SpawnSize;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Spawn)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid|Spawns")
 		int SpawnMinDistance;
 };
