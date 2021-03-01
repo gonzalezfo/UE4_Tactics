@@ -1,1 +1,1 @@
-"D:\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe" -2017 -projectfiles -project="C:\Users\isaac\Desktop\UE4_Tactics\Tactics\Tactics.uproject" -game -rocket -progress
+"C:\Program Files\Epic Games\UE_4.24\Engine\Binaries\DotNET\UnrealBuildTool.exe" -2017 -projectfiles -project="C:\Users\martinezhe\Desktop\UE4_Tactics\Tactics\Tactics.uproject" -game -rocket -progress

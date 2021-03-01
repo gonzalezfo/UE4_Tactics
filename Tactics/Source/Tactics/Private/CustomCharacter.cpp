@@ -2,8 +2,11 @@
 
 
 #include "CustomCharacter.h"
-#include "../Public/Cell.h"
+
 #include "Components/StaticMeshComponent.h"
+
+#include "Cell.h"
+#include "CharacterHUDWidget.h"
 
 
 // Sets default values
@@ -21,6 +24,16 @@ void ACustomCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (HUDWidgetClass)
+	{
+		HUDWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), HUDWidgetClass);
+
+		if (HUDWidget)
+		{
+			HUDWidget->AddToViewport();
+			HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
+	}
 }
 
 // Called every frame
@@ -102,11 +115,20 @@ TArray<ACell*> ACustomCharacter::GetSelectableCells()
 
 void ACustomCharacter::Selected()
 {
+	//Makes the HUD visible and sets the character name
+	HUDWidget->SetCharacterName(name_);
+	HUDWidget->SetVisibility(ESlateVisibility::Visible);
+
+	//Highlights the action cells.
 	GetCell()->GetGridPointer()->HighlightCells(GetSelectableCells());
 }
 
 void ACustomCharacter::Unselected()
 {
+	//Hides the HUD widget
+	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	//Unhighlights the action cells.
 	GetCell()->GetGridPointer()->UnhighlightCells(GetSelectableCells());
 }
 

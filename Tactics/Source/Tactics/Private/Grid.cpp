@@ -548,11 +548,10 @@ void AGrid::CreateGrid()
 			if (cchar)
 			{
 				cchar->InitPlayer(Cells[spawn_position_]);
+
+				//Set the character pointer on the character cell.
+				Cells[spawn_position_]->SetCharacterPointer(cchar);
 			}
-
-
-			//Set the character pointer on the character cell.
-			Cells[spawn_position_]->SetCharacterPointer(cchar);
 		}
 	}
 }
