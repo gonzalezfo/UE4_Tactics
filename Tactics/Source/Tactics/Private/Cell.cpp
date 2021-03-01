@@ -40,7 +40,7 @@ void ACell::ChangeMaterial(UMaterial* new_material)
 
 void ACell::HighlightCell()
 {
-	ChangeMaterial(HighlightMaterial);
+	ChangeMaterial(MoveHighlightMaterial);
 }
 
 void ACell::UnhighlightCell()

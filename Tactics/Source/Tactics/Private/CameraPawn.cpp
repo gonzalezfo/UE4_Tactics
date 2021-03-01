@@ -168,14 +168,6 @@ void ACameraPawn::SelectCharacter()
 		character_ = cchar;
 
 		character_->Selected();
-		UE_LOG(LogTemp, Warning, TEXT("Select Character"));
-
-		//AGrid* grid = character_->GetCell()->GetGridPointer();
-
-		//if (grid)
-		//{
-		//	grid->HighlightCells(character_);
-		//}
 
 		return;
 	}
@@ -188,8 +180,6 @@ void ACameraPawn::SelectCharacter()
 
 		if (cchar)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Select Character Through Cell"));
-
 			character_ = cchar;
 		}
 	}
@@ -214,7 +204,6 @@ void ACameraPawn::MoveCharacterToCell()
 
 			if (grid)
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("You are moving the character to the new cell"));
 				character_->Unselected();
 				grid->MoveCharacterToCell(character_, cell_);
 				ResetSelection();

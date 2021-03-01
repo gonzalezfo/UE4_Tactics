@@ -93,5 +93,8 @@ private:
 		UMaterial* SpawnMaterial;
 
 	UPROPERTY(EditAnywhere)
-		UMaterial* HighlightMaterial;
+		UMaterial* MoveHighlightMaterial;
+
+	UPROPERTY(EditAnywhere)
+		UMaterial* AttackHighlightMaterial;
 };
