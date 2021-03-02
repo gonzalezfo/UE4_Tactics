@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "CharacterHUDWidget.generated.h"
 
+class ACustomCharacter;
+
 class UTextBlock;
 class UButton;
 
@@ -27,8 +29,14 @@ public:
 	UFUNCTION()
 		void DefenseButtonClicked();
 
+	UFUNCTION()
+		void FinishTurnButtonClicked();
+
 	//Sets the text to the player name.
 	void SetCharacterName(FString);
+
+	//A reference to the current selected character.
+	ACustomCharacter* current_character_;
 
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -39,4 +47,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* DefenseButton;
+
+	UPROPERTY(meta = (BindWidget))
+		UButton* FinishTurnButton;
 };

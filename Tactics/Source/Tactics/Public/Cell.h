@@ -13,10 +13,18 @@ class ACustomCharacter;
 
 UENUM(BlueprintType)
 enum CellType {
-	kCellType_Void = 0		UMETA(DisplayName = "VOID"),
-	kCellType_Wall = 1		UMETA(DisplayName = "WALL"),
-	kCellType_Normal = 2    UMETA(DisplayName = "NORMAL"),
-	kCellType_Spawn = 3     UMETA(DisplayName = "SPAWN"),
+	kCellType_Void = 0						UMETA(DisplayName = "VOID"),
+	kCellType_Wall = 1						UMETA(DisplayName = "WALL"),
+	kCellType_Normal = 2					UMETA(DisplayName = "NORMAL"),
+	kCellType_Spawn = 3						UMETA(DisplayName = "SPAWN"),
+};
+
+UENUM(BlueprintType)
+enum CellMaterial
+{
+	kCellMaterial_Default = 0				UMETA(DisplayName = "DEFAULT"),
+	kCellMaterial_MoveHighlight = 1			UMETA(DisplayName = "MOVEHIGHLIGHT"),
+	kCellMaterial_AttackHighlight = 2		UMETA(DisplayName = "ATTACKHIGHLIGHT")
 };
 
 
@@ -62,7 +70,7 @@ public:
 	void SetCellMaterial();
 	void SetCellHighlightMaterial();
 
-	void HighlightCell(bool bHighlight);
+	void HighlightCell(CellMaterial);
 
 	bool bvisited = false;				// Is this cell have been searched already?
 	float globalGoal;					// Distance to Goal so far

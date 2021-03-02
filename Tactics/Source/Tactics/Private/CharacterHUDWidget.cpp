@@ -3,8 +3,14 @@
 
 #include "CharacterHUDWidget.h"
 
+#include "CustomCharacter.h"
+#include "CameraPawn.h"
+
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 void UCharacterHUDWidget::NativeConstruct()
 {
@@ -18,6 +24,10 @@ void UCharacterHUDWidget::NativeConstruct()
 	{
 		DefenseButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::DefenseButtonClicked);
 	}
+	if (!FinishTurnButton->OnClicked.Contains(this, "FinishTurnButtonClicked"))
+	{
+		FinishTurnButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::FinishTurnButtonClicked);
+	}
 }
 
 void UCharacterHUDWidget::AttackButtonClicked()
@@ -28,6 +38,18 @@ void UCharacterHUDWidget::AttackButtonClicked()
 void UCharacterHUDWidget::DefenseButtonClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("You are defending"));
+}
+
+void UCharacterHUDWidget::FinishTurnButtonClicked()
+{
+	current_character_->Unselected();
+
+	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (pawn)
+	{
+		pawn->ResetSelection();
+	}
 }
 
 void UCharacterHUDWidget::SetCharacterName(FString name)

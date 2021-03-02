@@ -31,12 +31,12 @@ public:
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
+	//Initialize the player.
+	void InitPlayer(ACell*);
+
 	//Functions of character selection and unselection.
 	void Selected();
 	void Unselected();
-
-	//Initialize the player.
-	void InitPlayer(ACell*);
 
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
@@ -46,6 +46,7 @@ public:
 	ACell* GetCell();
 
 	//Setters.
+	//Sets the current character cell.
 	void SetCell(ACell*);
 
 	//Character static mesh.

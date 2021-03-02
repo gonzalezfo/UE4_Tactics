@@ -742,6 +742,7 @@ void AGrid::SpawnCharacter() {
 
 		int repetitions = 0;
 
+		//IMPORTANT: Check if the cell is already asigned to another character
 		while (valid_position == false || repetitions > (Cells.Num() * 2)) {
 			if (Cells[character_index]->GetType() == CellType::kCellType_Normal || Cells[character_index]->GetType() == CellType::kCellType_Spawn) {
 				valid_position = true;
@@ -771,14 +772,14 @@ void AGrid::SpawnCharacter() {
 void AGrid::HighlightCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {
-		c->HighlightCell(true);
+		c->HighlightCell(CellMaterial::kCellMaterial_MoveHighlight);
 	}
 }
 
 void AGrid::UnhighlightCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {
-		c->HighlightCell(false);
+		c->HighlightCell(CellMaterial::kCellMaterial_Default);
 	}
 }
 

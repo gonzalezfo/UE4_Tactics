@@ -163,12 +163,27 @@ void ACell::SetCellHighlightMaterial() {
 }
 
 
-void ACell::HighlightCell(bool bHighlight) {
-	if (bHighlight) {
+void ACell::HighlightCell(CellMaterial material_type) {
+
+	switch(material_type)
+	{
+		case CellMaterial::kCellMaterial_Default:
+			SetCellMaterial();
+			break;
+		case CellMaterial::kCellMaterial_MoveHighlight:
+			SetCellHighlightMaterial();
+			break;
+		case CellMaterial::kCellMaterial_AttackHighlight:
+			SetCellHighlightMaterial();
+			break;
+		default:
+			break;
+	};
+	/*if (bHighlight) {
 		SetCellHighlightMaterial();
 	}
 	else {
 		SetCellMaterial();
-	}
+	}*/
 }
 

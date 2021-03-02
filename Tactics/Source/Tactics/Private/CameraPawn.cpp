@@ -245,12 +245,10 @@ void ACameraPawn::Select()
 
 	if (!CheckCharacterSelected())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("You are selecting the character"));
 		SelectCharacter();
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("You are selecting the cell"));
 		SelectCell();
 		if (CheckCellSelected()) {
 			MoveCharacterToCell();

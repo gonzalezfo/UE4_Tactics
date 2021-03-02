@@ -116,11 +116,12 @@ TArray<ACell*> ACustomCharacter::GetSelectableCells()
 void ACustomCharacter::Selected()
 {
 	//Makes the HUD visible and sets the character name
+	HUDWidget->current_character_ = this;
 	HUDWidget->SetCharacterName(name_);
 	HUDWidget->SetVisibility(ESlateVisibility::Visible);
 
 	//Highlights the action cells.
-	GetCell()->GetGridPointer()->HighlightCells(GetSelectableCells());
+	current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
 }
 
 void ACustomCharacter::Unselected()
@@ -129,7 +130,7 @@ void ACustomCharacter::Unselected()
 	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	//Unhighlights the action cells.
-	GetCell()->GetGridPointer()->UnhighlightCells(GetSelectableCells());
+	current_cell_->GetGridPointer()->UnhighlightCells(GetSelectableCells());
 }
 
 ACell* ACustomCharacter::GetCell()
