@@ -153,16 +153,17 @@ void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
 	}
 }
 
+float AGrid::CalculateDistance(ACell* a, ACell* b)
+{
+	return (float)((a->GetColumn() - b->GetColumn()) * (a->GetColumn() - b->GetColumn()) + (a->GetRow() - b->GetRow()) * (a->GetRow() - b->GetRow()));
+}
+
 TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 {
-	auto distance = [](ACell* a, ACell* b)
-	{
-		return sqrtf((float)((a->GetColumn() - b->GetColumn()) * (a->GetColumn() - b->GetColumn()) + (a->GetRow() - b->GetRow()) * (a->GetRow() - b->GetRow())));
-	};
 
 	// Puts the start cell with initial values and sets as current
 	start->localGoal = 0.0f;
-	start->globalGoal = distance(start, finish);
+	start->globalGoal = CalculateDistance(start, finish);
 	ACell* cellCurrent = start;
 
 	// Creation of the list to push all the non-visited cells
@@ -193,7 +194,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
 
 				// The potential lowest distance
-				float fPossiblyLowerGoal = cellCurrent->localGoal + distance(cellCurrent, cellNeighbour);
+				float fPossiblyLowerGoal = cellCurrent->localGoal + CalculateDistance(cellCurrent, cellNeighbour);
 
 				// Sets the path if the potential distance is smaller than the neighbours'
 				if (fPossiblyLowerGoal < cellNeighbour->localGoal)
@@ -202,7 +203,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 					cellNeighbour->localGoal = fPossiblyLowerGoal;
 
 					// updates the neighbour score as the path length has been changed
-					cellNeighbour->globalGoal = cellNeighbour->localGoal + distance(cellNeighbour, finish);
+					cellNeighbour->globalGoal = cellNeighbour->localGoal + CalculateDistance(cellNeighbour, finish);
 				}
 			}
 		}

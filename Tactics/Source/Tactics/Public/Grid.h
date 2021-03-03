@@ -64,6 +64,7 @@ private:
 	void ConnectCells();
 	void GenerateObstacles();
 	void SpawnCharacter();
+	float CalculateDistance(ACell* a, ACell* b);
 
 public:
 
