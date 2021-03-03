@@ -15,8 +15,27 @@ ACustomCharacter::ACustomCharacter()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	TeamNum = 255;
+
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
 	SetRootComponent(mesh_);
+}
+
+bool ACustomCharacter::IsFriendly(AActor* other)
+{
+	if (!other)
+	{
+		return false;
+	}
+
+	ACustomCharacter* otherChar = Cast<ACustomCharacter>(other);
+
+	if (otherChar)
+	{
+		return (TeamNum == otherChar->TeamNum);
+	}
+
+	return false;
 }
 
 // Called when the game starts or when spawned

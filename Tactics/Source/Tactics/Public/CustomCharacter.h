@@ -19,6 +19,9 @@ public:
 	//Sets default values for this actor's properties.
 	ACustomCharacter();
 
+	UFUNCTION(BlueprintCallable, Category = "Teams")
+		bool IsFriendly(AActor* other);
+
 protected:
 	//Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
@@ -28,15 +31,15 @@ protected:
 		ACell* current_cell_;
 
 public:
-	//Called every frame.
-	virtual void Tick(float DeltaTime) override;
-
 	//Initialize the player.
 	void InitPlayer(ACell*);
 
 	//Functions of character selection and unselection.
 	void Selected();
 	void Unselected();
+	//Called every frame.
+	virtual void Tick(float DeltaTime) override;
+
 
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
@@ -68,4 +71,7 @@ public:
 	//Reference to the character HUD widget.
 	UPROPERTY(VisibleAnywhere, Category = "References")
 		UCharacterHUDWidget* HUDWidget;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Team")
+		uint8 TeamNum;
 };
