@@ -24,7 +24,8 @@ enum CellMaterial
 {
 	kCellMaterial_Default = 0				UMETA(DisplayName = "DEFAULT"),
 	kCellMaterial_MoveHighlight = 1			UMETA(DisplayName = "MOVEHIGHLIGHT"),
-	kCellMaterial_AttackHighlight = 2		UMETA(DisplayName = "ATTACKHIGHLIGHT")
+	kCellMaterial_AttackHighlight = 2		UMETA(DisplayName = "ATTACKHIGHLIGHT"),
+	kCellMaterial_CurrentCell = 3			UMETA(DisplayName = "CURRENTCELL")
 };
 
 
@@ -69,6 +70,7 @@ public:
 	// Materials
 	void SetCellMaterial();
 	void SetCellHighlightMaterial();
+	void SetCellCurrentCellMaterial();
 
 	void HighlightCell(CellMaterial);
 

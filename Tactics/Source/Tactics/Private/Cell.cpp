@@ -163,6 +163,11 @@ void ACell::SetCellHighlightMaterial() {
 }
 
 
+void ACell::SetCellCurrentCellMaterial() {
+	if (CellHighLightMaterials[1] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[1]);
+}
+
+
 void ACell::HighlightCell(CellMaterial material_type) {
 
 	switch(material_type)
@@ -175,6 +180,9 @@ void ACell::HighlightCell(CellMaterial material_type) {
 			break;
 		case CellMaterial::kCellMaterial_AttackHighlight:
 			SetCellHighlightMaterial();
+			break;
+		case CellMaterial::kCellMaterial_CurrentCell:
+			SetCellCurrentCellMaterial();
 			break;
 		default:
 			break;

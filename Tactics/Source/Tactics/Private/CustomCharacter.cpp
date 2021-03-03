@@ -122,6 +122,7 @@ void ACustomCharacter::Selected()
 
 	//Highlights the action cells.
 	current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
+	current_cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 }
 
 void ACustomCharacter::Unselected()

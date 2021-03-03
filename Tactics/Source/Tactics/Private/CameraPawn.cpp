@@ -181,6 +181,8 @@ void ACameraPawn::SelectCharacter()
 		if (cchar)
 		{
 			character_ = cchar;
+			character_->Selected();
+
 		}
 	}
 }
