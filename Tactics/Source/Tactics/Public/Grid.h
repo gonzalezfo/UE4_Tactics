@@ -21,12 +21,14 @@ enum ESpawnTeam {
 	kSpawnTeam_Team_1 = 1			UMETA(DisplayName = "Team 1"),
 	kSpawnTeam_Team_2 = 2			UMETA(DisplayName = "Team 2"),
 	kSpawnTeam_Team_3 = 3			UMETA(DisplayName = "Team 3"),
+	/*
 	kSpawnTeam_Team_4 = 4			UMETA(DisplayName = "Team 4"),
 	kSpawnTeam_Team_5 = 5			UMETA(DisplayName = "Team 5"),
 	kSpawnTeam_Team_6 = 6			UMETA(DisplayName = "Team 6"),
 	kSpawnTeam_Team_7 = 7			UMETA(DisplayName = "Team 7"),
 	kSpawnTeam_Team_8 = 8			UMETA(DisplayName = "Team 8"),
 	kSpawnTeam_Team_9 = 9			UMETA(DisplayName = "Team 9"),
+	*/
 	kSpawnTeam_ERROR = -1			UMETA(DisplayName = "Invalid Team"),
 };
 
@@ -35,11 +37,11 @@ struct FGridSpawn
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Spawn Data")
 		TEnumAsByte<ESpawnTeam> SpawnTeam;
 
-	UPROPERTY(EditAnywhere)
-		int SpawnSize;
+	UPROPERTY(EditAnywhere, Category = "Spawn Data", meta = (ClampMin = "1", ClampMax = "10"))
+		int SpawnSize = 1;
 
 	UPROPERTY()
 		TArray<ACell*> SpawnCells;

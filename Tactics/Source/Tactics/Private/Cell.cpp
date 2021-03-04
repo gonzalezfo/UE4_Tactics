@@ -158,6 +158,10 @@ void ACell::SetCellMaterial() {
 	}
 }
 
+void ACell::SetCellSpawnMaterial() {
+	if (CellMeshMaterials[3] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[3]);
+}
+
 void ACell::SetCellHighlightMaterial() {
 	if (CellHighLightMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[0]);
 }

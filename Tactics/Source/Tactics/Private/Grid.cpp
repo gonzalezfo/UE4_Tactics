@@ -22,6 +22,7 @@ void AGrid::BeginPlay()
 	InitGrid();
 	ConnectCells();
 	GenerateObstacles();
+	GenerateSpawns();
 	SpawnCharacter();
 }
 
@@ -528,139 +529,6 @@ static void RemoveUnconnectedAreas(TArray<CellType>& cell_types, FIntPoint grid_
 	}
 };
 
-/*
-static void GenerateGridSpawns(TArray<CellType>& grid, FIntPoint gridSize, int numSpawns, int spawnSize, int spawnMinDistance) {
-	//SpawnSize Check
-	if (spawnSize <= 0 || spawnSize > gridSize.X || spawnSize > gridSize.Y) spawnSize = 1;
-
-	//SpawnMinDistance Check.
-	if (spawnMinDistance <= 0 || spawnMinDistance > gridSize.X || spawnMinDistance > gridSize.Y) spawnMinDistance = (gridSize.X + gridSize.Y) / 2;
-
-	//Set walkers. (Maybe turn this into a struct)
-	TArray<FIntPoint> spawn_positions;
-	spawn_positions.Init(FIntPoint(0, 0), numSpawns);
-	TArray<int> spawn_directions;
-	spawn_directions.Init(0, numSpawns);
-
-	bool valid_spawn_positions = true;
-	bool valid_spawn_distances = true;
-
-	do {
-		valid_spawn_distances = true;
-		// Spawn Spawns in our grid. Init their values.
-		do {
-			valid_spawn_positions = true;
-			for (int i = 0; i < numSpawns; i++) {
-				spawn_positions[i] = FIntPoint(FMath::RandRange(0, gridSize.X - 1), FMath::RandRange(0, gridSize.Y - 1));
-				spawn_directions[i] = FMath::RandRange(0, 3);
-				if (grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] != kCellType_Normal) valid_spawn_positions = false;
-			}
-		} while (valid_spawn_positions == false);
-
-		//Check Spawns Distances
-		for (int a = 0; a < numSpawns; a++) {
-			for (int b = 0; b < numSpawns; b++) {
-				if (a != b) {
-					//squared_distance=((b.x-a.x)²+(b.y-a.y)²)
-					int squared_distance = (spawn_positions[b].X - spawn_positions[a].X) * (spawn_positions[b].X - spawn_positions[a].X);
-					squared_distance += (spawn_positions[b].Y - spawn_positions[a].Y) * (spawn_positions[b].Y - spawn_positions[a].Y);
-					if (squared_distance < (spawnMinDistance * spawnMinDistance)) valid_spawn_distances = false;
-				}
-			}
-		}
-	} while (valid_spawn_distances == false);
-
-	//Set Spawners for each walker.
-	for (int i = 0; i < numSpawns; i++) {
-		//Spawn Generation.
-		for (int j = 0; j < spawnSize; j++) {
-			grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] = kCellType_Spawn;
-			bool is_valid_spawn = false;
-			while (is_valid_spawn == false) {
-				bool is_valid_dir = false;
-				//Check New Position for the walker
-				FIntPoint new_position = spawn_positions[i];
-				switch (spawn_directions[i])
-				{
-				case 0:
-					new_position.Y += 1;
-					break;
-				case 1:
-					new_position.X += 1;
-					break;
-				case 2:
-					new_position.Y -= 1;
-					break;
-				case 3:
-					new_position.X -= 1;
-					break;
-				}
-				is_valid_dir = (new_position.Y > 0 && new_position.Y < (gridSize.Y - 1) &&
-					new_position.X > 0 && new_position.X < (gridSize.X - 1));
-				//If valid, change direction if possible.
-				if (is_valid_dir) {
-					spawn_positions[i] = new_position;
-					if (!(grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] == kCellType_Spawn)) {
-						switch (spawn_directions[i])
-						{
-						case 0:
-							new_position.X += 1;
-							break;
-						case 1:
-							new_position.Y -= 1;
-							break;
-						case 2:
-							new_position.X -= 1;
-							break;
-						case 3:
-							new_position.Y += 1;
-							break;
-						}
-						if (!(grid[new_position.Y * gridSize.X + new_position.X] == kCellType_Spawn)) {
-							switch (spawn_directions[i])
-							{
-							case 0:
-								spawn_directions[i] = 1;
-								break;
-							case 1:
-								spawn_directions[i] = 2;
-								break;
-							case 2:
-								spawn_directions[i] = 3;
-								break;
-							case 3:
-								spawn_directions[i] = 0;
-								break;
-							}
-						}
-						is_valid_spawn = true;
-					}
-					//If not valid, change direction to allow walker to move.
-				}
-				else {
-					switch (spawn_directions[i])
-					{
-					case 0:
-						spawn_directions[i] = 1;
-						break;
-					case 1:
-						spawn_directions[i] = 2;
-						break;
-					case 2:
-						spawn_directions[i] = 3;
-						break;
-					case 3:
-						spawn_directions[i] = 0;
-						break;
-					}
-				}
-			}
-		}
-	}
-};
-
-*/
-
 void AGrid::InitGrid() {
 
 	Cells.Init(nullptr, GridSize.Y * GridSize.X);
@@ -706,8 +574,6 @@ void AGrid::GenerateObstacles()
 
 	RemoveUnconnectedAreas(cellTypes, GridSize);
 
-	//GenerateGridSpawns(cellTypes, GridSize, NumberOfSpawns, SpawnSize, SpawnMinDistance);
-
 	for (int value = 0; value < Cells.Num(); value++) {
 		Cells[value]->SetType(cellTypes[value]);
 		Cells[value]->SetCellMaterial();
@@ -736,8 +602,63 @@ void AGrid::ConnectCells()
 	}
 }
 
+static void ExpandSpawns(FGridSpawn& spawn, ACell* cell_ref) {
+	if (spawn.SpawnCells.Num() < spawn.SpawnSize) {
+		for (int n_cell = 0; n_cell < cell_ref->GetNeighbours().Num(); n_cell++) {
+			bool valid_neighbour = true;
+			for (int s_cell = 0; s_cell < spawn.SpawnCells.Num(); s_cell++) {
+				if (spawn.SpawnCells[s_cell] == cell_ref->GetNeighbours()[n_cell]) {
+					valid_neighbour = false;
+				}
+			}
+			if (valid_neighbour) {
+				spawn.SpawnCells.Push(cell_ref->GetNeighbours()[n_cell]);
+				ExpandSpawns(spawn, cell_ref->GetNeighbours()[n_cell]);
+			}
+		}
+	}
+}
+
 void AGrid::GenerateSpawns() {
-	//TODO:
+	
+	bool valid_spawn_distances = false;
+	TArray<FIntPoint> spawn_positions;
+	spawn_positions.Init(FIntPoint(0, 0), Spawns.Num());
+	do {
+		//Validate First Spawn Position in our grid.
+		for (int index = 0; index < Spawns.Num(); index++) {
+			bool is_valid_position = false;
+			do {
+				spawn_positions[index] = FIntPoint(FMath::RandRange(0, GridSize.X - 1), FMath::RandRange(0, GridSize.Y - 1));
+				if (Cells[spawn_positions[index].Y * GridSize.X + spawn_positions[index].X]->GetType() == kCellType_Normal) {
+					is_valid_position = true;
+				}
+			} while (is_valid_position == false);
+		}
+		//Check Distances Between Spawns.
+		for (int a = 0; a < Spawns.Num(); a++) {
+			for (int b = 0; b < Spawns.Num(); b++) {
+				if (a != b) {
+					//squared_distance=((b.x-a.x)²+(b.y-a.y)²)
+					int squared_distance = (spawn_positions[b].X - spawn_positions[a].X) * (spawn_positions[b].X - spawn_positions[a].X);
+					squared_distance += (spawn_positions[b].Y - spawn_positions[a].Y) * (spawn_positions[b].Y - spawn_positions[a].Y);
+					if (squared_distance < (SpawnMinDistance * SpawnMinDistance)) valid_spawn_distances = false;
+				}
+			}
+		}
+	} while (valid_spawn_distances == false);
+
+	for (int index = 0; index < Spawns.Num(); index++) {
+		//Set the initial Cell for the Spawn.
+		Spawns[index].SpawnCells.Push(Cells[spawn_positions[index].Y * GridSize.X + spawn_positions[index].X]);
+		//Expand the Spawn Until it covers as many cells as they need.
+		ExpandSpawns(Spawns[index], Cells[spawn_positions[index].Y * GridSize.X + spawn_positions[index].X]);
+	
+		//Set Material for the Spawn Cells.
+		for (int value = 0; value < Spawns[index].SpawnCells.Num(); value++) {
+			Spawns[index].SpawnCells[value]->SetCellSpawnMaterial();
+		}
+	}
 }
 
 void AGrid::SpawnCharacter() {
