@@ -17,6 +17,8 @@ ACustomCharacter::ACustomCharacter()
 
 	TeamNum = 255;
 
+	movement_time_ = 0.0f;
+
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
 	SetRootComponent(mesh_);
 }
@@ -60,6 +62,7 @@ void ACustomCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	MoveAlongPath(DeltaTime);
 }
 
 void ACustomCharacter::InitPlayer(ACell* tmp)
@@ -117,6 +120,30 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 	
 }
 
+void ACustomCharacter::MoveAlongPath(float DeltaTime)
+{
+	if (path_cells_.Num() != 0)
+	{
+		ACell* tmp = path_cells_.Top();
+
+		if (tmp)
+		{
+			movement_time_ += DeltaTime * movement_speed_;
+
+			SetCell(tmp);
+
+			if (movement_time_ >= 1.0f)
+			{
+				current_cell_ = tmp;
+				tmp->SetCharacterPointer(this);
+
+				path_cells_.Remove(tmp);
+				movement_time_ = 0.0f;
+			}
+		}
+	}
+}
+
 TArray<ACell*> ACustomCharacter::GetSelectableCells()
 {
 	TArray<ACell*> cells;
@@ -162,9 +189,15 @@ void ACustomCharacter::SetCell(ACell* new_cell)
 {
 	if (new_cell)
 	{
-		current_cell_ = new_cell;
-
+		FVector current_position = current_cell_->GetActorLocation();
 		FVector new_position = new_cell->GetActorLocation();
+
+		float alpha = movement_time_;
+
+		alpha = FMath::Clamp(alpha, 0.0f, 1.0f);
+
+		new_position.X = FMath::Lerp(current_position.X, new_position.X, alpha);
+		new_position.Y = FMath::Lerp(current_position.Y, new_position.Y, alpha);
 		new_position.Z += 50.0f;
 
 		SetActorLocation(new_position);

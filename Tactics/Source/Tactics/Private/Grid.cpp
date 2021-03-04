@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Containers/Array.h"
 #include "..\Public\Grid.h"
+#include "Engine/World.h"
 #include <list>
 
 // Sets default values
@@ -145,11 +146,12 @@ void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
 
 		if (tmp)
 		{
+			TArray<ACell*> path = FindPath(tmp, new_cell);
+
+			character->path_cells_ = path;
+
 			tmp->SetCharacterPointer(nullptr);
 		}
-
-		character->SetCell(new_cell);
-		new_cell->SetCharacterPointer(character);
 	}
 }
 
@@ -160,7 +162,6 @@ float AGrid::CalculateDistance(ACell* a, ACell* b)
 
 TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 {
-
 	// Puts the start cell with initial values and sets as current
 	start->localGoal = 0.0f;
 	start->globalGoal = CalculateDistance(start, finish);
@@ -209,6 +210,8 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		}
 	}
 
+
+
 	TArray<ACell*> cellPath;
 
 	if (finish->GetParent() != nullptr)
@@ -223,6 +226,14 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 				cell = cell->GetParent();
 			}
 		}
+	}
+
+	for (auto cell : Cells)
+	{
+		cell->localGoal = INFINITY;
+		cell->globalGoal = INFINITY;
+		cell->SetParent(nullptr);
+		cell->bvisited = false;
 	}
 
 	return cellPath;
