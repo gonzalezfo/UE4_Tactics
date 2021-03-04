@@ -17,6 +17,9 @@ ACustomCharacter::ACustomCharacter()
 
 	TeamNum = 255;
 
+	movement_time_ = 20;
+	current_movement_time_ = movement_time_;
+
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
 	SetRootComponent(mesh_);
 }
@@ -60,6 +63,25 @@ void ACustomCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (path_cells_.Num() != 0)
+	{
+		ACell* tmp = path_cells_.Top();
+
+		if (tmp)
+		{
+			SetCell(tmp);
+
+			current_movement_time_--;
+
+			if (current_movement_time_ <= 1)
+			{
+				tmp->SetCharacterPointer(this);
+
+				path_cells_.Remove(tmp);
+				current_movement_time_ = movement_time_;
+			}
+		}
+	}
 }
 
 void ACustomCharacter::InitPlayer(ACell* tmp)
@@ -162,12 +184,16 @@ void ACustomCharacter::SetCell(ACell* new_cell)
 {
 	if (new_cell)
 	{
-		current_cell_ = new_cell;
-
+		FVector current_position = current_cell_->GetActorLocation();
 		FVector new_position = new_cell->GetActorLocation();
+
+		new_position.X = FMath::Lerp(current_position.X, new_position.X, 1 / current_movement_time_);
+		new_position.Y = FMath::Lerp(current_position.Y, new_position.Y, 1 / current_movement_time_);
+
 		new_position.Z += 50.0f;
 
 		SetActorLocation(new_position);
+		current_cell_ = new_cell;
 	}
 }
 

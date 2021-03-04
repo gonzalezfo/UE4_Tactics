@@ -30,6 +30,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
 
+	int current_movement_time_;
+
 public:
 	//Initialize the player.
 	void InitPlayer(ACell*);
@@ -40,6 +42,9 @@ public:
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
+	TArray<ACell*> path_cells_;
+
+	int movement_time_;
 
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.

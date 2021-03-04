@@ -145,11 +145,12 @@ void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
 
 		if (tmp)
 		{
+			TArray<ACell*> path = FindPath(tmp, new_cell);
+
+			character->path_cells_ = path;
+
 			tmp->SetCharacterPointer(nullptr);
 		}
-
-		character->SetCell(new_cell);
-		new_cell->SetCharacterPointer(character);
 	}
 }
 
@@ -160,7 +161,6 @@ float AGrid::CalculateDistance(ACell* a, ACell* b)
 
 TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 {
-
 	// Puts the start cell with initial values and sets as current
 	start->localGoal = 0.0f;
 	start->globalGoal = CalculateDistance(start, finish);
