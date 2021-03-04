@@ -6,6 +6,7 @@
 #include "DrawDebugHelpers.h"
 #include "Containers/Array.h"
 #include "..\Public\Grid.h"
+#include "Engine/World.h"
 #include <list>
 
 // Sets default values
@@ -209,6 +210,8 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		}
 	}
 
+
+
 	TArray<ACell*> cellPath;
 
 	if (finish->GetParent() != nullptr)
@@ -223,6 +226,14 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 				cell = cell->GetParent();
 			}
 		}
+	}
+
+	for (auto cell : Cells)
+	{
+		cell->localGoal = INFINITY;
+		cell->globalGoal = INFINITY;
+		cell->SetParent(nullptr);
+		cell->bvisited = false;
 	}
 
 	return cellPath;
