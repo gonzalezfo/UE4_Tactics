@@ -528,6 +528,7 @@ static void RemoveUnconnectedAreas(TArray<CellType>& cell_types, FIntPoint grid_
 	}
 };
 
+/*
 static void GenerateGridSpawns(TArray<CellType>& grid, FIntPoint gridSize, int numSpawns, int spawnSize, int spawnMinDistance) {
 	//SpawnSize Check
 	if (spawnSize <= 0 || spawnSize > gridSize.X || spawnSize > gridSize.Y) spawnSize = 1;
@@ -596,7 +597,7 @@ static void GenerateGridSpawns(TArray<CellType>& grid, FIntPoint gridSize, int n
 				}
 				is_valid_dir = (new_position.Y > 0 && new_position.Y < (gridSize.Y - 1) &&
 					new_position.X > 0 && new_position.X < (gridSize.X - 1));
-				//If valid, change direction if possible. 
+				//If valid, change direction if possible.
 				if (is_valid_dir) {
 					spawn_positions[i] = new_position;
 					if (!(grid[spawn_positions[i].Y * gridSize.X + spawn_positions[i].X] == kCellType_Spawn)) {
@@ -658,6 +659,8 @@ static void GenerateGridSpawns(TArray<CellType>& grid, FIntPoint gridSize, int n
 	}
 };
 
+*/
+
 void AGrid::InitGrid() {
 
 	Cells.Init(nullptr, GridSize.Y * GridSize.X);
@@ -703,7 +706,7 @@ void AGrid::GenerateObstacles()
 
 	RemoveUnconnectedAreas(cellTypes, GridSize);
 
-	GenerateGridSpawns(cellTypes, GridSize, NumberOfSpawns, SpawnSize, SpawnMinDistance);
+	//GenerateGridSpawns(cellTypes, GridSize, NumberOfSpawns, SpawnSize, SpawnMinDistance);
 
 	for (int value = 0; value < Cells.Num(); value++) {
 		Cells[value]->SetType(cellTypes[value]);
@@ -731,6 +734,10 @@ void AGrid::ConnectCells()
 			Cells[y * GridSize.X + x]->SetNeighbours(cell_neighbours);
 		}
 	}
+}
+
+void AGrid::GenerateSpawns() {
+	//TODO:
 }
 
 void AGrid::SpawnCharacter() {
