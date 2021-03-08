@@ -70,7 +70,7 @@ public:
 	// Materials
 	void SetCellMaterial();
 	void SetCellHighlightMaterial();
-	void SetCellSpawnMaterial();
+	void SetCellSpawnMaterial(int spawn_team);
 	void SetCellCurrentCellMaterial();
 
 	void HighlightCell(CellMaterial);
@@ -99,7 +99,7 @@ private:
 		TArray<UMaterial*> CellHighLightMaterials;
 
 	UPROPERTY(EditAnywhere, Category = "Cell")
-		TArray<UMaterial*> CellSpawnMaterials;
+		TArray<UMaterialInstance*> CellSpawnMaterials;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Cell", meta = (AllowPrivateAccess = "true"))
 		AGrid* Grid;

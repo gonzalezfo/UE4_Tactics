@@ -664,7 +664,7 @@ void AGrid::GenerateSpawns() {
 
 		//Set Material for the Spawn Cells.
 		for (int value = 0; value < Spawns[index].SpawnCells.Num(); value++) {
-			Spawns[index].SpawnCells[value]->SetCellSpawnMaterial();
+			Spawns[index].SpawnCells[value]->SetCellSpawnMaterial(Spawns[index].SpawnTeam);
 		}
 	}
 }
@@ -718,6 +718,15 @@ void AGrid::UnhighlightCells(TArray<ACell*> cell_array)
 	for (auto c : cell_array) {
 		c->HighlightCell(CellMaterial::kCellMaterial_Default);
 	}
+	//Set Material for the Spawn Cells.
+	for (int num_spawns = 0; num_spawns < Spawns.Num(); num_spawns++) {
+		for (int num_cells = 0; num_cells < Spawns[num_spawns].SpawnCells.Num(); num_cells++) {
+			Spawns[num_spawns].SpawnCells[num_cells]->SetCellSpawnMaterial(Spawns[num_spawns].SpawnTeam);
+		}
+	}
+
+
+
 }
 
 ACell* AGrid::GetCellByID(int id)
