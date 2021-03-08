@@ -603,28 +603,36 @@ void AGrid::ConnectCells()
 }
 
 static void ExpandSpawns(FGridSpawn& spawn, ACell* cell_ref) {
-	if (spawn.SpawnCells.Num() < spawn.SpawnSize) {
-		for (int n_cell = 0; n_cell < cell_ref->GetNeighbours().Num(); n_cell++) {
-			bool valid_neighbour = true;
-			for (int s_cell = 0; s_cell < spawn.SpawnCells.Num(); s_cell++) {
-				if (spawn.SpawnCells[s_cell] == cell_ref->GetNeighbours()[n_cell]) {
-					valid_neighbour = false;
-				}
-			}
-			if (valid_neighbour) {
-				spawn.SpawnCells.Push(cell_ref->GetNeighbours()[n_cell]);
-				ExpandSpawns(spawn, cell_ref->GetNeighbours()[n_cell]);
+	//spawn.SpawnCells.Push(cell_ref);
+	TArray<ACell*> n_cells;
+	for (int n_cell = 0; n_cell < cell_ref->GetNeighbours().Num(); n_cell++) {
+		bool valid_neighbour = true;
+		//Check that the neighbour cells are not inside our spawn cell array already.
+		for (int s_cell = 0; s_cell < spawn.SpawnCells.Num(); s_cell++) {
+			if (spawn.SpawnCells[s_cell]->GetID() == cell_ref->GetNeighbours()[n_cell]->GetID()) {
+				valid_neighbour = false;
 			}
 		}
+		//Add valid neighbours to the spawn cells arrays.
+		if (valid_neighbour && cell_ref->GetNeighbours()[n_cell]->GetType() == kCellType_Normal && spawn.SpawnCells.Num() < spawn.SpawnSize) {
+			spawn.SpawnCells.Push(cell_ref->GetNeighbours()[n_cell]);
+			n_cells.Push(cell_ref->GetNeighbours()[n_cell]);
+		}
+	}
+	//If needed, add more cells to the spawn array.
+	for (int cell_idx = 0; cell_idx < n_cells.Num(); cell_idx++) {
+		ExpandSpawns(spawn, n_cells[cell_idx]);
 	}
 }
 
 void AGrid::GenerateSpawns() {
 	
-	bool valid_spawn_distances = false;
+	bool valid_spawn_distances = true;
 	TArray<FIntPoint> spawn_positions;
 	spawn_positions.Init(FIntPoint(0, 0), Spawns.Num());
+
 	do {
+		valid_spawn_distances = true;
 		//Validate First Spawn Position in our grid.
 		for (int index = 0; index < Spawns.Num(); index++) {
 			bool is_valid_position = false;
@@ -643,7 +651,7 @@ void AGrid::GenerateSpawns() {
 					int squared_distance = (spawn_positions[b].X - spawn_positions[a].X) * (spawn_positions[b].X - spawn_positions[a].X);
 					squared_distance += (spawn_positions[b].Y - spawn_positions[a].Y) * (spawn_positions[b].Y - spawn_positions[a].Y);
 					if (squared_distance < (SpawnMinDistance * SpawnMinDistance)) valid_spawn_distances = false;
-				}
+				} 
 			}
 		}
 	} while (valid_spawn_distances == false);
@@ -653,7 +661,7 @@ void AGrid::GenerateSpawns() {
 		Spawns[index].SpawnCells.Push(Cells[spawn_positions[index].Y * GridSize.X + spawn_positions[index].X]);
 		//Expand the Spawn Until it covers as many cells as they need.
 		ExpandSpawns(Spawns[index], Cells[spawn_positions[index].Y * GridSize.X + spawn_positions[index].X]);
-	
+
 		//Set Material for the Spawn Cells.
 		for (int value = 0; value < Spawns[index].SpawnCells.Num(); value++) {
 			Spawns[index].SpawnCells[value]->SetCellSpawnMaterial();

@@ -43,7 +43,7 @@ struct FGridSpawn
 	UPROPERTY(EditAnywhere, Category = "Spawn Data", meta = (ClampMin = "1", ClampMax = "10"))
 		int SpawnSize = 1;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 		TArray<ACell*> SpawnCells;
 };
 
