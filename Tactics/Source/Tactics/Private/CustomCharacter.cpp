@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "Cell.h"
+#include "Camera/CameraComponent.h"
 #include "CharacterHUDWidget.h"
 
 
@@ -21,6 +22,9 @@ ACustomCharacter::ACustomCharacter()
 
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
 	SetRootComponent(mesh_);
+
+	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
+	CameraComp->SetupAttachment(mesh_);
 }
 
 bool ACustomCharacter::IsFriendly(AActor* other)
