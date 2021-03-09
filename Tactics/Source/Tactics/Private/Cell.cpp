@@ -158,6 +158,28 @@ void ACell::SetCellMaterial() {
 	}
 }
 
+void ACell::SetCellSpawnMaterial(int spawn_team) {
+	switch (spawn_team) {
+	case kSpawnTeam_Player:
+		if (CellSpawnMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellSpawnMaterials[0]);
+		break;
+	case kSpawnTeam_Team_1:
+		if (CellSpawnMaterials[1] != nullptr) CellMeshComponent->SetMaterial(0, CellSpawnMaterials[1]);
+		break;
+	case kSpawnTeam_Team_2:
+		if (CellSpawnMaterials[2] != nullptr) CellMeshComponent->SetMaterial(0, CellSpawnMaterials[2]);
+		break;
+	case kSpawnTeam_Team_3:
+		if (CellSpawnMaterials[3] != nullptr) CellMeshComponent->SetMaterial(0, CellSpawnMaterials[3]);
+		break;
+	case kSpawnTeam_ERROR:
+		if (CellSpawnMaterials[CellSpawnMaterials.Num() - 1] != nullptr) CellMeshComponent->SetMaterial(0, CellSpawnMaterials[CellSpawnMaterials.Num() - 1]);
+		break;
+	default:
+		break;
+	}
+}
+
 void ACell::SetCellHighlightMaterial() {
 	if (CellHighLightMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[0]);
 }
