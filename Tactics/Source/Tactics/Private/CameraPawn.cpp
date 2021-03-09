@@ -21,8 +21,6 @@ ACameraPawn::ACameraPawn()
 	// Initialize vars
 	Margin = 3;
 	CamSpeed = 15.0f;
-	ClampMin = -500.0f;
-	ClampMax = 500.0f;
 	SpringArmLength = 150.0f;
 	ZoomModifier = 50.0f;
 	ZoomOut = 1000.0f;
@@ -53,6 +51,20 @@ void ACameraPawn::BeginPlay()
 		PC->bShowMouseCursor = true;
 	
 	ZoomIn *= -1; // To put positive values in the Editor
+
+	FVector2D tmp_size;
+	tmp_size.X = (grid_->GridSize.X * grid_->CellSize);
+	tmp_size.Y = (grid_->GridSize.X * grid_->CellSize);
+
+	if (grid_)
+	{
+		ClampMin.X = -(tmp_size.X / 2.0f);
+		ClampMin.Y = -(tmp_size.Y / 2.0f);
+		ClampMax.X = tmp_size.Y;
+		ClampMax.Y = tmp_size.X;
+	}
+
+	SetActorLocation(FVector(tmp_size.X / 2, tmp_size.Y / 2, 720.0f));
 }
 
 // Called every frame
@@ -113,8 +125,8 @@ void ACameraPawn::PanMoveCamera(FVector& Direction)
 	else {
 		AddActorWorldOffset(Direction);
 		FVector newPosition = GetActorLocation();
-		newPosition.X = FMath::Clamp(newPosition.X, ClampMin, ClampMax);
-		newPosition.Y = FMath::Clamp(newPosition.Y, ClampMin, ClampMax);
+		newPosition.X = FMath::Clamp(newPosition.X, ClampMin.X, ClampMax.X);
+		newPosition.Y = FMath::Clamp(newPosition.Y, ClampMin.Y, ClampMax.Y);
 
 		SetActorLocation(newPosition, false, nullptr, ETeleportType::None);
 	}

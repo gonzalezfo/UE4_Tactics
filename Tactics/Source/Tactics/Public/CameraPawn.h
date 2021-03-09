@@ -12,6 +12,7 @@ class UCameraComponent;
 class APlayerController;
 class ACustomCharacter;
 class ACell;
+class AGrid;
 
 
 UCLASS()
@@ -61,6 +62,7 @@ protected:
 
 	APlayerController* PC;
 
+
 	ACustomCharacter* character_;
 	ACell* cell_;
 
@@ -70,6 +72,8 @@ protected:
 
 	FVector PanDirection;
 
+	UPROPERTY(EditAnywhere, Category = Cam)
+	AGrid* grid_;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float Margin;
@@ -78,10 +82,10 @@ protected:
 		float CamSpeed;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
-		float ClampMin;
+		FVector2D ClampMin;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
-		float ClampMax;
+		FVector2D ClampMax;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float SpringArmLength;
