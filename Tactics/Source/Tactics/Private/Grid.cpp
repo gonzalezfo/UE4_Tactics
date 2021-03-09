@@ -684,37 +684,59 @@ void AGrid::SpawnCharacter() {
 
 	//Checks if not null
 	if (CharacterToInstantiate != nullptr) {
-		//Set a proper position for our character.
-		int character_index = FMath::FRandRange(0, Cells.Num() - 1);
-		bool valid_position = false;
 
-		int repetitions = 0;
+		//Check Our Spawns.
+		if (Spawns.Num() > 0) {
+			//If we have Spawns we assign the characters to the spawn cells.
+			for (int spawn_idx = 0; spawn_idx < Spawns.Num(); spawn_idx++) {
+				for (int spawn_cell = 0; spawn_cell < Spawns[spawn_idx].SpawnCells.Num(); spawn_cell++) {
+					//Set character position
+					FVector character_position = Spawns[spawn_idx].SpawnCells[spawn_cell]->GetActorLocation();
+					character_position.Z += 50.0f;
+					FRotator character_rotation = FRotator(0.0f);
 
-		//IMPORTANT: Check if the cell is already asigned to another character
-		while (valid_position == false || repetitions > (Cells.Num() * 2)) {
-			if (Cells[character_index]->GetType() == CellType::kCellType_Normal || Cells[character_index]->GetType() == CellType::kCellType_Spawn) {
-				valid_position = true;
-			}
-			else {
-				character_index = FMath::FRandRange(0, Cells.Num() - 1);
+					//Spawn character and set it.
+					ACustomCharacter* character = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, character_position, character_rotation));
+					if (character) character->InitPlayer(Spawns[spawn_idx].SpawnCells[spawn_cell]);
+					//Set the character pointer on the character cell.
+					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetCharacterPointer(character);
+				}
 			}
 		}
+		//Spawn a Random Character into the Grid.
+		else {
+			//Set a proper position for our character.
+			int character_index = FMath::FRandRange(0, Cells.Num() - 1);
+			bool valid_position = false;
 
-		//New character position
-		FVector new_pos = Cells[character_index]->GetActorLocation();
-		new_pos.Z += 50.0f;
-		FRotator character_rotation = FRotator(0.0f);
+			int repetitions = 0;
+
+			//IMPORTANT: Check if the cell is already asigned to another character
+			while (valid_position == false || repetitions > (Cells.Num() * 2)) {
+				if (Cells[character_index]->GetType() == CellType::kCellType_Normal || Cells[character_index]->GetType() == CellType::kCellType_Spawn) {
+					valid_position = true;
+				}
+				else {
+					character_index = FMath::FRandRange(0, Cells.Num() - 1);
+				}
+			}
+
+			//New character position
+			FVector new_pos = Cells[character_index]->GetActorLocation();
+			new_pos.Z += 50.0f;
+			FRotator character_rotation = FRotator(0.0f);
 
 
-		//Spawn character and set it's cell pointer
-		ACustomCharacter* cchar = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, new_pos, character_rotation));
-		if (cchar)
-		{
-			cchar->InitPlayer(Cells[character_index]);
+			//Spawn character and set it's cell pointer
+			ACustomCharacter* cchar = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, new_pos, character_rotation));
+			if (cchar)
+			{
+				cchar->InitPlayer(Cells[character_index]);
+			}
+			//Set the character pointer on the character cell.
+			Cells[character_index]->SetCharacterPointer(cchar);
 		}
-		//Set the character pointer on the character cell.
-		Cells[character_index]->SetCharacterPointer(cchar);
-	}
+	}	
 }
 
 void AGrid::HighlightCells(TArray<ACell*> cell_array)
