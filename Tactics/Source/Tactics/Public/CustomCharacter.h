@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
 
+	//Movement time
+	float movement_time_;
+
 public:
 	//Initialize the player.
 	void InitPlayer(ACell*);
@@ -40,6 +43,10 @@ public:
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
+	//Path
+	TArray<ACell*> path_cells_;
+
+	void MoveAlongPath(float DeltaTime);
 
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
@@ -59,6 +66,10 @@ public:
 	//Character range of action.
 	UPROPERTY(EditAnywhere, Category = "Properties")
 		int range_;
+
+	//Character movement speed.
+	UPROPERTY(EditAnywhere, Category = "Properties")
+		float movement_speed_;
 
 	//Character name.
 	UPROPERTY(EditAnywhere, Category = "Properties")
