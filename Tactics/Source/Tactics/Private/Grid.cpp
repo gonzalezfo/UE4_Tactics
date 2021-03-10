@@ -20,6 +20,11 @@ void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Init();
+}
+
+void AGrid::Init()
+{
 	InitGrid();
 	ConnectCells();
 	GenerateObstacles();

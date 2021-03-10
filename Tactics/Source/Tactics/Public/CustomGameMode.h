@@ -18,6 +18,9 @@ struct FTeam
 		TArray<ACustomCharacter*> TeamMembers;
 
 	UPROPERTY(VisibleAnywhere)
+		TEnumAsByte<ESpawnTeam> TeamNumber;
+
+	UPROPERTY(VisibleAnywhere)
 		bool Defeated = false;
 };
 
@@ -29,6 +32,10 @@ class TACTICS_API ACustomGameMode : public AGameModeBase
 protected:
 
 	virtual void BeginPlay() override;
+
+private:
+
+	void SetGameTeamsFromGridSpawns(AGrid* grid);
 
 public: 
 
