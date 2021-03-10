@@ -54,10 +54,15 @@ public:
 
 	//Gets the current character cell.
 	ACell* GetCell();
+	int GetCharacterTeam();
 
 	//Setters.
 	//Sets the current character cell.
 	void SetCell(ACell*);
+
+	void SetCharacterTeam(int team_value);
+
+	void UpdateMaterial();
 
 	//Character static mesh.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
@@ -83,6 +88,11 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "References")
 		UCharacterHUDWidget* HUDWidget;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Team")
+private:
+
+	UPROPERTY(EditAnywhere, Category = "Team")
+		TArray<UMaterialInstance*> CharacterMaterials;
+
+	UPROPERTY(VisibleAnywhere, Category = "Team")
 		uint8 TeamNum;
 };

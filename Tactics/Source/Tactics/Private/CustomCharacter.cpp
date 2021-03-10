@@ -204,3 +204,27 @@ void ACustomCharacter::SetCell(ACell* new_cell)
 	}
 }
 
+void ACustomCharacter::SetCharacterTeam(int team_value) {
+	TeamNum = team_value;
+}
+
+int ACustomCharacter::GetCharacterTeam() {
+	return TeamNum;
+}
+
+void ACustomCharacter::UpdateMaterial() {
+	switch (TeamNum) {
+	case kSpawnTeam_Player:
+		if (CharacterMaterials[0] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[0]);
+		break;
+	case kSpawnTeam_Team_1:
+		if (CharacterMaterials[1] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[1]);
+		break;
+	case kSpawnTeam_Team_2:
+		if (CharacterMaterials[2] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[2]);
+		break;
+	case kSpawnTeam_Team_3:
+		if (CharacterMaterials[3] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[3]);
+		break;
+	}
+}
