@@ -180,6 +180,7 @@ void ACameraPawn::SelectCharacter()
 		if (cchar->TurnAvailable) {
 			character_ = cchar;
 			character_->Selected();
+			PC->SetViewTargetWithBlend(character_, 1.0f);
 			return;
 		}
 	}
@@ -195,6 +196,7 @@ void ACameraPawn::SelectCharacter()
 			if (cchar->TurnAvailable) {
 				character_ = cchar;
 				character_->Selected();
+				PC->SetViewTargetWithBlend(character_, 1.0f);
 			}
 		}
 	}
@@ -225,7 +227,6 @@ void ACameraPawn::MoveCharacterToCell()
 				character_->TurnAvailable = false;
 				ResetSelection();
 			}
-
 		}
 	}
 }
@@ -234,6 +235,7 @@ void ACameraPawn::ResetSelection()
 {
 	character_ = nullptr;
 	cell_ = nullptr;
+	PC->SetViewTargetWithBlend(this, 1.0f);
 }
 
 void ACameraPawn::Zoom(float axis)

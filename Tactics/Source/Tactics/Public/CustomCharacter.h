@@ -8,6 +8,7 @@
 
 class ACell;
 class UCharacterHUDWidget;
+class UCameraComponent;
 
 
 UCLASS()
@@ -29,6 +30,9 @@ protected:
 	//Pointer to the current character cell.
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
+	
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		UCameraComponent* CameraComp;
 
 	//Movement time
 	float movement_time_;
