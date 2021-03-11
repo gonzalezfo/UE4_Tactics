@@ -3,15 +3,13 @@
 
 #include "HealthComponent.h"
 #include "..\Public\HealthComponent.h"
+#include "CustomCharacter.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = false;
-
-	// ...
+	MaxHealth = 100.0f;
+	bIsDead = false;
 }
 
 
@@ -20,53 +18,52 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	AActor* MyOwner = GetOwner();
+
+	if (MyOwner)
+	{
+		MyOwner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::HandleTakeAnyDamage);
+	}
 	
+	CurrentHealth = MaxHealth;
 }
 
-
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-float UHealthComponent::GetCurrentHealth()
-{
-	return currentHealth_;
-}
-
-float UHealthComponent::GetMaxHealth()
-{
-	return maxHealth_;
-}
-
-void UHealthComponent::TakeDamage(float damageToTake)
-{
-	//only take damage if its positive
-	if (damageToTake > 0.0f) {
-		currentHealth_ -= damageToTake;
-
-
-		//if health goes below 0, cap it
-		if (currentHealth_ < 0.0f) {
-			currentHealth_ = 0.0f;
-		}
+	if (Damage <= 0.0f || bIsDead)
+	{
+		return;
 	}
-}
 
-void UHealthComponent::Heal(float healing)
-{
-	//only heal if its positive
-	if (healing > 0.0f) {
-		currentHealth_ += healing;
-
-		//if current health is higher than max, then cap it
-		if (currentHealth_ > maxHealth_) {
-			currentHealth_ = maxHealth_;
-		}
+	if (DamageCauser != DamagedActor)
+	{
+		return;
 	}
+
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
+
+	bIsDead = CurrentHealth <= 0.0f;
+
+	OnHealthChanged.Broadcast(this, CurrentHealth, Damage, DamageType, InstigatedBy, DamageCauser);
 }
+
+float UHealthComponent::GetCurrentHealth() const
+{
+	return CurrentHealth;
+}
+
+void UHealthComponent::Regenerate(float RegAmount)
+{
+	if (RegAmount <= 0.0f || CurrentHealth <= 0.0f)
+	{
+		return;
+	}
+
+	CurrentHealth = FMath::Clamp(CurrentHealth + RegAmount, 0.0f, MaxHealth);
+
+	OnHealthChanged.Broadcast(this, CurrentHealth, -RegAmount, nullptr, nullptr, nullptr);
+}
+
+
+
 

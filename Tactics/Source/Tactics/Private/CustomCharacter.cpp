@@ -8,6 +8,7 @@
 #include "Cell.h"
 #include "Camera/CameraComponent.h"
 #include "CharacterHUDWidget.h"
+#include "HealthComponent.h"
 
 
 // Sets default values
@@ -17,7 +18,7 @@ ACustomCharacter::ACustomCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TeamNum = 255;
-
+	bDied = false;
 	movement_time_ = 0.0f;
 
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
@@ -25,6 +26,8 @@ ACustomCharacter::ACustomCharacter()
 
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(mesh_);
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
 }
 
 bool ACustomCharacter::IsFriendly(AActor* other)
@@ -59,6 +62,8 @@ void ACustomCharacter::BeginPlay()
 			HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 		}
 	}
+
+	HealthComp->OnHealthChanged.AddDynamic(this, &ACustomCharacter::OnHealthChanged);
 }
 
 // Called every frame
@@ -230,5 +235,17 @@ void ACustomCharacter::UpdateMaterial() {
 	case kSpawnTeam_Team_3:
 		if (CharacterMaterials[3] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[3]);
 		break;
+	}
+}
+
+void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float CurrentHealth, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
+{
+	if (CurrentHealth <= 0.0f && !bDied)
+	{
+		bDied = true;
+
+		//DetachFromControllerPendingDestroy();
+
+		//SetLifeSpan(5.0f);
 	}
 }

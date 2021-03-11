@@ -9,6 +9,7 @@
 class ACell;
 class UCharacterHUDWidget;
 class UCameraComponent;
+class UHealthComponent;
 
 
 UCLASS()
@@ -33,6 +34,10 @@ protected:
 	
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+		UHealthComponent* HealthComp;
+
 
 	//Movement time
 	float movement_time_;
@@ -94,6 +99,13 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Team")
 		bool TurnAvailable;
+
+	UFUNCTION()
+		void OnHealthChanged(UHealthComponent* OwningHealthComp, float CurrentHealth, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(BlueprintReadOnly, Category = "Health")
+		bool bDied;
+
 
 private:
 
