@@ -62,6 +62,8 @@ protected:
 
 public:
 
+	void Init();
+
 	// Returns the size of the cell
 	float GetCellSize();
 

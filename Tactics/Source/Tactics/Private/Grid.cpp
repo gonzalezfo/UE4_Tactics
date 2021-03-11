@@ -20,6 +20,11 @@ void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Init();
+}
+
+void AGrid::Init()
+{
 	InitGrid();
 	ConnectCells();
 	GenerateObstacles();
@@ -697,7 +702,11 @@ void AGrid::SpawnCharacter() {
 
 					//Spawn character and set it.
 					ACustomCharacter* character = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, character_position, character_rotation));
-					if (character) character->InitPlayer(Spawns[spawn_idx].SpawnCells[spawn_cell]);
+					if (character) {
+						character->InitPlayer(Spawns[spawn_idx].SpawnCells[spawn_cell]);
+						character->SetCharacterTeam(Spawns[spawn_idx].SpawnTeam);
+						character->UpdateMaterial();
+					}
 					//Set the character pointer on the character cell.
 					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetCharacterPointer(character);
 				}

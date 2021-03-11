@@ -177,12 +177,12 @@ void ACameraPawn::SelectCharacter()
 
 	if (cchar)
 	{
-		character_ = cchar;
-
-		character_->Selected();
-		PC->SetViewTargetWithBlend(character_, 1.0f);
-
-		return;
+		if (cchar->TurnAvailable) {
+			character_ = cchar;
+			character_->Selected();
+			PC->SetViewTargetWithBlend(character_, 1.0f);
+			return;
+		}
 	}
 	
 	ACell* cell = Cast<ACell>(hitResult);
@@ -191,11 +191,13 @@ void ACameraPawn::SelectCharacter()
 	{
 		cchar = cell->GetCharacterPointer();
 
-		if (cchar)
+		if (cchar) 
 		{
-			character_ = cchar;
-			character_->Selected();
-			PC->SetViewTargetWithBlend(character_, 1.0f);
+			if (cchar->TurnAvailable) {
+				character_ = cchar;
+				character_->Selected();
+				PC->SetViewTargetWithBlend(character_, 1.0f);
+			}
 		}
 	}
 }
@@ -221,6 +223,8 @@ void ACameraPawn::MoveCharacterToCell()
 			{
 				character_->Unselected();
 				grid->MoveCharacterToCell(character_, cell_);
+				//
+				character_->TurnAvailable = false;
 				ResetSelection();
 			}
 		}
