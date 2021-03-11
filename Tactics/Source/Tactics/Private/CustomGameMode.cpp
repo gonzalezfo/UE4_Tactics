@@ -6,9 +6,12 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
+#include "Engine/Public/UnrealEngine.h"
 
 ACustomGameMode::ACustomGameMode() {
 	PrimaryActorTick.bCanEverTick = true;
+
+
 }
 
 // Called when the game starts or when spawned

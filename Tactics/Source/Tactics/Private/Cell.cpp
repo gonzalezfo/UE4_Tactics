@@ -7,6 +7,9 @@
 // Sets default values
 ACell::ACell()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
+
 	CellRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Cell Root Component"));
 	SetRootComponent(CellRootComponent);
 

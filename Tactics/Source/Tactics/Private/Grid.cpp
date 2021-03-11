@@ -12,6 +12,7 @@
 // Sets default values
 AGrid::AGrid()
 {
+	PrimaryActorTick.bCanEverTick = true;
 
 }
 

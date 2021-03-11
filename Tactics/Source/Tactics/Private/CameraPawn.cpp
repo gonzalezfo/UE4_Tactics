@@ -20,7 +20,7 @@ ACameraPawn::ACameraPawn()
 
 	// Initialize vars
 	Margin = 3;
-	CamSpeed = 15.0f;
+	CamSpeed = 1500.0f;
 	SpringArmLength = 150.0f;
 	ZoomModifier = 50.0f;
 	ZoomOut = 1000.0f;
@@ -74,7 +74,7 @@ void ACameraPawn::Tick(float DeltaTime)
 	if (PC)
 		PC->GetViewportSize(ScreenSizeX, ScreenSizeY);
 
-	PanDirection = GetCameraPanDirection() * CamSpeed;
+	PanDirection = GetCameraPanDirection() * CamSpeed * DeltaTime;
 	PanMoveCamera(PanDirection);
 }
 
