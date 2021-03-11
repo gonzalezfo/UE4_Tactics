@@ -88,6 +88,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "References")
 		UCharacterHUDWidget* HUDWidget;
 
+	UPROPERTY(VisibleAnywhere, Category = "Team")
+		bool TurnAvailable;
+
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Team")
@@ -95,4 +98,5 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Team")
 		uint8 TeamNum;
+
 };

@@ -33,16 +33,19 @@ void UCharacterHUDWidget::NativeConstruct()
 void UCharacterHUDWidget::AttackButtonClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("You are attacking"));
+	//current_character_->TurnAvailable = false;
 }
 
 void UCharacterHUDWidget::DefenseButtonClicked()
 {
 	UE_LOG(LogTemp, Warning, TEXT("You are defending"));
+	//current_character_->TurnAvailable = false;
 }
 
 void UCharacterHUDWidget::FinishTurnButtonClicked()
 {
 	current_character_->Unselected();
+	current_character_->TurnAvailable = false;
 
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 

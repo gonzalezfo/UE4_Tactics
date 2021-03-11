@@ -9,6 +9,7 @@
 
 #include "CustomGameMode.generated.h"
 
+//TODO: Put this in a Class and maybe use them to build the spawns of the Grid later.
 USTRUCT(BlueprintType)
 struct FTeam
 {
@@ -18,7 +19,7 @@ struct FTeam
 		TArray<ACustomCharacter*> TeamMembers;
 
 	UPROPERTY(VisibleAnywhere)
-		TEnumAsByte<ESpawnTeam> TeamNumber;
+		TEnumAsByte<ESpawnTeam> TeamId;
 
 	UPROPERTY(VisibleAnywhere)
 		bool Defeated = false;
@@ -37,7 +38,17 @@ private:
 
 	void SetGameTeamsFromGridSpawns(AGrid* grid);
 
+	void NextTurn();
+	void SetTurn(int value);
+
+	bool CheckForNextTurn();
+
 public: 
+
+	//Sets default values for this actor's properties.
+	ACustomGameMode();
+
+	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		AGrid* GameGrid;
