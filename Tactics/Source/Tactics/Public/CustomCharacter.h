@@ -7,6 +7,7 @@
 #include "CustomCharacter.generated.h"
 
 class ACell;
+class ACameraPawn;
 class UCharacterHUDWidget;
 class UCameraComponent;
 class UHealthComponent;
@@ -31,6 +32,9 @@ protected:
 	//Pointer to the current character cell.
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
+
+	UPROPERTY(VisibleAnywhere, Category = "Camera")
+		ACameraPawn* camera_pawn_;
 	
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		UCameraComponent* CameraComp;
@@ -68,6 +72,8 @@ public:
 	//Setters.
 	//Sets the current character cell.
 	void SetCell(ACell*);
+
+	void SetCameraPointer(ACameraPawn*);
 
 	void SetCharacterTeam(int team_value);
 

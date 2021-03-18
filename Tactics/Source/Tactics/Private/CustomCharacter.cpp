@@ -6,9 +6,13 @@
 #include "Components/StaticMeshComponent.h"
 
 #include "Cell.h"
-#include "Camera/CameraComponent.h"
+#include "CameraPawn.h"
 #include "CharacterHUDWidget.h"
+
+#include "Camera/CameraComponent.h"
 #include "HealthComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -148,6 +152,15 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 				path_cells_.Remove(tmp);
 				movement_time_ = 0.0f;
+
+				if (path_cells_.Num() == 0)
+				{
+					if (camera_pawn_)
+					{
+						APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+						PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+					}
+				}
 			}
 		}
 	}
@@ -211,6 +224,11 @@ void ACustomCharacter::SetCell(ACell* new_cell)
 
 		SetActorLocation(new_position);
 	}
+}
+
+void ACustomCharacter::SetCameraPointer(ACameraPawn* new_camera)
+{
+	camera_pawn_ = new_camera;
 }
 
 void ACustomCharacter::SetCharacterTeam(int team_value) {
