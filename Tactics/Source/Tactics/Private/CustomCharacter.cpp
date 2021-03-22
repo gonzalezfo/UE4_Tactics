@@ -56,6 +56,7 @@ void ACustomCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Adds the HUD Widget to Viewport.
 	if (HUDWidgetClass)
 	{
 		HUDWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), HUDWidgetClass);
@@ -68,6 +69,9 @@ void ACustomCharacter::BeginPlay()
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &ACustomCharacter::OnHealthChanged);
+
+	//Sets the character state.
+	state_ = CharacterState::kCharacterState_Idle;
 }
 
 // Called every frame
@@ -137,6 +141,8 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 {
 	if (path_cells_.Num() != 0)
 	{
+		state_ = CharacterState::kCharacterState_Moving;
+
 		ACell* tmp = path_cells_.Top();
 
 		if (tmp)
@@ -153,10 +159,14 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 				path_cells_.Remove(tmp);
 				movement_time_ = 0.0f;
 
+				//Checks if the array is empty which means the character finished its movement.
 				if (path_cells_.Num() == 0)
 				{
 					if (camera_pawn_)
 					{
+						state_ = CharacterState::kCharacterState_FinishMovement;
+
+						//Sets the view target to the camera pawn.
 						APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 						PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
 					}

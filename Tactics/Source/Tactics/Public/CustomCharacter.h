@@ -13,6 +13,14 @@ class UCameraComponent;
 class UHealthComponent;
 
 
+UENUM(BlueprintType)
+enum CharacterState
+{
+	kCharacterState_Idle = 0					UMETA(DisplayName = "IDLE"),
+	kCharacterState_Moving = 1				UMETA(DisplayName = "MOVING"),
+	kCharacterState_FinishMovement = 2		UMETA(DisplayName = "FINISH MOVEMENT"),
+};
+
 UCLASS()
 class TACTICS_API ACustomCharacter : public APawn
 {
@@ -22,6 +30,7 @@ public:
 	//Sets default values for this actor's properties.
 	ACustomCharacter();
 
+	//Checks if the given actor is friendly or not.
 	UFUNCTION(BlueprintCallable, Category = "Teams")
 		bool IsFriendly(AActor* other);
 
@@ -33,13 +42,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
 
-	UPROPERTY(VisibleAnywhere, Category = "Camera")
+	//Reference to the Camera Pawn.
+	UPROPERTY(VisibleAnywhere, Category = "References")
 		ACameraPawn* camera_pawn_;
 	
-	UPROPERTY(EditAnywhere, Category = "Camera")
+	//Camera component.
+	UPROPERTY(EditAnywhere, Category = "Camera Properties")
 		UCameraComponent* CameraComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	//Health component.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
 		UHealthComponent* HealthComp;
 
 
@@ -47,14 +59,15 @@ protected:
 	float movement_time_;
 
 public:
+	//Called every frame.
+	virtual void Tick(float DeltaTime) override;
+
 	//Initialize the player.
 	void InitPlayer(ACell*);
 
 	//Functions of character selection and unselection.
 	void Selected();
 	void Unselected();
-	//Called every frame.
-	virtual void Tick(float DeltaTime) override;
 
 	//Path
 	TArray<ACell*> path_cells_;
@@ -67,6 +80,7 @@ public:
 
 	//Gets the current character cell.
 	ACell* GetCell();
+
 	int GetCharacterTeam();
 
 	//Setters.
@@ -79,21 +93,28 @@ public:
 
 	void UpdateMaterial();
 
+
 	//Character static mesh.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
 		UStaticMeshComponent* mesh_;
 
+
+	//Character name.
+	UPROPERTY(EditAnywhere, Category = "Gameplay Properties")
+		FString name_;
+
 	//Character range of action.
-	UPROPERTY(EditAnywhere, Category = "Properties")
+	UPROPERTY(EditAnywhere, Category = "Gameplay Properties")
 		int range_;
 
 	//Character movement speed.
-	UPROPERTY(EditAnywhere, Category = "Properties")
+	UPROPERTY(EditAnywhere, Category = "Gameplay Properties")
 		float movement_speed_;
 
-	//Character name.
-	UPROPERTY(EditAnywhere, Category = "Properties")
-		FString name_;
+	//If the character is moving or not.
+	UPROPERTY(EditAnywhere, Category = "Gameplay Properties")
+		TEnumAsByte<CharacterState> state_;
+
 
 	//Reference to the character HUD widget class.
 	UPROPERTY(EditAnywhere, Category = "References")
@@ -103,21 +124,27 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "References")
 		UCharacterHUDWidget* HUDWidget;
 
+
+	//If the character has the turn available or not.
 	UPROPERTY(VisibleAnywhere, Category = "Team")
 		bool TurnAvailable;
 
+	
+
+	//If the character is dead or not.
+	UPROPERTY(BlueprintReadOnly, Category = "Health Properties")
+		bool bDied;
+
+	//Event for the character health changing.
 	UFUNCTION()
 		void OnHealthChanged(UHealthComponent* OwningHealthComp, float CurrentHealth, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
-	UPROPERTY(BlueprintReadOnly, Category = "Health")
-		bool bDied;
-
-
 private:
-
+	//The material of the character.
 	UPROPERTY(EditAnywhere, Category = "Team")
 		TArray<UMaterialInstance*> CharacterMaterials;
 
+	//The character team.
 	UPROPERTY(VisibleAnywhere, Category = "Team")
 		uint8 TeamNum;
 
