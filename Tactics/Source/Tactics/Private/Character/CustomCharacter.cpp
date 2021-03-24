@@ -3,15 +3,14 @@
 
 #include "Character/CustomCharacter.h"
 
-#include "Components/StaticMeshComponent.h"
-
 #include "Grid/Cell.h"
 #include "CameraPawn/CameraPawn.h"
 #include "Widgets/CharacterHUDWidget.h"
-
-#include "Camera/CameraComponent.h"
 #include "Components/HealthComponent.h"
+#include "Core/CustomGameMode.h"
 
+#include "Components/StaticMeshComponent.h"
+#include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 
@@ -280,6 +279,50 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 	if (CurrentHealth <= 0.0f && !bDied)
 	{
 		bDied = true;
+
+		ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+		if (GM)
+		{
+			//DEFEAT CONDITION (assuming player is team 0)
+			bool defeat = true;
+
+			for (int i = 0; i < GM->GameTeams[0].TeamMembers.Num(); ++i)
+			{
+				if (!GM->GameTeams[0].TeamMembers[i]->bDied) {
+					defeat = false;
+					break;
+				}
+			}
+
+			if (defeat)
+			{
+				//DEFEAT
+				UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
+				return;
+			}
+
+			//VICTORY CONDITION (assuming player is team 0)
+			bool victory = true;
+
+			for (int i = 1; i < GM->GameTeams.Num() && victory; ++i)
+			{
+				for (int j = 0; j < GM->GameTeams[i].TeamMembers.Num(); ++j)
+				{
+					if (!GM->GameTeams[i].TeamMembers[j]->bDied) {
+						victory = false;
+						break;
+					}
+				}
+			}
+
+			if(victory)
+			{
+				//VICTORY
+				UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
+				return;
+			}
+		}
 
 		//DetachFromControllerPendingDestroy();
 
