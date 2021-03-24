@@ -179,6 +179,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 void ACustomCharacter::ReturnToMainCamera()
 {
 	GetWorldTimerManager().ClearTimer(handle_);
+	state_ = CharacterState::kCharacterState_Idle;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
 }
