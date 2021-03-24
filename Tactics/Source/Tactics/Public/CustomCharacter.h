@@ -38,6 +38,8 @@ protected:
 	//Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
+	void ReturnToMainCamera();
+
 	//Pointer to the current character cell.
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
@@ -57,6 +59,8 @@ protected:
 
 	//Movement time
 	float movement_time_;
+
+	FTimerHandle handle_;
 
 public:
 	//Called every frame.
@@ -128,8 +132,6 @@ public:
 	//If the character has the turn available or not.
 	UPROPERTY(VisibleAnywhere, Category = "Team")
 		bool TurnAvailable;
-
-	
 
 	//If the character is dead or not.
 	UPROPERTY(BlueprintReadOnly, Category = "Health Properties")

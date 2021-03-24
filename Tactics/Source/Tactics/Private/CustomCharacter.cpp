@@ -13,6 +13,7 @@
 #include "HealthComponent.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Actor.h"
 
 
 // Sets default values
@@ -167,14 +168,21 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 						state_ = CharacterState::kCharacterState_FinishMovement;
 
 						//Sets the view target to the camera pawn.
-						APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-						PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+						GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
 					}
 				}
 			}
 		}
 	}
 }
+
+void ACustomCharacter::ReturnToMainCamera()
+{
+	GetWorldTimerManager().ClearTimer(handle_);
+	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+}
+
 
 TArray<ACell*> ACustomCharacter::GetSelectableCells()
 {
