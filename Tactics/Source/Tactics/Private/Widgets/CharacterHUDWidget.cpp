@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CharacterHUDWidget.h"
+#include "Widgets/CharacterHUDWidget.h"
 
-#include "CustomCharacter.h"
-#include "CameraPawn.h"
+#include "Character/CustomCharacter.h"
+#include "CameraPawn/CameraPawn.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"

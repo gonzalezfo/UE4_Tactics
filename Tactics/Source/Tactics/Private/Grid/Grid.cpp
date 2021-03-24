@@ -1,11 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Grid.h"
-#include "Cell.h"
-#include "CustomCharacter.h"
+#include "Grid/Grid.h"
+#include "Grid/Cell.h"
+#include "Character/CustomCharacter.h"
 #include "DrawDebugHelpers.h"
 #include "Containers/Array.h"
-#include "..\Public\Grid.h"
 #include "Engine/World.h"
 #include <list>
 

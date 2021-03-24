@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CameraPawn.h"
+#include "CameraPawn/CameraPawn.h"
+#include "Character/CustomCharacter.h"
+#include "Grid/Cell.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "CustomCharacter.h"
-#include "Cell.h"
+
 #include "DrawDebugHelpers.h"
 
 

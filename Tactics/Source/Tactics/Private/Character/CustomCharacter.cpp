@@ -1,16 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CustomCharacter.h"
+#include "Character/CustomCharacter.h"
 
 #include "Components/StaticMeshComponent.h"
 
-#include "Cell.h"
-#include "CameraPawn.h"
-#include "CharacterHUDWidget.h"
+#include "Grid/Cell.h"
+#include "CameraPawn/CameraPawn.h"
+#include "Widgets/CharacterHUDWidget.h"
 
 #include "Camera/CameraComponent.h"
-#include "HealthComponent.h"
+#include "Components/HealthComponent.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
@@ -179,6 +179,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 void ACustomCharacter::ReturnToMainCamera()
 {
 	GetWorldTimerManager().ClearTimer(handle_);
+	state_ = CharacterState::kCharacterState_Idle;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
 }

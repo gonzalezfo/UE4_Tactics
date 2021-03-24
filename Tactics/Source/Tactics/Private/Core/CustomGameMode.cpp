@@ -1,8 +1,8 @@
-#include "CustomGameMode.h"
+#include "Core/CustomGameMode.h"
 
-#include "Cell.h"
-#include "Grid.h"
-#include "../Public/CustomCharacter.h"
+#include "Grid/Cell.h"
+#include "Grid/Grid.h"
+#include "Character/CustomCharacter.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"

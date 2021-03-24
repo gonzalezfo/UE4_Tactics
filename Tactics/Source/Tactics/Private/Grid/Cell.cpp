@@ -1,5 +1,5 @@
-#include "../Public/Cell.h"
-#include "../Public/CustomCharacter.h"
+#include "Grid/Cell.h"
+#include "Character/CustomCharacter.h"
 
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"

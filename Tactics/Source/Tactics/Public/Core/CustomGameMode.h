@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
-#include "Grid.h"
+#include "Grid/Grid.h"
 
 #include "CustomGameMode.generated.h"
 

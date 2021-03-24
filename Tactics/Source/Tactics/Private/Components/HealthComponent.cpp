@@ -1,9 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "HealthComponent.h"
-#include "..\Public\HealthComponent.h"
-#include "CustomCharacter.h"
+#include "Components/HealthComponent.h"
+#include "Character/CustomCharacter.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()

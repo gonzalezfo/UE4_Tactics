@@ -5,7 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
 
-#include "../Public/Grid.h"
+#include "Grid/Grid.h"
 
 #include "Cell.generated.h"
 

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CustomPlayerController.h"
-#include "CameraPawn.h"
+#include "Core/CustomPlayerController.h"
+#include "CameraPawn/CameraPawn.h"
 
 
 void ACustomPlayerController::SetupInputComponent()
