@@ -17,6 +17,7 @@ enum CellType {
 	kCellType_Wall = 1						UMETA(DisplayName = "WALL"),
 	kCellType_Normal = 2					UMETA(DisplayName = "NORMAL"),
 	kCellType_Spawn = 3						UMETA(DisplayName = "SPAWN"),
+	kCellType_Occupied = 4					UMETA(DisplayName = "OCCUPIED"),
 };
 
 UENUM(BlueprintType)

@@ -165,6 +165,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					if (camera_pawn_)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
+						tmp->SetType(CellType::kCellType_Occupied);
 
 						//Sets the view target to the camera pawn.
 						GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);

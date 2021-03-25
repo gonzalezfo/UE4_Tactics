@@ -19,8 +19,6 @@ AGrid::AGrid()
 void AGrid::BeginPlay()
 {
 	Super::BeginPlay();
-
-	//Init();
 }
 
 void AGrid::Init()
@@ -157,6 +155,7 @@ void AGrid::MoveCharacterToCell(ACustomCharacter* character, ACell* new_cell)
 			character->path_cells_ = path;
 
 			tmp->SetCharacterPointer(nullptr);
+			tmp->SetType(CellType::kCellType_Normal);
 		}
 	}
 }
@@ -196,7 +195,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		// Checks all the neighbour nodes of the current node
 		for (auto cellNeighbour : cellCurrent->GetNeighbours())
 		{
-			if (!cellNeighbour->bvisited && cellNeighbour->GetType() != kCellType_Wall)
+			if (!cellNeighbour->bvisited && cellNeighbour->GetType() == kCellType_Normal)
 			{
 				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
 
@@ -709,6 +708,7 @@ void AGrid::SpawnCharacter() {
 					}
 					//Set the character pointer on the character cell.
 					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetCharacterPointer(character);
+					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetType(CellType::kCellType_Occupied);
 				}
 			}
 		}
@@ -742,8 +742,10 @@ void AGrid::SpawnCharacter() {
 			{
 				cchar->InitPlayer(Cells[character_index]);
 			}
+
 			//Set the character pointer on the character cell.
 			Cells[character_index]->SetCharacterPointer(cchar);
+			Cells[character_index]->SetType(CellType::kCellType_Occupied);
 		}
 	}	
 }

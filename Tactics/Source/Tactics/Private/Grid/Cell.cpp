@@ -38,7 +38,6 @@ void ACell::Init(int newID, AGrid* newGrid)
 		SetGridPointer(newGrid);
 		SetMeshSize(newGrid->GetCellSize());
 	}
-
 }
 
 
@@ -154,6 +153,9 @@ void ACell::SetCellMaterial() {
 			break;
 		case kCellType_Spawn:
 			if (CellMeshMaterials[3] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[3]);
+			break;
+		case kCellType_Occupied:
+			if (CellMeshMaterials[2] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[2]);
 			break;
 		default:
 			break;
