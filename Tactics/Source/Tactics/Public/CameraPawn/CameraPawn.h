@@ -52,6 +52,10 @@ public:
 	void ResetSelection();
 	void Zoom(float axis);
 
+	void DoCharacterAction();
+
+	ACustomCharacter* GetCharacter();
+
 protected:
 	// References to classes and components
 	USceneComponent* Root;
@@ -73,7 +77,7 @@ protected:
 	FVector PanDirection;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
-	AGrid* grid_;
+		AGrid* grid_;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float Margin;

@@ -2,8 +2,10 @@
 
 
 #include "CameraPawn/CameraPawn.h"
-#include "Character/CustomCharacter.h"
+#include "Grid/Grid.h"
 #include "Grid/Cell.h"
+#include "Character/CustomCharacter.h"
+#include "Widgets/CharacterHUDWidget.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -220,7 +222,7 @@ void ACameraPawn::MoveCharacterToCell()
 {
 	if (cell_ && character_)
 	{
-		if (character_->GetSelectableCells().Contains(cell_)) {
+		if (character_->GetMovableCells().Contains(cell_)) {
 			AGrid* grid = cell_->GetGridPointer();
 
 			if (grid)
@@ -272,12 +274,75 @@ void ACameraPawn::Select()
 	}
 	else
 	{
-		SelectCell();
-		if (CheckCellSelected()) {
-			MoveCharacterToCell();
-		}
+		DoCharacterAction();
 
+		//SelectCell();
+		//if (CheckCellSelected()) {
+		//	MoveCharacterToCell();
+		//}
 	}
 }
 
+void ACameraPawn::DoCharacterAction()
+{
+	if (CheckCharacterSelected())
+	{
+		switch (character_->HUDWidget->selected_action_)
+		{
+		case kSelectedAction_Moving:
+			SelectCell();
+			if (CheckCellSelected()) 
+			{
+				MoveCharacterToCell();
+			}
+			break;
+		case kSelectedAction_Attacking:
+			SelectCell();
+			if (CheckCellSelected())
+			{
+				ACell* character_cell = character_->GetCell();
+
+				if (character_cell)
+				{
+					if (grid_)
+					{
+						//float distance_to_cell = grid_->CalculateDistance(nullptr, nullptr);
+						int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
+						if (distance_to_cell <= 2)
+						{
+							ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
+							if (tmp_char)
+							{
+								//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
+								//{
+									FVector Direction;
+									FHitResult Hit;
+
+									UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, character_, tmp_char->MeleeDamage);
+
+									character_->Unselected();
+
+									character_->TurnAvailable = false;
+									ResetSelection();
+								//}
+							}
+						}
+					}
+				}
+			}
+			break;
+		case kSelectedAction_Defending:
+
+			break;
+		case kSelectedAction_None:
+
+			break;
+		}
+	}
+}
+
+ACustomCharacter* ACameraPawn::GetCharacter()
+{
+	return character_;
+}
 

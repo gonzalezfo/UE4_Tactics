@@ -11,6 +11,15 @@ class ACustomCharacter;
 class UTextBlock;
 class UButton;
 
+UENUM(BlueprintType)
+enum SelectedAction
+{
+	kSelectedAction_Moving = 0			UMETA(DisplayName = "MOVING"),
+	kSelectedAction_Attacking = 1		UMETA(DisplayName = "ATTACKING"),
+	kSelectedAction_Defending = 2		UMETA(DisplayName = "DEFENDING"),
+	kSelectedAction_None = 3			UMETA(DisplayName = "NONE"),
+};
+
 /**
  * 
  */
@@ -27,6 +36,9 @@ public:
 		void AttackButtonClicked();
 
 	UFUNCTION()
+		void MoveButtonClicked();
+
+	UFUNCTION()
 		void DefenseButtonClicked();
 
 	UFUNCTION()
@@ -38,12 +50,17 @@ public:
 	//A reference to the current selected character.
 	ACustomCharacter* current_character_;
 
+	SelectedAction selected_action_;
+
 protected:
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* CharacterName;
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* AttackButton;
+
+	UPROPERTY(meta = (BindWidget))
+		UButton* MoveButton;
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* DefenseButton;

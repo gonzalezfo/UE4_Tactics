@@ -80,7 +80,7 @@ public:
 
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
-	TArray<ACell*> GetSelectableCells();
+	TArray<ACell*> GetMovableCells();
 
 	//Gets the current character cell.
 	ACell* GetCell();
@@ -140,6 +140,8 @@ public:
 	//Event for the character health changing.
 	UFUNCTION()
 		void OnHealthChanged(UHealthComponent* OwningHealthComp, float CurrentHealth, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	TSubclassOf<UDamageType> MeleeDamage;
 
 private:
 	//The material of the character.

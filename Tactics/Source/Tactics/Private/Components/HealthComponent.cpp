@@ -34,7 +34,7 @@ void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, 
 		return;
 	}
 
-	if (DamageCauser != DamagedActor)
+	if (DamageCauser == DamagedActor)
 	{
 		return;
 	}

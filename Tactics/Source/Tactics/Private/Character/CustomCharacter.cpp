@@ -101,7 +101,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->North(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -110,7 +110,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->South(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -119,7 +119,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->East(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -128,13 +128,12 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->West(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
 		}
 	}
-	
 }
 
 void ACustomCharacter::MoveAlongPath(float DeltaTime)
@@ -153,6 +152,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 			if (movement_time_ >= 1.0f)
 			{
+				current_cell_->SetCharacterPointer(nullptr);
 				current_cell_ = tmp;
 				tmp->SetCharacterPointer(this);
 
@@ -185,7 +185,7 @@ void ACustomCharacter::ReturnToMainCamera()
 }
 
 
-TArray<ACell*> ACustomCharacter::GetSelectableCells()
+TArray<ACell*> ACustomCharacter::GetMovableCells()
 {
 	TArray<ACell*> cells;
 	if (current_cell_) {
@@ -208,8 +208,8 @@ void ACustomCharacter::Selected()
 	HUDWidget->SetVisibility(ESlateVisibility::Visible);
 
 	//Highlights the action cells.
-	current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
-	current_cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+	//current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
+	//current_cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 }
 
 void ACustomCharacter::Unselected()
@@ -218,7 +218,7 @@ void ACustomCharacter::Unselected()
 	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	//Unhighlights the action cells.
-	current_cell_->GetGridPointer()->UnhighlightCells(GetSelectableCells());
+	current_cell_->GetGridPointer()->UnhighlightCells(GetMovableCells());
 }
 
 ACell* ACustomCharacter::GetCell()

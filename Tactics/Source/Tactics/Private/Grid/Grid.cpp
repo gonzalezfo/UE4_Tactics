@@ -30,6 +30,15 @@ void AGrid::Init()
 	SpawnCharacter();
 }
 
+int AGrid::CalculateManhattanDistance(ACell* a, ACell* b)
+{
+	if (a == nullptr || b == nullptr)
+	{
+		return 0;
+	}
+	return (abs(a->GetRow() - b->GetRow()) + abs(a->GetColumn() - b->GetColumn()));
+}
+
 float AGrid::GetCellSize()
 {
 	return CellSize;

@@ -3,6 +3,8 @@
 
 #include "Widgets/CharacterHUDWidget.h"
 
+#include "Grid/Cell.h"
+
 #include "Character/CustomCharacter.h"
 #include "CameraPawn/CameraPawn.h"
 
@@ -16,6 +18,10 @@ void UCharacterHUDWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	if (!MoveButton->OnClicked.Contains(this, "MoveButtonClicked"))
+	{
+		MoveButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::MoveButtonClicked);
+	}
 	if (!AttackButton->OnClicked.Contains(this, "AttackButtonClicked"))
 	{
 		AttackButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::AttackButtonClicked);
@@ -28,17 +34,43 @@ void UCharacterHUDWidget::NativeConstruct()
 	{
 		FinishTurnButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::FinishTurnButtonClicked);
 	}
+
+	selected_action_ = kSelectedAction_None;
 }
 
 void UCharacterHUDWidget::AttackButtonClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("You are attacking"));
+	selected_action_ = kSelectedAction_Attacking;
+	//current_character_->TurnAvailable = false;
+}
+
+void UCharacterHUDWidget::MoveButtonClicked()
+{
+	selected_action_ = kSelectedAction_Moving;
+
+	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (pawn)
+	{
+		ACustomCharacter* character_ = pawn->GetCharacter();
+
+		if (character_)
+		{
+			ACell* cell_ = character_->GetCell();
+			if (cell_)
+			{
+				cell_->GetGridPointer()->HighlightCells(character_->GetMovableCells());
+				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+			}
+		}
+
+	}
 	//current_character_->TurnAvailable = false;
 }
 
 void UCharacterHUDWidget::DefenseButtonClicked()
 {
-	UE_LOG(LogTemp, Warning, TEXT("You are defending"));
+	selected_action_ = kSelectedAction_Defending;
 	//current_character_->TurnAvailable = false;
 }
 
@@ -53,6 +85,7 @@ void UCharacterHUDWidget::FinishTurnButtonClicked()
 	{
 		pawn->ResetSelection();
 	}
+	selected_action_ = kSelectedAction_None;
 }
 
 void UCharacterHUDWidget::SetCharacterName(FString name)
