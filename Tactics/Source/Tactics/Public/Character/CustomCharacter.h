@@ -78,9 +78,12 @@ public:
 
 	void MoveAlongPath(float DeltaTime);
 
+	void Defend();
+	void EndTurn();
+
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
-	TArray<ACell*> GetSelectableCells();
+	TArray<ACell*> GetMovableCells();
 
 	//Gets the current character cell.
 	ACell* GetCell();
@@ -137,9 +140,20 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Health Properties")
 		bool bDied;
 
+	//If the character is defending itself or not.
+	UPROPERTY(VisibleAnywhere, Category = "Actions")
+		bool isDefending;
+
 	//Event for the character health changing.
 	UFUNCTION()
 		void OnHealthChanged(UHealthComponent* OwningHealthComp, float CurrentHealth, float HealthDelta, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	TSubclassOf<UDamageType> MeleeDamage;
+
+	UFUNCTION()
+		void StartTurn();
+
+	int cells_moved_this_turn_;
 
 private:
 	//The material of the character.

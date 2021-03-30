@@ -64,6 +64,8 @@ public:
 
 	void Init();
 
+	int CalculateManhattanDistance(ACell* a, ACell* b);
+
 	// Returns the size of the cell
 	float GetCellSize();
 
@@ -91,6 +93,7 @@ public:
 	void UnhighlightCells(TArray<ACell*>);
 
 	ACell* GetCellByID(int id);
+	float CalculateDistance(ACell* a, ACell* b);
 
 private:
 
@@ -99,7 +102,6 @@ private:
 	void GenerateObstacles();
 	void GenerateSpawns();
 	void SpawnCharacter();
-	float CalculateDistance(ACell* a, ACell* b);
 
 public:
 

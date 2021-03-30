@@ -46,11 +46,27 @@ public:
 
 	bool CheckCharacterSelected();
 	bool CheckCellSelected();
+
+	//Selects the character that is going to act this turn.
 	void SelectCharacter();
+
+	//Selects a cell to do the action (moving, attacking, etc).
 	void SelectCell();
+
 	void MoveCharacterToCell();
+	void Attack();
+	void Defend();
+	void EndTurn();
+
 	void ResetSelection();
+	void ResetCellSelection();
+	void ResetCharacterSelection();
+
 	void Zoom(float axis);
+
+	void DoCharacterAction();
+
+	ACustomCharacter* GetCharacter();
 
 protected:
 	// References to classes and components
@@ -73,7 +89,7 @@ protected:
 	FVector PanDirection;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
-	AGrid* grid_;
+		AGrid* grid_;
 
 	UPROPERTY(EditAnywhere, Category = Cam)
 		float Margin;

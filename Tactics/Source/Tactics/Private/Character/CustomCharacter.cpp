@@ -23,6 +23,7 @@ ACustomCharacter::ACustomCharacter()
 
 	TeamNum = 255;
 	bDied = false;
+	isDefending = false;
 	movement_time_ = 0.0f;
 
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
@@ -101,7 +102,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->North(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -110,7 +111,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->South(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -119,7 +120,7 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->East(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
@@ -128,13 +129,12 @@ static void AddCells(TArray<ACell*>& cell_array, ACell* start, int range) {
 			target_id = grid->West(start);
 			target = grid->GetCellByID(target_id);
 			if (target) {
-				if (target->IsWalkable()) {
+				if (target->IsWalkable() && target->GetCharacterPointer() == nullptr) {
 					AddCells(cell_array, target, range - 1);
 				}
 			}
 		}
 	}
-	
 }
 
 void ACustomCharacter::MoveAlongPath(float DeltaTime)
@@ -153,6 +153,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 			if (movement_time_ >= 1.0f)
 			{
+				current_cell_->SetCharacterPointer(nullptr);
 				current_cell_ = tmp;
 				tmp->SetCharacterPointer(this);
 
@@ -165,10 +166,6 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					if (camera_pawn_)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
-						tmp->SetType(CellType::kCellType_Occupied);
-
-						//Sets the view target to the camera pawn.
-						GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
 					}
 				}
 			}
@@ -176,16 +173,42 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 	}
 }
 
+void ACustomCharacter::Defend()
+{
+	isDefending = true;
+}
+
+void ACustomCharacter::EndTurn()
+{
+	TurnAvailable = false;
+
+	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	//Sets the view target to the camera pawn.
+	GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
+}
+
+void ACustomCharacter::StartTurn()
+{
+	TurnAvailable = true;
+	isDefending = false;
+	cells_moved_this_turn_ = 0;
+}
+
+
 void ACustomCharacter::ReturnToMainCamera()
 {
 	GetWorldTimerManager().ClearTimer(handle_);
 	state_ = CharacterState::kCharacterState_Idle;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+	if (PC)
+	{
+		PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+	}
 }
 
 
-TArray<ACell*> ACustomCharacter::GetSelectableCells()
+TArray<ACell*> ACustomCharacter::GetMovableCells()
 {
 	TArray<ACell*> cells;
 	if (current_cell_) {
@@ -208,17 +231,14 @@ void ACustomCharacter::Selected()
 	HUDWidget->SetVisibility(ESlateVisibility::Visible);
 
 	//Highlights the action cells.
-	current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
-	current_cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+	//current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
+	//current_cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 }
 
 void ACustomCharacter::Unselected()
 {
-	//Hides the HUD widget
-	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
-
 	//Unhighlights the action cells.
-	current_cell_->GetGridPointer()->UnhighlightCells(GetSelectableCells());
+	current_cell_->GetGridPointer()->UnhighlightCells(GetMovableCells());
 }
 
 ACell* ACustomCharacter::GetCell()

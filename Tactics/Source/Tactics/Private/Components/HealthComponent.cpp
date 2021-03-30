@@ -34,16 +34,28 @@ void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, 
 		return;
 	}
 
-	if (DamageCauser != DamagedActor)
+	if (DamageCauser == DamagedActor)
 	{
 		return;
 	}
 
-	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.0f, MaxHealth);
+	ACustomCharacter* tmp = Cast<ACustomCharacter>(DamagedActor);
+
+	float damageToTake = Damage;
+
+	if(tmp)
+	{
+		if (tmp->isDefending)
+		{
+			damageToTake *= 0.5f;
+		}
+	}
+
+	CurrentHealth = FMath::Clamp(CurrentHealth - damageToTake, 0.0f, MaxHealth);
 
 	bIsDead = CurrentHealth <= 0.0f;
 
-	OnHealthChanged.Broadcast(this, CurrentHealth, Damage, DamageType, InstigatedBy, DamageCauser);
+	OnHealthChanged.Broadcast(this, CurrentHealth, damageToTake, DamageType, InstigatedBy, DamageCauser);
 }
 
 float UHealthComponent::GetCurrentHealth() const

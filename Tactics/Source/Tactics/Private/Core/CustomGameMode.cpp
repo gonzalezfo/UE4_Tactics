@@ -85,12 +85,17 @@ void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
 //Sets the movement aviability of all the characters of the Teams.
 void ACustomGameMode::SetTurn(int value) {
 	if (value >= GameTeams.Num()) return;
-	for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
+	/*for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
 		bool movement = (t_idx == CurrentTeamTurn);
+
 		for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); c_idx++) {
 			(GameTeams[t_idx].TeamMembers[c_idx])->TurnAvailable = movement;
 		}
+	}*/
+	for (auto& characters : GameTeams[value].TeamMembers) {
+		characters->StartTurn();
 	}
+	
 }
 
 void ACustomGameMode::NextTurn() {
