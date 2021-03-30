@@ -23,6 +23,7 @@ ACustomCharacter::ACustomCharacter()
 
 	TeamNum = 255;
 	bDied = false;
+	isDefending = false;
 	movement_time_ = 0.0f;
 
 	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
@@ -165,10 +166,6 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					if (camera_pawn_)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
-						tmp->SetType(CellType::kCellType_Occupied);
-
-						//Sets the view target to the camera pawn.
-						GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
 					}
 				}
 			}
@@ -176,12 +173,38 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 	}
 }
 
+void ACustomCharacter::Defend()
+{
+	isDefending = true;
+}
+
+void ACustomCharacter::EndTurn()
+{
+	TurnAvailable = false;
+
+	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	//Sets the view target to the camera pawn.
+	GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
+}
+
+void ACustomCharacter::StartTurn()
+{
+	TurnAvailable = true;
+	isDefending = false;
+	cells_moved_this_turn_ = 0;
+}
+
+
 void ACustomCharacter::ReturnToMainCamera()
 {
 	GetWorldTimerManager().ClearTimer(handle_);
 	state_ = CharacterState::kCharacterState_Idle;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+	if (PC)
+	{
+		PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+	}
 }
 
 
@@ -214,9 +237,6 @@ void ACustomCharacter::Selected()
 
 void ACustomCharacter::Unselected()
 {
-	//Hides the HUD widget
-	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
-
 	//Unhighlights the action cells.
 	current_cell_->GetGridPointer()->UnhighlightCells(GetMovableCells());
 }

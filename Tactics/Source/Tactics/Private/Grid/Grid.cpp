@@ -204,7 +204,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		// Checks all the neighbour nodes of the current node
 		for (auto cellNeighbour : cellCurrent->GetNeighbours())
 		{
-			if (!cellNeighbour->bvisited && cellNeighbour->GetType() == kCellType_Normal)
+			if (!cellNeighbour->bvisited && cellNeighbour->GetType() == kCellType_Normal && cellNeighbour->GetCharacterPointer() == nullptr)
 			{
 				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
 
@@ -717,7 +717,7 @@ void AGrid::SpawnCharacter() {
 					}
 					//Set the character pointer on the character cell.
 					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetCharacterPointer(character);
-					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetType(CellType::kCellType_Occupied);
+					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetType(CellType::kCellType_Spawn);
 				}
 			}
 		}
@@ -754,7 +754,7 @@ void AGrid::SpawnCharacter() {
 
 			//Set the character pointer on the character cell.
 			Cells[character_index]->SetCharacterPointer(cchar);
-			Cells[character_index]->SetType(CellType::kCellType_Occupied);
+			Cells[character_index]->SetType(CellType::kCellType_Normal);
 		}
 	}	
 }

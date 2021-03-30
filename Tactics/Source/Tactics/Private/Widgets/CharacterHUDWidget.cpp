@@ -71,21 +71,26 @@ void UCharacterHUDWidget::MoveButtonClicked()
 void UCharacterHUDWidget::DefenseButtonClicked()
 {
 	selected_action_ = kSelectedAction_Defending;
-	//current_character_->TurnAvailable = false;
+	
+	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (pawn)
+	{
+		pawn->Defend();
+		pawn->EndTurn();
+	}
 }
 
 void UCharacterHUDWidget::FinishTurnButtonClicked()
 {
-	current_character_->Unselected();
-	current_character_->TurnAvailable = false;
+	selected_action_ = kSelectedAction_EndTurn;
 
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
 	if (pawn)
 	{
-		pawn->ResetSelection();
+		pawn->EndTurn();
 	}
-	selected_action_ = kSelectedAction_None;
 }
 
 void UCharacterHUDWidget::SetCharacterName(FString name)

@@ -17,7 +17,8 @@ enum SelectedAction
 	kSelectedAction_Moving = 0			UMETA(DisplayName = "MOVING"),
 	kSelectedAction_Attacking = 1		UMETA(DisplayName = "ATTACKING"),
 	kSelectedAction_Defending = 2		UMETA(DisplayName = "DEFENDING"),
-	kSelectedAction_None = 3			UMETA(DisplayName = "NONE"),
+	kSelectedAction_EndTurn = 3			UMETA(DisplayName = "END TURN"),
+	kSelectedAction_None = 4			UMETA(DisplayName = "NONE"),
 };
 
 /**

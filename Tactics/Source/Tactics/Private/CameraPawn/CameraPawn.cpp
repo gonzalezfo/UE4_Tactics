@@ -210,11 +210,23 @@ void ACameraPawn::SelectCharacter()
 
 void ACameraPawn::SelectCell()
 {
-	ACell* cell = Cast<ACell>(DoLineTrace());
+	AActor* hitResult = DoLineTrace();
+
+	//If the user clicks on a character we get its cell and then return.
+	ACustomCharacter* cchar = Cast<ACustomCharacter>(hitResult);
+
+	if (cchar) {
+		cell_ = cchar->GetCell();
+		return;
+	}
+
+	//If it is not a character then we check if it is a cell.
+	ACell* cell = Cast<ACell>(hitResult);
 
 	if (cell)
 	{
 		cell_ = cell;
+		return;
 	}
 }
 
@@ -230,18 +242,75 @@ void ACameraPawn::MoveCharacterToCell()
 				character_->Unselected();
 				grid->MoveCharacterToCell(character_, cell_);
 
-				character_->TurnAvailable = false;
-				ResetSelection();
+				ResetCellSelection();
 			}
 		}
 	}
 }
 
-void ACameraPawn::ResetSelection()
+void ACameraPawn::Attack()
+{
+	ACell* character_cell = character_->GetCell();
+
+	if (character_cell)
+	{
+		if (grid_)
+		{
+			//float distance_to_cell = grid_->CalculateDistance(nullptr, nullptr);
+			int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
+			if (distance_to_cell <= 2)
+			{
+				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
+				if (tmp_char)
+				{
+					//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
+					//{
+					FVector Direction;
+					FHitResult Hit;
+
+					UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, character_, tmp_char->MeleeDamage);
+
+					character_->Unselected();
+
+					ResetCellSelection();
+				//}
+				}
+			}
+		}
+	}
+}
+
+void ACameraPawn::Defend()
+{
+	if (character_)
+	{
+		character_->Defend();
+	}
+}
+
+void ACameraPawn::EndTurn() 
+{
+	if (character_)
+	{
+		character_->EndTurn();
+		ResetSelection();
+	}
+}
+
+void ACameraPawn::ResetCellSelection()
+{
+	cell_ = nullptr;
+}
+
+void ACameraPawn::ResetCharacterSelection()
 {
 	character_ = nullptr;
-	cell_ = nullptr;
-	//PC->SetViewTargetWithBlend(this, 1.0f);
+}
+
+void ACameraPawn::ResetSelection()
+{
+	ResetCellSelection();
+	ResetCharacterSelection();
 }
 
 void ACameraPawn::Zoom(float axis)
@@ -300,39 +369,21 @@ void ACameraPawn::DoCharacterAction()
 			SelectCell();
 			if (CheckCellSelected())
 			{
-				ACell* character_cell = character_->GetCell();
-
-				if (character_cell)
-				{
-					if (grid_)
-					{
-						//float distance_to_cell = grid_->CalculateDistance(nullptr, nullptr);
-						int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
-						if (distance_to_cell <= 2)
-						{
-							ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
-							if (tmp_char)
-							{
-								//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
-								//{
-									FVector Direction;
-									FHitResult Hit;
-
-									UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, character_, tmp_char->MeleeDamage);
-
-									character_->Unselected();
-
-									character_->TurnAvailable = false;
-									ResetSelection();
-								//}
-							}
-						}
-					}
-				}
+				Attack();
 			}
 			break;
 		case kSelectedAction_Defending:
+			if (character_)
+			{
+				Defend();
+			}
+			break;
 
+		case kSelectedAction_EndTurn:
+			if (character_)
+			{
+				EndTurn();
+			}
 			break;
 		case kSelectedAction_None:
 
