@@ -158,6 +158,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 				tmp->SetCharacterPointer(this);
 
 				path_cells_.Remove(tmp);
+				cells_moved_this_turn_++;
 				movement_time_ = 0.0f;
 
 				//Checks if the array is empty which means the character finished its movement.
@@ -216,7 +217,7 @@ TArray<ACell*> ACustomCharacter::GetMovableCells()
 
 		AGrid* grid = current_cell_->GetGridPointer();
 		if (grid) {
-			AddCells(cells, current_cell_, range_);
+			AddCells(cells, current_cell_, range_ - cells_moved_this_turn_);
 		}
 	}
 
