@@ -759,10 +759,17 @@ void AGrid::SpawnCharacter() {
 	}	
 }
 
-void AGrid::HighlightCells(TArray<ACell*> cell_array)
+void AGrid::HighlightMoveCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {
 		c->HighlightCell(CellMaterial::kCellMaterial_MoveHighlight);
+	}
+}
+
+void AGrid::HighlightAttackCells(TArray<ACell*> cell_array)
+{
+	for (auto c : cell_array) {
+		c->HighlightCell(CellMaterial::kCellMaterial_AttackHighlight);
 	}
 }
 

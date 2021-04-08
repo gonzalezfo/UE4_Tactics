@@ -85,6 +85,8 @@ public:
 	//Gets an array of the selectable cells of the player with a certain range.
 	TArray<ACell*> GetMovableCells();
 
+	TArray<ACell*> GetAttackCells();
+
 	//Gets the current character cell.
 	ACell* GetCell();
 

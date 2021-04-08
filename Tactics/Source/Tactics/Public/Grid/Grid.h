@@ -89,7 +89,8 @@ public:
 
 	TArray<ACell*> FindPath(ACell* start, ACell* finish);
 
-	void HighlightCells(TArray<ACell*>);
+	void HighlightMoveCells(TArray<ACell*>);
+	void HighlightAttackCells(TArray<ACell*>);
 	void UnhighlightCells(TArray<ACell*>);
 
 	ACell* GetCellByID(int id);

@@ -41,7 +41,24 @@ void UCharacterHUDWidget::NativeConstruct()
 void UCharacterHUDWidget::AttackButtonClicked()
 {
 	selected_action_ = kSelectedAction_Attacking;
-	//current_character_->TurnAvailable = false;
+	
+	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (pawn)
+	{
+		ACustomCharacter* character_ = pawn->GetCharacter();
+
+		if (character_)
+		{
+			ACell* cell_ = character_->GetCell();
+			if (cell_)
+			{
+				cell_->GetGridPointer()->HighlightAttackCells(character_->GetAttackCells());
+				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+			}
+		}
+
+	}
 }
 
 void UCharacterHUDWidget::MoveButtonClicked()
@@ -59,13 +76,12 @@ void UCharacterHUDWidget::MoveButtonClicked()
 			ACell* cell_ = character_->GetCell();
 			if (cell_)
 			{
-				cell_->GetGridPointer()->HighlightCells(character_->GetMovableCells());
+				cell_->GetGridPointer()->HighlightMoveCells(character_->GetMovableCells());
 				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 			}
 		}
 
 	}
-	//current_character_->TurnAvailable = false;
 }
 
 void UCharacterHUDWidget::DefenseButtonClicked()

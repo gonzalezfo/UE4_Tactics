@@ -224,6 +224,23 @@ TArray<ACell*> ACustomCharacter::GetMovableCells()
 	return cells;
 }
 
+TArray<ACell*> ACustomCharacter::GetAttackCells()
+{
+	TArray<ACell*> cells;
+	
+	AGrid* grid = current_cell_->GetGridPointer();
+
+	if (grid)
+	{
+		cells.Add(grid->Cells[grid->North(current_cell_)]);
+		cells.Add(grid->Cells[grid->East(current_cell_)]);
+		cells.Add(grid->Cells[grid->South(current_cell_)]);
+		cells.Add(grid->Cells[grid->West(current_cell_)]);
+	}
+
+	return cells;
+}
+
 void ACustomCharacter::Selected()
 {
 	//Makes the HUD visible and sets the character name

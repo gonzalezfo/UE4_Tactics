@@ -182,8 +182,24 @@ void ACell::SetCellSpawnMaterial(int spawn_team) {
 	}
 }
 
-void ACell::SetCellHighlightMaterial() {
-	if (CellHighLightMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[0]);
+void ACell::SetCellHighlightMaterial(CellMaterial material_type) {
+	switch (material_type)
+	{
+	case kCellMaterial_Default:
+		break;
+	case kCellMaterial_MoveHighlight:
+		if (CellHighLightMaterials[0] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[0]);
+		break;
+	case kCellMaterial_AttackHighlight:
+		if (CellHighLightMaterials[2] != nullptr) CellMeshComponent->SetMaterial(0, CellHighLightMaterials[2]);
+		break;
+	case kCellMaterial_CurrentCell:
+		SetCellCurrentCellMaterial();
+		break;
+	default:
+		break;
+	};
+	
 }
 
 
@@ -200,10 +216,10 @@ void ACell::HighlightCell(CellMaterial material_type) {
 			SetCellMaterial();
 			break;
 		case CellMaterial::kCellMaterial_MoveHighlight:
-			SetCellHighlightMaterial();
+			SetCellHighlightMaterial(material_type);
 			break;
 		case CellMaterial::kCellMaterial_AttackHighlight:
-			SetCellHighlightMaterial();
+			SetCellHighlightMaterial(material_type);
 			break;
 		case CellMaterial::kCellMaterial_CurrentCell:
 			SetCellCurrentCellMaterial();
@@ -211,11 +227,5 @@ void ACell::HighlightCell(CellMaterial material_type) {
 		default:
 			break;
 	};
-	/*if (bHighlight) {
-		SetCellHighlightMaterial();
-	}
-	else {
-		SetCellMaterial();
-	}*/
 }
 

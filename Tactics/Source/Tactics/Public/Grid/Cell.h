@@ -69,7 +69,7 @@ public:
 
 	// Materials
 	void SetCellMaterial();
-	void SetCellHighlightMaterial();
+	void SetCellHighlightMaterial(CellMaterial);
 	void SetCellSpawnMaterial(int spawn_team);
 	void SetCellCurrentCellMaterial();
 
