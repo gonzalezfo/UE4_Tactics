@@ -14,7 +14,7 @@ void ACustomAIController::SetCharacterRandomMovement() {
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 
 	if (SelectedCharacter != nullptr) {
-		TArray<ACell*> selectable_cells = SelectedCharacter->GetSelectableCells();
+		TArray<ACell*> selectable_cells = SelectedCharacter->GetMovableCells();
 		if (selectable_cells.Num() > 0 && Grid != nullptr) {
 			int value = FMath::RandRange(0, selectable_cells.Num() - 1);
 			Grid->MoveCharacterToCell(SelectedCharacter, selectable_cells[value]);
