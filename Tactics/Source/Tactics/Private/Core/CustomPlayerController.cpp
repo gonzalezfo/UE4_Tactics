@@ -19,7 +19,7 @@ void ACustomPlayerController::Select()
 {
 	CustomCamera = Cast<ACameraPawn>(this->GetPawn());
 
-	if (CustomCamera)
+	if (CustomCamera && bIsMyTurn)
 	{
 		CustomCamera->Select();
 	}
@@ -30,8 +30,22 @@ void ACustomPlayerController::Zoom(float axis)
 {
 	CustomCamera = Cast<ACameraPawn>(this->GetPawn());
 
-	if (CustomCamera)
+	if (CustomCamera && bIsMyTurn)
 	{
 		CustomCamera->Zoom(axis);
 	}
 }
+
+bool ACustomPlayerController::IsMyTurn() {
+	return bIsMyTurn;
+}
+
+void ACustomPlayerController::BeginTurn() {
+	bIsMyTurn = true;
+}
+
+void ACustomPlayerController::EndTurn() {
+	bIsMyTurn = false;
+}
+
+

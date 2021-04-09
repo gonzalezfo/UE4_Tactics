@@ -15,6 +15,14 @@ class TACTICS_API ACustomPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 
+public: 
+
+	bool IsMyTurn();
+
+	void BeginTurn();
+
+	void EndTurn();
+
 private:
 	virtual void SetupInputComponent() override;
 	
@@ -22,4 +30,6 @@ private:
 
 	void Select();
 	void Zoom(float axis);
+
+	bool bIsMyTurn;
 };

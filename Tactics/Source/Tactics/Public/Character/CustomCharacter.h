@@ -16,7 +16,7 @@ class UHealthComponent;
 UENUM(BlueprintType)
 enum CharacterState
 {
-	kCharacterState_Idle = 0					UMETA(DisplayName = "IDLE"),
+	kCharacterState_Idle = 0				UMETA(DisplayName = "IDLE"),
 	kCharacterState_Moving = 1				UMETA(DisplayName = "MOVING"),
 	kCharacterState_FinishMovement = 2		UMETA(DisplayName = "FINISH MOVEMENT"),
 };
@@ -102,6 +102,7 @@ public:
 
 	void UpdateMaterial();
 
+	void EndCharacterTurn();
 
 	//Character static mesh.
 	UPROPERTY(VisibleAnywhere, Category = "Mesh")
