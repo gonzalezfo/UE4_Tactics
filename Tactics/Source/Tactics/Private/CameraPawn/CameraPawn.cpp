@@ -228,7 +228,7 @@ void ACameraPawn::MoveCharacterToCell()
 				character_->Unselected();
 				grid->MoveCharacterToCell(character_, cell_);
 
-				character_->TurnAvailable = false;
+				//character_->TurnAvailable = false;
 				ResetSelection();
 			}
 		}

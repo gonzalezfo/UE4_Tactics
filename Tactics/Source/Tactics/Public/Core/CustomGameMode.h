@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 
+#include "CameraPawn/CameraPawn.h"
+#include "Core/CustomAIController.h"
+#include "Core/CustomPlayerController.h"
 #include "Grid/Grid.h"
 
 #include "CustomGameMode.generated.h"
@@ -23,6 +26,12 @@ struct FTeam
 
 	UPROPERTY(VisibleAnywhere)
 		bool Defeated = false;
+
+	UPROPERTY(VisibleAnywhere)
+		bool bFinishedTurn = false;
+
+	UPROPERTY(VisibleAnywhere)
+		ACustomAIController* TeamAIController;
 };
 
 UCLASS()
@@ -54,9 +63,18 @@ public:
 		AGrid* GameGrid;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
+		ACameraPawn* GridCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		TArray<FTeam> GameTeams;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		int CurrentTeamTurn;
+
+	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
+		ACustomPlayerController* PlayerController;
+
+	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
+		TArray<ACustomAIController*> GameAIPlayers;
 	
 };

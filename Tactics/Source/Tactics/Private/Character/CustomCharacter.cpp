@@ -181,6 +181,7 @@ void ACustomCharacter::ReturnToMainCamera()
 	state_ = CharacterState::kCharacterState_Idle;
 	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
+	GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::EndCharacterTurn, 1.0f, false);
 }
 
 
@@ -328,4 +329,9 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 
 		//SetLifeSpan(5.0f);
 	}
+}
+
+
+void ACustomCharacter::EndCharacterTurn() {
+	TurnAvailable = false;
 }

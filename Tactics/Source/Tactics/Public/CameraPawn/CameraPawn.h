@@ -60,8 +60,7 @@ protected:
 
 	UCameraComponent* CameraComp;
 
-	APlayerController* PC;
-
+	APlayerController* PC; 
 
 	ACustomCharacter* character_;
 	ACell* cell_;

@@ -10,8 +10,6 @@
 
 ACustomGameMode::ACustomGameMode() {
 	PrimaryActorTick.bCanEverTick = true;
-
-
 }
 
 // Called when the game starts or when spawned
@@ -20,7 +18,11 @@ void ACustomGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	//Find the Grid for the GameMode.
-	GameGrid = (AGrid*) UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass());
+	GameGrid = Cast<AGrid>(UGameplayStatics::GetActorOfClass(GetWorld(), AGrid::StaticClass()));
+
+	GridCamera = Cast<ACameraPawn>(UGameplayStatics::GetActorOfClass(GetWorld(), ACameraPawn::StaticClass()));
+
+	PlayerController = Cast<ACustomPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (GameGrid != nullptr) {
 		GameGrid->Init();
@@ -77,6 +79,24 @@ void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
 			}
 		}
 	}
+
+	//Spawn the AIControllers and set their values depending on their teams.
+	for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
+		if (GameTeams[t_idx].TeamId != ESpawnTeam::kSpawnTeam_Player) {
+			ACustomAIController* ai_controller = Cast<ACustomAIController>(GetWorld()->SpawnActor<AActor>(ACustomAIController::StaticClass(), FVector::ZeroVector, FRotator::ZeroRotator));
+			ai_controller->AITeamCharacters = GameTeams[t_idx].TeamMembers;
+			ai_controller->CameraPawn = GridCamera;
+			ai_controller->Grid = GameGrid;
+
+			if (ai_controller != nullptr) {
+				GameAIPlayers.Push(ai_controller);
+				GameTeams[t_idx].TeamAIController = ai_controller;
+			}
+		} else {
+			GameTeams[t_idx].TeamAIController = nullptr;
+		}
+	}
+
 	//Set things for turns
 	CurrentTeamTurn = 0;
 	SetTurn(0);
@@ -87,9 +107,19 @@ void ACustomGameMode::SetTurn(int value) {
 	if (value >= GameTeams.Num()) return;
 	for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
 		bool movement = (t_idx == CurrentTeamTurn);
+		GameTeams[t_idx].bFinishedTurn = movement;
 		for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); c_idx++) {
 			(GameTeams[t_idx].TeamMembers[c_idx])->TurnAvailable = movement;
 		}
+	}
+
+	if (GameTeams[value].TeamId != ESpawnTeam::kSpawnTeam_Player) {
+		if (GameTeams[value].TeamAIController != nullptr) {
+			GameTeams[value].TeamAIController->BeginTurn();
+		}
+	}
+	else {
+		PlayerController->BeginTurn();
 	}
 }
 
@@ -100,8 +130,17 @@ void ACustomGameMode::NextTurn() {
 }
 
 bool ACustomGameMode::CheckForNextTurn() {
-	for (int c_idx = 0; c_idx < GameTeams[CurrentTeamTurn].TeamMembers.Num(); c_idx++) {
-		if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->TurnAvailable == true) return false;
+	if (GameTeams[CurrentTeamTurn].TeamId != ESpawnTeam::kSpawnTeam_Player) {
+		GameTeams[CurrentTeamTurn].bFinishedTurn = !(GameTeams[CurrentTeamTurn].TeamAIController)->IsMyTurn();
 	}
-	return true;
+	else {
+		GameTeams[CurrentTeamTurn].bFinishedTurn = true;
+		for (int c_idx = 0; c_idx < GameTeams[CurrentTeamTurn].TeamMembers.Num(); c_idx++) {
+			if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->TurnAvailable == true) {
+				GameTeams[CurrentTeamTurn].bFinishedTurn = false;
+			}
+		}
+		if (GameTeams[CurrentTeamTurn].bFinishedTurn) PlayerController->EndTurn();
+	}
+	return GameTeams[CurrentTeamTurn].bFinishedTurn;
 }
