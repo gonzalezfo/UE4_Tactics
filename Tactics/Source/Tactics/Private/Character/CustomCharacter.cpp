@@ -257,7 +257,13 @@ void ACustomCharacter::Selected()
 void ACustomCharacter::Unselected()
 {
 	//Unhighlights the action cells.
-	current_cell_->GetGridPointer()->UnhighlightCells(GetMovableCells());
+	AGrid* grid = current_cell_->GetGridPointer();
+
+	if (grid)
+	{
+		grid->UnhighlightCells(GetMovableCells());
+		grid->UnhighlightCells(GetAttackCells());
+	}
 }
 
 ACell* ACustomCharacter::GetCell()
