@@ -11,6 +11,8 @@ class ACameraPawn;
 class UCharacterHUDWidget;
 class UCameraComponent;
 class UHealthComponent;
+class USkeletalComponent;
+class UAnimationAsset;
 
 
 UENUM(BlueprintType)
@@ -100,14 +102,13 @@ public:
 
 	void SetCharacterTeam(int team_value);
 
-	void UpdateMaterial();
+	//void UpdateMaterial();
 
 	void EndCharacterTurn();
 
 	//Character static mesh.
-	UPROPERTY(VisibleAnywhere, Category = "Mesh")
-		UStaticMeshComponent* mesh_;
-
+	UPROPERTY(VisibleDefaultsOnly, Category = "Character")
+		USkeletalMeshComponent* mesh_;
 
 	//Character name.
 	UPROPERTY(EditAnywhere, Category = "Gameplay Properties")
@@ -157,6 +158,25 @@ public:
 		void StartTurn();
 
 	int cells_moved_this_turn_;
+
+
+	//Animations
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	UAnimationAsset* idle;
+
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	UAnimationAsset* attack;
+	
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	UAnimationAsset* defense;
+	
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	UAnimationAsset* walk;
+	
+	UPROPERTY(EditAnywhere, Category = "Animations")
+	UAnimationAsset* death;
+
+
 
 private:
 	//The material of the character.

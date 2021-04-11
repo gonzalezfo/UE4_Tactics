@@ -265,6 +265,7 @@ void ACameraPawn::Attack()
 				{
 					//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
 					//{
+					tmp_char->mesh_->PlayAnimation(tmp_char->attack, false);
 					FVector Direction;
 					FHitResult Hit;
 
