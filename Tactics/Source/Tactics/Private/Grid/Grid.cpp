@@ -713,7 +713,7 @@ void AGrid::SpawnCharacter() {
 					if (character) {
 						character->InitPlayer(Spawns[spawn_idx].SpawnCells[spawn_cell]);
 						character->SetCharacterTeam(Spawns[spawn_idx].SpawnTeam);
-						character->UpdateMaterial();
+						//character->UpdateMaterial();
 					}
 					//Set the character pointer on the character cell.
 					Spawns[spawn_idx].SpawnCells[spawn_cell]->SetCharacterPointer(character);
