@@ -137,15 +137,22 @@ void ACustomGameMode::NextTurn() {
 bool ACustomGameMode::CheckForNextTurn() {
 	if (GameTeams[CurrentTeamTurn].TeamId != ESpawnTeam::kSpawnTeam_Player) {
 		GameTeams[CurrentTeamTurn].bFinishedTurn = !(GameTeams[CurrentTeamTurn].TeamAIController)->IsMyTurn();
+		return GameTeams[CurrentTeamTurn].bFinishedTurn;
 	}
 	else {
-		GameTeams[CurrentTeamTurn].bFinishedTurn = true;
-		for (int c_idx = 0; c_idx < GameTeams[CurrentTeamTurn].TeamMembers.Num(); c_idx++) {
-			if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->TurnAvailable == true) {
-				GameTeams[CurrentTeamTurn].bFinishedTurn = false;
+		if (PlayerController->IsMyTurn() && GameTeams[CurrentTeamTurn].bFinishedTurn == false) {
+			bool finished_players_turn = true;
+			for (int c_idx = 0; c_idx < GameTeams[CurrentTeamTurn].TeamMembers.Num(); c_idx++) {
+				if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->TurnAvailable == true) {
+					finished_players_turn = false;
+				}
+			}
+			if (finished_players_turn) {
+				GetWorldTimerManager().SetTimer(TimerHandle, PlayerController, &ACustomPlayerController::EndTurn, 2.0f, false);
+				GameTeams[CurrentTeamTurn].bFinishedTurn = true;
 			}
 		}
-		if (GameTeams[CurrentTeamTurn].bFinishedTurn) PlayerController->EndTurn();
+		return !(PlayerController->IsMyTurn());
 	}
-	return GameTeams[CurrentTeamTurn].bFinishedTurn;
+	return false;
 }

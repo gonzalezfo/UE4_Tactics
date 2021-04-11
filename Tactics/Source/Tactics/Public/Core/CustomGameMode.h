@@ -76,5 +76,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		TArray<ACustomAIController*> GameAIPlayers;
+
+private: 
+
+	FTimerHandle TimerHandle;
 	
 };
