@@ -265,7 +265,7 @@ void ACameraPawn::Attack()
 				{
 					//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
 					//{
-					tmp_char->mesh_->PlayAnimation(tmp_char->attack, false);
+					character_->mesh_->PlayAnimation(tmp_char->attack, false);
 					FVector Direction;
 					FHitResult Hit;
 
@@ -363,6 +363,7 @@ void ACameraPawn::DoCharacterAction()
 			SelectCell();
 			if (CheckCellSelected()) 
 			{
+				character_->mesh_->PlayAnimation(character_->walk, true);
 				MoveCharacterToCell();
 			}
 			break;
@@ -387,7 +388,6 @@ void ACameraPawn::DoCharacterAction()
 			}
 			break;
 		case kSelectedAction_None:
-
 			break;
 		}
 	}
