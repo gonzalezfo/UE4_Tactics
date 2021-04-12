@@ -143,9 +143,29 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 	if (path_cells_.Num() != 0)
 	{
 		state_ = CharacterState::kCharacterState_Moving;
-		mesh_->PlayAnimation(walk, true);
 
 		ACell* tmp = path_cells_.Top();
+
+		if (current_cell_->GetGridPointer()->North(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->South(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->East(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->West(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
 
 		if (tmp)
 		{
