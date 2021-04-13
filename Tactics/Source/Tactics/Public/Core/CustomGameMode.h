@@ -12,6 +12,9 @@
 
 #include "CustomGameMode.generated.h"
 
+class ASoundManager;
+
+
 //TODO: Put this in a Class and maybe use them to build the spawns of the Grid later.
 USTRUCT(BlueprintType)
 struct FTeam
@@ -64,6 +67,12 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		ACameraPawn* GridCamera;
+
+	UPROPERTY(EditAnywhere, Category = "GameMode Variables")
+		TSubclassOf<ASoundManager> SoundManagerClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
+		ASoundManager* SoundManager;
 
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		TArray<FTeam> GameTeams;

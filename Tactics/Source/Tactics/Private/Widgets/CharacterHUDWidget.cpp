@@ -7,9 +7,12 @@
 
 #include "Character/CustomCharacter.h"
 #include "CameraPawn/CameraPawn.h"
+#include "Core/CustomGameMode.h"
+#include "Core/SoundManager.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
+#include "Components/AudioComponent.h"
 
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
@@ -40,6 +43,8 @@ void UCharacterHUDWidget::NativeConstruct()
 
 void UCharacterHUDWidget::AttackButtonClicked()
 {
+	PlayClickedButtonSound();
+
 	selected_action_ = kSelectedAction_Attacking;
 	
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -63,6 +68,8 @@ void UCharacterHUDWidget::AttackButtonClicked()
 
 void UCharacterHUDWidget::MoveButtonClicked()
 {
+	PlayClickedButtonSound();
+
 	selected_action_ = kSelectedAction_Moving;
 
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -86,6 +93,8 @@ void UCharacterHUDWidget::MoveButtonClicked()
 
 void UCharacterHUDWidget::DefenseButtonClicked()
 {
+	PlayClickedButtonSound();
+
 	selected_action_ = kSelectedAction_Defending;
 	
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -99,6 +108,8 @@ void UCharacterHUDWidget::DefenseButtonClicked()
 
 void UCharacterHUDWidget::FinishTurnButtonClicked()
 {
+	PlayClickedButtonSound();
+
 	selected_action_ = kSelectedAction_EndTurn;
 
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
@@ -112,4 +123,19 @@ void UCharacterHUDWidget::FinishTurnButtonClicked()
 void UCharacterHUDWidget::SetCharacterName(FString name)
 {
 	CharacterName->SetText(FText::FromString(name));
+}
+
+void UCharacterHUDWidget::PlayClickedButtonSound()
+{
+	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM)
+	{
+		ASoundManager* SM = GM->SoundManager;
+
+		if (SM)
+		{
+			SM->UISoundComponent->Play();
+		}
+	}
 }

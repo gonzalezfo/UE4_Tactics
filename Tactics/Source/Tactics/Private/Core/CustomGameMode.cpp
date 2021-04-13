@@ -3,6 +3,7 @@
 #include "Grid/Cell.h"
 #include "Grid/Grid.h"
 #include "Character/CustomCharacter.h"
+#include "Core/SoundManager.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
@@ -28,6 +29,12 @@ void ACustomGameMode::BeginPlay()
 		GameGrid->Init();
 		SetGameTeamsFromGridSpawns(GameGrid);
 	}
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+
+	SoundManager = GetWorld()->SpawnActor<ASoundManager>(SoundManagerClass,
+		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 }
 
 void ACustomGameMode::Tick(float DeltaTime)

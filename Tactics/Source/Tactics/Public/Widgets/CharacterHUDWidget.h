@@ -68,4 +68,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* FinishTurnButton;
+
+	UFUNCTION()
+		void PlayClickedButtonSound();
 };
