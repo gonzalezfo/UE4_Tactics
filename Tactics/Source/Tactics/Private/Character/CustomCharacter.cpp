@@ -9,7 +9,7 @@
 #include "Components/HealthComponent.h"
 #include "Core/CustomGameMode.h"
 
-#include "Components/StaticMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
@@ -26,9 +26,9 @@ ACustomCharacter::ACustomCharacter()
 	isDefending = false;
 	movement_time_ = 0.0f;
 
-	mesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Character Mesh Component"));
+	mesh_ = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Character Mesh Component"));
 	SetRootComponent(mesh_);
-
+	
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
 	CameraComp->SetupAttachment(mesh_);
 
@@ -73,6 +73,7 @@ void ACustomCharacter::BeginPlay()
 
 	//Sets the character state.
 	state_ = CharacterState::kCharacterState_Idle;
+	mesh_->PlayAnimation(idle, true);
 }
 
 // Called every frame
@@ -145,6 +146,27 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 		ACell* tmp = path_cells_.Top();
 
+		if (current_cell_->GetGridPointer()->North(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->South(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->East(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+		else if (current_cell_->GetGridPointer()->West(current_cell_) == tmp->GetID())
+		{
+			FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
+			mesh_->SetWorldRotation(rot);
+		}
+
 		if (tmp)
 		{
 			movement_time_ += DeltaTime * movement_speed_;
@@ -167,6 +189,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					if (camera_pawn_)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
+						mesh_->PlayAnimation(idle, true);
 					}
 				}
 			}
@@ -177,6 +200,8 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 void ACustomCharacter::Defend()
 {
 	isDefending = true;
+	mesh_->PlayAnimation(defense, true);
+
 }
 
 void ACustomCharacter::EndTurn()
@@ -291,6 +316,8 @@ void ACustomCharacter::Selected()
 	HUDWidget->current_character_ = this;
 	HUDWidget->SetCharacterName(name_);
 	HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	mesh_->PlayAnimation(idle, true);
+
 
 	//Highlights the action cells.
 	//current_cell_->GetGridPointer()->HighlightCells(GetSelectableCells());
@@ -346,28 +373,29 @@ int ACustomCharacter::GetCharacterTeam() {
 	return TeamNum;
 }
 
-void ACustomCharacter::UpdateMaterial() {
-	switch (TeamNum) {
-	case kSpawnTeam_Player:
-		if (CharacterMaterials[0] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[0]);
-		break;
-	case kSpawnTeam_Team_1:
-		if (CharacterMaterials[1] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[1]);
-		break;
-	case kSpawnTeam_Team_2:
-		if (CharacterMaterials[2] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[2]);
-		break;
-	case kSpawnTeam_Team_3:
-		if (CharacterMaterials[3] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[3]);
-		break;
-	}
-}
+//void ACustomCharacter::UpdateMaterial() {
+//	switch (TeamNum) {
+//	case kSpawnTeam_Player:
+//		if (CharacterMaterials[0] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[0]);
+//		break;
+//	case kSpawnTeam_Team_1:
+//		if (CharacterMaterials[1] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[1]);
+//		break;
+//	case kSpawnTeam_Team_2:
+//		if (CharacterMaterials[2] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[2]);
+//		break;
+//	case kSpawnTeam_Team_3:
+//		if (CharacterMaterials[3] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[3]);
+//		break;
+//	}
+//}
 
 void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float CurrentHealth, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {
 	if (CurrentHealth <= 0.0f && !bDied)
 	{
 		bDied = true;
+		mesh_->PlayAnimation(death, false);
 
 		ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
