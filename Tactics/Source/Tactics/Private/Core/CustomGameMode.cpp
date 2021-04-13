@@ -56,7 +56,6 @@ void ACustomGameMode::Tick(float DeltaTime)
 		default: text_color = FColor::Purple; break;
 	}
 	GEngine->AddOnScreenDebugMessage(-1, 0.0f, text_color, FString::Printf(TEXT("Team Turn: %d"), CurrentTeamTurn));
-	//
 }
 
 void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
