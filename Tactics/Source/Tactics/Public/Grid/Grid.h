@@ -33,6 +33,18 @@ enum ESpawnTeam {
 };
 
 USTRUCT(BlueprintType)
+struct FSpawnCharacterComponent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Data")
+		TSubclassOf<ACustomCharacter> CharacterToInstantiate;
+
+	UPROPERTY(EditAnywhere, Category = "Character Data", meta = (ClampMin = "1", ClampMax = "10"))
+		int NumberOfCharacters = 1;
+};
+
+USTRUCT(BlueprintType)
 struct FGridSpawn
 {
 	GENERATED_BODY()
@@ -40,11 +52,12 @@ struct FGridSpawn
 	UPROPERTY(EditAnywhere, Category = "Spawn Data")
 		TEnumAsByte<ESpawnTeam> SpawnTeam;
 
-	UPROPERTY(EditAnywhere, Category = "Spawn Data", meta = (ClampMin = "1", ClampMax = "10"))
-		int SpawnSize = 1;
+	UPROPERTY(EditAnywhere, Category = "Spawn Data")
+		TArray<FSpawnCharacterComponent> SpawnCharacters;
 
-	UPROPERTY(VisibleAnywhere)
-		TArray<ACell*> SpawnCells;
+	TArray<ACell*> SpawnCells;
+
+	int SpawnSize = 0;
 };
 
 UCLASS()
@@ -108,9 +121,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid", meta = (AllowPrivateAccess = "true"))
 		TSubclassOf<ACell> CellToInstantiate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid", meta = (AllowPrivateAccess = "true"))
-		TSubclassOf<AActor> CharacterToInstantiate;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Grid")
 		FIntPoint GridSize;
