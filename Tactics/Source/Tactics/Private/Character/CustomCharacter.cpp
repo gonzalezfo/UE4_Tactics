@@ -183,6 +183,8 @@ void ACustomCharacter::EndTurn()
 {
 	TurnAvailable = false;
 
+	Unselected();
+
 	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	//Sets the view target to the camera pawn.
@@ -233,10 +235,51 @@ TArray<ACell*> ACustomCharacter::GetAttackCells()
 
 	if (grid)
 	{
-		cells.Add(grid->Cells[grid->North(current_cell_)]);
-		cells.Add(grid->Cells[grid->East(current_cell_)]);
-		cells.Add(grid->Cells[grid->South(current_cell_)]);
-		cells.Add(grid->Cells[grid->West(current_cell_)]);
+		int north, east, south, west = 0;
+
+		//North
+		north = grid->North(current_cell_);
+
+		if (grid->IsValidID(north))
+		{
+			if (!grid->isWall(grid->Cells[north]))
+			{
+				cells.Add(grid->Cells[north]);
+			}
+		}
+
+		//East
+		east = grid->East(current_cell_);
+
+		if (grid->IsValidID(east))
+		{
+			if (!grid->isWall(grid->Cells[east]))
+			{
+				cells.Add(grid->Cells[east]);
+			}
+		}
+		
+		//South
+		south = grid->South(current_cell_);
+
+		if (grid->IsValidID(south))
+		{
+			if (!grid->isWall(grid->Cells[south]))
+			{
+				cells.Add(grid->Cells[south]);
+			}
+		}
+
+		//West
+		west = grid->West(current_cell_);
+
+		if (grid->IsValidID(west))
+		{
+			if (!grid->isWall(grid->Cells[west]))
+			{
+				cells.Add(grid->Cells[west]);
+			}
+		}
 	}
 
 	return cells;
