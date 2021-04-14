@@ -11,6 +11,7 @@ class ACameraPawn;
 class UCharacterHUDWidget;
 class UCameraComponent;
 class UHealthComponent;
+class UWidgetComponent;
 class USkeletalComponent;
 class UAnimationAsset;
 
@@ -35,6 +36,10 @@ public:
 	//Checks if the given actor is friendly or not.
 	UFUNCTION(BlueprintCallable, Category = "Teams")
 		bool IsFriendly(AActor* other);
+
+	//Widget component.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Widget Properties")
+		UWidgetComponent* WidgetComp;
 
 protected:
 	//Called when the game starts or when spawned.

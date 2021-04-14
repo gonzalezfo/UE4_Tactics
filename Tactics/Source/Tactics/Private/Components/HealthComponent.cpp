@@ -3,6 +3,8 @@
 
 #include "Components/HealthComponent.h"
 #include "Character/CustomCharacter.h"
+#include "Components/WidgetComponent.h"
+#include "Widgets/FloatingTextWidget.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -49,6 +51,14 @@ void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, 
 		{
 			damageToTake *= 0.5f;
 		}
+	}
+
+	//Floating Text
+	UFloatingTextWidget* FloatingText = Cast<UFloatingTextWidget>(tmp->WidgetComp->GetUserWidgetObject());
+
+	if (FloatingText)
+	{
+		FloatingText->DoFloatingText(damageToTake);
 	}
 
 	CurrentHealth = FMath::Clamp(CurrentHealth - damageToTake, 0.0f, MaxHealth);

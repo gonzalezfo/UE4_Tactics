@@ -7,6 +7,7 @@
 #include "CameraPawn/CameraPawn.h"
 #include "Widgets/CharacterHUDWidget.h"
 #include "Components/HealthComponent.h"
+#include "Components/WidgetComponent.h"
 #include "Core/CustomGameMode.h"
 
 #include "Components/SkeletalMeshComponent.h"
@@ -33,6 +34,9 @@ ACustomCharacter::ACustomCharacter()
 	CameraComp->SetupAttachment(mesh_);
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+
+	WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComp"));
+	WidgetComp->SetupAttachment(CameraComp);
 }
 
 bool ACustomCharacter::IsFriendly(AActor* other)
