@@ -11,6 +11,12 @@ class ACameraPawn;
 class UCharacterHUDWidget;
 class UCameraComponent;
 class UHealthComponent;
+<<<<<<< Updated upstream
+=======
+class UWidgetComponent;
+class USkeletalComponent;
+class UAnimationAsset;
+>>>>>>> Stashed changes
 
 
 UENUM(BlueprintType)
@@ -56,6 +62,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
 		UHealthComponent* HealthComp;
 
+	//Widget component.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Widget Properties")
+		UWidgetComponent* WidgetComp;
 
 	//Movement time
 	float movement_time_;

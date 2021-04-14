@@ -263,8 +263,41 @@ void ACameraPawn::Attack()
 				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
 				if (tmp_char)
 				{
+<<<<<<< Updated upstream
 					//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
 					//{
+=======
+					if (character_cell->GetGridPointer()->North(character_cell) == cell_->GetID())
+					{
+						FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
+						character_->mesh_->SetWorldRotation(rot);
+						rot = FRotator(0.0f, 0.0f, 0.0f);
+						tmp_char->mesh_->SetWorldRotation(rot);
+					}
+					else if (character_cell->GetGridPointer()->South(character_cell) == cell_->GetID())
+					{
+						FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
+						character_->mesh_->SetWorldRotation(rot);						
+						rot = FRotator(0.0f, -180.0f, 0.0f);
+						tmp_char->mesh_->SetWorldRotation(rot);
+					}
+					else if (character_cell->GetGridPointer()->East(character_cell) == cell_->GetID())
+					{
+						FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
+						character_->mesh_->SetWorldRotation(rot);						
+						rot = FRotator(0.0f, 90.0f, 0.0f);
+						tmp_char->mesh_->SetWorldRotation(rot);
+					}
+					else if (character_cell->GetGridPointer()->West(character_cell) == cell_->GetID())
+					{
+						FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
+						character_->mesh_->SetWorldRotation(rot);						
+						rot = FRotator(0.0f, -90.0f, 0.0f);
+						tmp_char->mesh_->SetWorldRotation(rot);
+					}
+
+					character_->mesh_->PlayAnimation(tmp_char->attack, false);
+>>>>>>> Stashed changes
 					FVector Direction;
 					FHitResult Hit;
 
