@@ -111,15 +111,7 @@ void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
 //Sets the movement aviability of all the characters of the Teams.
 void ACustomGameMode::SetTurn(int value) {
 	if (value >= GameTeams.Num()) return;
-	/*
-	for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
-		bool movement = (t_idx == CurrentTeamTurn);
-		GameTeams[t_idx].bFinishedTurn = movement;
-		for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); c_idx++) {
-			(GameTeams[t_idx].TeamMembers[c_idx])->TurnAvailable = movement;
-		}
-	}
-	*/
+
 	for (auto& characters : GameTeams[value].TeamMembers) {
 		characters->StartTurn();
 	}
@@ -127,10 +119,12 @@ void ACustomGameMode::SetTurn(int value) {
 	if (GameTeams[value].TeamId != ESpawnTeam::kSpawnTeam_Player) {
 		if (GameTeams[value].TeamAIController != nullptr) {
 			GameTeams[value].TeamAIController->BeginTurn();
+			GameTeams[value].bFinishedTurn = false;
 		}
 	}
 	else {
 		PlayerController->BeginTurn();
+		GameTeams[value].bFinishedTurn = false;
 	}
 }
 
