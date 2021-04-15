@@ -250,62 +250,10 @@ void ACameraPawn::MoveCharacterToCell()
 
 void ACameraPawn::Attack()
 {
-	ACell* character_cell = character_->GetCell();
-
-	if (character_cell)
+	if (character_)
 	{
-		if (grid_)
-		{
-			//float distance_to_cell = grid_->CalculateDistance(nullptr, nullptr);
-			int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
-			if (distance_to_cell <= 2)
-			{
-				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
-				if (tmp_char)
-				{
-					//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
-					//{
-					if (character_cell->GetGridPointer()->North(character_cell) == cell_->GetID())
-					{
-						FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
-						character_->mesh_->SetWorldRotation(rot);
-						rot = FRotator(0.0f, 0.0f, 0.0f);
-						tmp_char->mesh_->SetWorldRotation(rot);
-					}
-					else if (character_cell->GetGridPointer()->South(character_cell) == cell_->GetID())
-					{
-						FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
-						character_->mesh_->SetWorldRotation(rot);						
-						rot = FRotator(0.0f, -180.0f, 0.0f);
-						tmp_char->mesh_->SetWorldRotation(rot);
-					}
-					else if (character_cell->GetGridPointer()->East(character_cell) == cell_->GetID())
-					{
-						FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
-						character_->mesh_->SetWorldRotation(rot);						
-						rot = FRotator(0.0f, 90.0f, 0.0f);
-						tmp_char->mesh_->SetWorldRotation(rot);
-					}
-					else if (character_cell->GetGridPointer()->West(character_cell) == cell_->GetID())
-					{
-						FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
-						character_->mesh_->SetWorldRotation(rot);						
-						rot = FRotator(0.0f, -90.0f, 0.0f);
-						tmp_char->mesh_->SetWorldRotation(rot);
-					}
-					character_->mesh_->PlayAnimation(tmp_char->attack, false);
-					FVector Direction;
-					FHitResult Hit;
-
-					UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, character_, tmp_char->MeleeDamage);
-
-					character_->Unselected();
-
-					ResetCellSelection();
-				//}
-				}
-			}
-		}
+		character_->Attack(cell_);
+		ResetCellSelection();
 	}
 }
 
@@ -373,11 +321,6 @@ void ACameraPawn::Select()
 	else
 	{
 		DoCharacterAction();
-
-		//SelectCell();
-		//if (CheckCellSelected()) {
-		//	MoveCharacterToCell();
-		//}
 	}
 }
 

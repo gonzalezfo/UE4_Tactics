@@ -61,6 +61,8 @@ void ACustomCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PC = Cast<APlayerController>(GetController());
+
 	//Adds the HUD Widget to Viewport.
 	if (HUDWidgetClass)
 	{
@@ -193,7 +195,68 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					if (camera_pawn_)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
-						mesh_->PlayAnimation(idle, true);
+					}
+					mesh_->PlayAnimation(idle, true);
+				}
+			}
+		}
+	}
+}
+
+void ACustomCharacter::Attack(ACell* cell_)
+{
+	ACell* character_cell = GetCell();
+
+	if (character_cell)
+	{
+		AGrid* grid_ = character_cell->GetGridPointer();
+		if (grid_)
+		{
+			//float distance_to_cell = grid_->CalculateDistance(nullptr, nullptr);
+			int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
+			if (distance_to_cell <= 2)
+			{
+				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
+				if (tmp_char)
+				{
+					if (!tmp_char->bDied) {
+						//if (tmp_char->GetCharacterTeam() != character_->GetCharacterTeam())
+						//{
+						if (character_cell->GetGridPointer()->North(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, 0.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->South(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, -180.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->East(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, 90.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->West(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, -90.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						mesh_->PlayAnimation(tmp_char->attack, false);
+						FVector Direction;
+						FHitResult Hit;
+
+						UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, this, tmp_char->MeleeDamage);
+
+						Unselected();
 					}
 				}
 			}
@@ -232,7 +295,8 @@ void ACustomCharacter::ReturnToMainCamera()
 {
 	GetWorldTimerManager().ClearTimer(handle_);
 	state_ = CharacterState::kCharacterState_Idle;
-	APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	
 	if (PC) {
 		PC->SetViewTargetWithBlend(camera_pawn_, 1.0f);
@@ -376,23 +440,6 @@ void ACustomCharacter::SetCharacterTeam(int team_value) {
 int ACustomCharacter::GetCharacterTeam() {
 	return TeamNum;
 }
-
-//void ACustomCharacter::UpdateMaterial() {
-//	switch (TeamNum) {
-//	case kSpawnTeam_Player:
-//		if (CharacterMaterials[0] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[0]);
-//		break;
-//	case kSpawnTeam_Team_1:
-//		if (CharacterMaterials[1] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[1]);
-//		break;
-//	case kSpawnTeam_Team_2:
-//		if (CharacterMaterials[2] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[2]);
-//		break;
-//	case kSpawnTeam_Team_3:
-//		if (CharacterMaterials[3] != nullptr) mesh_->SetMaterial(0, CharacterMaterials[3]);
-//		break;
-//	}
-//}
 
 void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, float CurrentHealth, float HealthDelta, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
 {

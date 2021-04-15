@@ -47,6 +47,8 @@ protected:
 
 	void ReturnToMainCamera();
 
+	APlayerController* PC;
+
 	//Pointer to the current character cell.
 	UPROPERTY(VisibleAnywhere, Category = "Cell")
 		ACell* current_cell_;
@@ -85,6 +87,8 @@ public:
 
 	void MoveAlongPath(float DeltaTime);
 
+
+	void Attack(ACell* cell_);
 	void Defend();
 	void EndTurn();
 
