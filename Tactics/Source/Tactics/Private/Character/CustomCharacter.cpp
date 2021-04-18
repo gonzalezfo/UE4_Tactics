@@ -460,6 +460,12 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 		bDied = true;
 		mesh_->PlayAnimation(death, false);
 
+		DetachFromControllerPendingDestroy();
+		current_cell_ = nullptr;
+
+		SetLifeSpan(5.0f);
+
+
 		ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
 		if (GM)
