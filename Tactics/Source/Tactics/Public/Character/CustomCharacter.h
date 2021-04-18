@@ -71,6 +71,9 @@ protected:
 
 	FTimerHandle handle_;
 
+	void FinishAttack();
+	FTimerHandle AttackTimer;
+
 public:
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;

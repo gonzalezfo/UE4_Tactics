@@ -15,6 +15,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Actor.h"
 
+#include "TimerManager.h"
+
 
 // Sets default values
 ACustomCharacter::ACustomCharacter()
@@ -250,18 +252,28 @@ void ACustomCharacter::Attack(ACell* cell_)
 							rot = FRotator(0.0f, -90.0f, 0.0f);
 							tmp_char->mesh_->SetWorldRotation(rot);
 						}
-						mesh_->PlayAnimation(tmp_char->attack, false);
 						FVector Direction;
 						FHitResult Hit;
 
 						UGameplayStatics::ApplyPointDamage(tmp_char, 50.0f, Direction, Hit, PC, this, tmp_char->MeleeDamage);
 
 						Unselected();
+						mesh_->PlayAnimation(attack, false);
+						GetWorldTimerManager().SetTimer(AttackTimer, this, &ACustomCharacter::FinishAttack, 0.7f, false);
 					}
 				}
 			}
 		}
 	}
+}
+
+
+void ACustomCharacter::FinishAttack()
+{
+
+	mesh_->PlayAnimation(idle, true);
+
+	GetWorldTimerManager().ClearTimer(AttackTimer);
 }
 
 void ACustomCharacter::Defend()
