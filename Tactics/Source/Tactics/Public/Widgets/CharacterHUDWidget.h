@@ -18,7 +18,8 @@ enum SelectedAction
 	kSelectedAction_Attacking = 1		UMETA(DisplayName = "ATTACKING"),
 	kSelectedAction_Defending = 2		UMETA(DisplayName = "DEFENDING"),
 	kSelectedAction_EndTurn = 3			UMETA(DisplayName = "END TURN"),
-	kSelectedAction_None = 4			UMETA(DisplayName = "NONE"),
+	kSelectedAction_Heal = 4			UMETA(DisplayName = "HEAL"),
+	kSelectedAction_None = 5			UMETA(DisplayName = "NONE"),
 };
 
 /**
@@ -43,6 +44,9 @@ public:
 		void DefenseButtonClicked();
 
 	UFUNCTION()
+		void HealButtonClicked();
+
+	UFUNCTION()
 		void FinishTurnButtonClicked();
 
 	//Sets the text to the player name.
@@ -65,6 +69,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* DefenseButton;
+
+	UPROPERTY(meta = (BindWidget))
+		UButton* HealButton;
 
 	UPROPERTY(meta = (BindWidget))
 		UButton* FinishTurnButton;

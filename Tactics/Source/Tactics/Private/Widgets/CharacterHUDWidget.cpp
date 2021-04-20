@@ -33,6 +33,10 @@ void UCharacterHUDWidget::NativeConstruct()
 	{
 		DefenseButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::DefenseButtonClicked);
 	}
+	if (!HealButton->OnClicked.Contains(this, "HealButtonClicked"))
+	{
+		HealButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::HealButtonClicked);
+	}
 	if (!FinishTurnButton->OnClicked.Contains(this, "FinishTurnButtonClicked"))
 	{
 		FinishTurnButton->OnClicked.AddDynamic(this, &UCharacterHUDWidget::FinishTurnButtonClicked);
@@ -104,6 +108,13 @@ void UCharacterHUDWidget::DefenseButtonClicked()
 		pawn->Defend();
 		pawn->EndTurn();
 	}
+}
+
+void UCharacterHUDWidget::HealButtonClicked()
+{
+	PlayClickedButtonSound();
+
+	selected_action_ = kSelectedAction_Heal;
 }
 
 void UCharacterHUDWidget::FinishTurnButtonClicked()
