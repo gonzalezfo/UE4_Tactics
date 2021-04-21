@@ -14,6 +14,7 @@ class UHealthComponent;
 class UWidgetComponent;
 class USkeletalComponent;
 class UAnimationAsset;
+class UFloatingTextWidget;
 
 
 UENUM(BlueprintType)
@@ -61,11 +62,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera Properties")
 		UCameraComponent* CameraComp;
 
-	//Health component.
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
-		UHealthComponent* HealthComp;
-
-
 	//Movement time
 	float movement_time_;
 
@@ -75,6 +71,10 @@ protected:
 	FTimerHandle AttackTimer;
 
 public:
+	//Health component.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
+		UHealthComponent* HealthComp;
+
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;
 
@@ -140,13 +140,12 @@ public:
 
 
 	//Reference to the character HUD widget class.
-	UPROPERTY(EditAnywhere, Category = "References")
+	UPROPERTY(EditAnywhere, Category = "Widget")
 		TSubclassOf<UCharacterHUDWidget> HUDWidgetClass;
 
 	//Reference to the character HUD widget.
-	UPROPERTY(VisibleAnywhere, Category = "References")
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
 		UCharacterHUDWidget* HUDWidget;
-
 
 	//If the character has the turn available or not.
 	UPROPERTY(VisibleAnywhere, Category = "Team")

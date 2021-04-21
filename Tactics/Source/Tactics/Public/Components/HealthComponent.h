@@ -36,6 +36,8 @@ protected:
 
 public:	
 	float GetCurrentHealth() const;
+
+	float GetCurrentHealthPercentage();
 	
 	UPROPERTY(BlueprintAssignable, Category = "Events")
 		FOnHealthChangedSignature OnHealthChanged;

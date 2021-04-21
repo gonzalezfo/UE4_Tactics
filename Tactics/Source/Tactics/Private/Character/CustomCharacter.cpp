@@ -9,6 +9,8 @@
 #include "Components/HealthComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Core/CustomGameMode.h"
+#include "Widgets/FloatingTextWidget.h"
+
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -78,6 +80,14 @@ void ACustomCharacter::BeginPlay()
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &ACustomCharacter::OnHealthChanged);
+	
+	UFloatingTextWidget* FloatingText = Cast<UFloatingTextWidget>(this->WidgetComp->GetUserWidgetObject());
+	if (FloatingText)
+	{
+		FloatingText->InitOverheadHUDWidget(this);
+	}
+
+
 
 	//Sets the character state.
 	state_ = CharacterState::kCharacterState_Idle;

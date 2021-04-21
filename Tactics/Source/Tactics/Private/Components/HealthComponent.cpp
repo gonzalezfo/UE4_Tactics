@@ -6,10 +6,12 @@
 #include "Components/WidgetComponent.h"
 #include "Widgets/FloatingTextWidget.h"
 
+
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
 	MaxHealth = 100.0f;
+	CurrentHealth = MaxHealth;
 	bIsDead = false;
 }
 
@@ -26,7 +28,6 @@ void UHealthComponent::BeginPlay()
 		MyOwner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::HandleTakeAnyDamage);
 	}
 	
-	CurrentHealth = MaxHealth;
 }
 
 void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, const UDamageType * DamageType, AController * InstigatedBy, AActor * DamageCauser)
@@ -53,7 +54,7 @@ void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, 
 		}
 	}
 
-	//Floating Text
+	////Floating Text
 	UFloatingTextWidget* FloatingText = Cast<UFloatingTextWidget>(tmp->WidgetComp->GetUserWidgetObject());
 
 	if (FloatingText)
@@ -71,6 +72,11 @@ void UHealthComponent::HandleTakeAnyDamage(AActor * DamagedActor, float Damage, 
 float UHealthComponent::GetCurrentHealth() const
 {
 	return CurrentHealth;
+}
+
+float UHealthComponent::GetCurrentHealthPercentage()
+{
+	return CurrentHealth / MaxHealth;
 }
 
 void UHealthComponent::Regenerate(float RegAmount)
