@@ -793,6 +793,13 @@ void AGrid::HighlightAttackCells(TArray<ACell*> cell_array)
 	}
 }
 
+void AGrid::HighlightHealCells(TArray<ACell*> cell_array)
+{
+	for (auto c : cell_array) {
+		c->HighlightCell(CellMaterial::kCellMaterial_HealHighlight);
+	}
+}
+
 void AGrid::UnhighlightCells(TArray<ACell*> cell_array)
 {
 	for (auto c : cell_array) {

@@ -130,7 +130,7 @@ void UCharacterHUDWidget::HealButtonClicked()
 			ACell* cell_ = character_->GetCell();
 			if (cell_)
 			{
-				cell_->GetGridPointer()->HighlightAttackCells(character_->GetAttackCells());
+				cell_->GetGridPointer()->HighlightHealCells(character_->GetAttackCells());
 				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 			}
 		}

@@ -104,6 +104,7 @@ public:
 
 	void HighlightMoveCells(TArray<ACell*>);
 	void HighlightAttackCells(TArray<ACell*>);
+	void HighlightHealCells(TArray<ACell*>);
 	void UnhighlightCells(TArray<ACell*>);
 
 	ACell* GetCellByID(int id);

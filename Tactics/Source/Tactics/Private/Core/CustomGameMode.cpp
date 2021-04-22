@@ -156,3 +156,45 @@ bool ACustomGameMode::CheckForNextTurn() {
 	}
 	return false;
 }
+
+void ACustomGameMode::CheckVictoryCondition() 
+{
+	//DEFEAT CONDITION (assuming player is team 0)
+	bool defeat = true;
+
+	for (int i = 0; i < GameTeams[0].TeamMembers.Num(); ++i)
+	{
+		if (!GameTeams[0].TeamMembers[i]->bDied) {
+			defeat = false;
+			break;
+		}
+	}
+
+	if (defeat)
+	{
+		//DEFEAT
+		UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
+		return;
+	}
+
+	//VICTORY CONDITION (assuming player is team 0)
+	bool victory = true;
+
+	for (int i = 1; i < GameTeams.Num() && victory; ++i)
+	{
+		for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
+		{
+			if (!GameTeams[i].TeamMembers[j]->bDied) {
+				victory = false;
+				break;
+			}
+		}
+	}
+
+	if (victory)
+	{
+		//VICTORY
+		UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
+		return;
+	}
+}
