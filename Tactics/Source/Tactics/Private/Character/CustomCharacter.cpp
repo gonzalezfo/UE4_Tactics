@@ -320,6 +320,9 @@ void ACustomCharacter::StartTurn()
 	isDefending = false;
 	bHasAttackedThisTurn = false;
 	cells_moved_this_turn_ = 0;
+	HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 }
 
 
