@@ -725,7 +725,6 @@ void AGrid::SpawnCharacter() {
 			for (int spawn_cell = 0; spawn_cell < Spawns[spawn_idx].SpawnCells.Num(); spawn_cell++) {
 				//Set character position
 				FVector character_position = Spawns[spawn_idx].SpawnCells[spawn_cell]->GetActorLocation();
-				character_position.Z += 50.0f;
 				FRotator character_rotation = FRotator(0.0f);
 
 				//Spawn character and set it.
