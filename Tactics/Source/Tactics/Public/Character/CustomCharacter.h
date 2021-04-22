@@ -187,7 +187,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animations")
 	UAnimationAsset* death;
 
-
+	bool bHasAttackedThisTurn;
 
 private:
 	//The material of the character.

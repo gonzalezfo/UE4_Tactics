@@ -8,6 +8,8 @@
 #include "Widgets/CharacterHUDWidget.h"
 #include "Components/HealthComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Components/Button.h"
+
 #include "Core/CustomGameMode.h"
 #include "Widgets/FloatingTextWidget.h"
 
@@ -88,6 +90,7 @@ void ACustomCharacter::BeginPlay()
 	}
 
 
+	bHasAttackedThisTurn = false;
 
 	//Sets the character state.
 	state_ = CharacterState::kCharacterState_Idle;
@@ -280,8 +283,14 @@ void ACustomCharacter::Attack(ACell* cell_)
 
 void ACustomCharacter::FinishAttack()
 {
-
 	mesh_->PlayAnimation(idle, true);
+
+	if (bHasAttackedThisTurn)
+	{
+		HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+		HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+		HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+	}
 
 	GetWorldTimerManager().ClearTimer(AttackTimer);
 }
@@ -309,6 +318,7 @@ void ACustomCharacter::StartTurn()
 {
 	TurnAvailable = true;
 	isDefending = false;
+	bHasAttackedThisTurn = false;
 	cells_moved_this_turn_ = 0;
 }
 

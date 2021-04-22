@@ -57,7 +57,7 @@ void UCharacterHUDWidget::AttackButtonClicked()
 	{
 		ACustomCharacter* character_ = pawn->GetCharacter();
 
-		if (character_)
+		if (character_ && !character_->bHasAttackedThisTurn && !character_->isDefending)
 		{
 			ACell* cell_ = character_->GetCell();
 			if (cell_)
@@ -82,7 +82,7 @@ void UCharacterHUDWidget::MoveButtonClicked()
 	{
 		ACustomCharacter* character_ = pawn->GetCharacter();
 
-		if (character_)
+		if (character_ && !character_->isDefending)
 		{
 			ACell* cell_ = character_->GetCell();
 			if (cell_)
@@ -105,8 +105,12 @@ void UCharacterHUDWidget::DefenseButtonClicked()
 
 	if (pawn)
 	{
-		pawn->Defend();
-		pawn->EndTurn();
+		ACustomCharacter* character_ = pawn->GetCharacter();
+		if (character_ && !character_->bHasAttackedThisTurn)
+		{
+			pawn->Defend();
+			pawn->EndTurn();
+		}
 	}
 }
 

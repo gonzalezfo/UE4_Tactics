@@ -254,12 +254,13 @@ void ACameraPawn::Attack()
 	{
 		character_->Attack(cell_);
 		ResetCellSelection();
+		character_->bHasAttackedThisTurn = true;
 	}
 }
 
 void ACameraPawn::Defend()
 {
-	if (character_)
+	if (character_ )
 	{
 		character_->Defend();
 	}

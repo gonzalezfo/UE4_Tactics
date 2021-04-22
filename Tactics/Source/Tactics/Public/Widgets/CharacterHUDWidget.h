@@ -7,7 +7,6 @@
 #include "CharacterHUDWidget.generated.h"
 
 class ACustomCharacter;
-
 class UTextBlock;
 class UButton;
 
@@ -57,7 +56,6 @@ public:
 
 	SelectedAction selected_action_;
 
-protected:
 	UPROPERTY(meta = (BindWidget))
 		UTextBlock* CharacterName;
 
@@ -76,6 +74,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		UButton* FinishTurnButton;
 
+protected:
 	UFUNCTION()
 		void PlayClickedButtonSound();
 };
