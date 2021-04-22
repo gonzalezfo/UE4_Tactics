@@ -93,6 +93,7 @@ public:
 
 	void Attack(ACell* cell_);
 	void Defend();
+	void Heal(ACell* cell_);
 	void EndTurn();
 
 	//Getters

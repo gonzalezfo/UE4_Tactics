@@ -266,6 +266,15 @@ void ACameraPawn::Defend()
 	}
 }
 
+void ACameraPawn::Heal()
+{
+	if (character_)
+	{
+		character_->Heal(cell_);
+		ResetCellSelection();
+	}
+}
+
 void ACameraPawn::EndTurn() 
 {
 	if (character_)
@@ -352,7 +361,13 @@ void ACameraPawn::DoCharacterAction()
 				Defend();
 			}
 			break;
-
+		case kSelectedAction_Heal:
+			SelectCell();
+			if (CheckCellSelected())
+			{
+				Heal();
+			}
+			break;
 		case kSelectedAction_EndTurn:
 			if (character_)
 			{

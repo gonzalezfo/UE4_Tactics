@@ -66,7 +66,6 @@ void UCharacterHUDWidget::AttackButtonClicked()
 				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 			}
 		}
-
 	}
 }
 
@@ -119,6 +118,23 @@ void UCharacterHUDWidget::HealButtonClicked()
 	PlayClickedButtonSound();
 
 	selected_action_ = kSelectedAction_Heal;
+
+	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+	if (pawn)
+	{
+		ACustomCharacter* character_ = pawn->GetCharacter();
+
+		if (character_ && !character_->isDefending)
+		{
+			ACell* cell_ = character_->GetCell();
+			if (cell_)
+			{
+				cell_->GetGridPointer()->HighlightAttackCells(character_->GetAttackCells());
+				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+			}
+		}
+	}
 }
 
 void UCharacterHUDWidget::FinishTurnButtonClicked()

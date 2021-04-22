@@ -2,12 +2,17 @@
 
 
 #include "Widgets/FloatingTextWidget.h"
+
+#include "Character/CustomCharacter.h"
+
 #include "Components/TextBlock.h"
 #include "Components/ProgressBar.h"
-#include "Character/CustomCharacter.h"
-#include "Kismet/GameplayStatics.h"
 #include "Components/HealthComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
+//#include "Styling/SlateColor.h"
+//#include "Math/Color.h"
 
 void UFloatingTextWidget::NativeConstruct()
 {
@@ -38,6 +43,16 @@ void UFloatingTextWidget::UpdateHealthBar(UHealthComponent* OwningHealthComp, fl
 
 void UFloatingTextWidget::DoFloatingText(float damage)
 {
-	FloatingText->SetText(FText::AsNumber(damage));
+	if (damage < 0.0f)
+	{
+		//It gives a link error when I try to do this.
+		//FloatingText->SetColorAndOpacity(FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f, 1.0f)));
+		FloatingText->SetText(FText::AsNumber(damage * -1.0f));
+	}
+	else
+	{
+		FloatingText->SetText(FText::AsNumber(damage));
+	}
+	
 	PlayAnimation(Fade);
 }

@@ -56,6 +56,7 @@ public:
 	void MoveCharacterToCell();
 	void Attack();
 	void Defend();
+	void Heal();
 	void EndTurn();
 
 	void ResetSelection();

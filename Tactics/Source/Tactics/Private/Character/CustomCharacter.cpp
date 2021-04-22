@@ -302,6 +302,65 @@ void ACustomCharacter::Defend()
 
 }
 
+void ACustomCharacter::Heal(ACell* cell_)
+{
+	ACell* character_cell = GetCell();
+
+	if (character_cell)
+	{
+		AGrid* grid_ = character_cell->GetGridPointer();
+		if (grid_)
+		{
+			int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
+			if (distance_to_cell <= 2)
+			{
+				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
+				if (tmp_char)
+				{
+					if (!tmp_char->bDied) {
+						if (character_cell->GetGridPointer()->North(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, 0.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->South(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, 0.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, -180.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->East(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, -90.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, 90.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						else if (character_cell->GetGridPointer()->West(character_cell) == cell_->GetID())
+						{
+							FRotator rot = FRotator(0.0f, 90.0f, 0.0f);
+							mesh_->SetWorldRotation(rot);
+							rot = FRotator(0.0f, -90.0f, 0.0f);
+							tmp_char->mesh_->SetWorldRotation(rot);
+						}
+						FVector Direction;
+						FHitResult Hit;
+
+						UGameplayStatics::ApplyPointDamage(tmp_char, -50.0f, Direction, Hit, PC, this, tmp_char->MeleeDamage);
+
+						Unselected();
+						//mesh_->PlayAnimation(attack, false);
+						//GetWorldTimerManager().SetTimer(AttackTimer, this, &ACustomCharacter::FinishAttack, 0.7f, false);
+					}
+				}
+			}
+		}
+	}
+}
+
 void ACustomCharacter::EndTurn()
 {
 	TurnAvailable = false;
