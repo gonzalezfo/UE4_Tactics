@@ -181,7 +181,7 @@ void ACameraPawn::SelectCharacter()
 
 	if (cchar)
 	{
-		if (cchar->TurnAvailable) {
+		if (cchar->bTurnAvailable) {
 			character_ = cchar;
 			character_->Selected();
 			character_->SetCameraPointer(this);
@@ -198,7 +198,7 @@ void ACameraPawn::SelectCharacter()
 
 		if (cchar) 
 		{
-			if (cchar->TurnAvailable) {
+			if (cchar->bTurnAvailable) {
 				character_ = cchar;
 				character_->Selected();
 				character_->SetCameraPointer(this);

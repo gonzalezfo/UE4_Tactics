@@ -96,6 +96,9 @@ public:
 	void Heal(ACell* cell_);
 	void EndTurn();
 
+	//Change bDied Bool to false, turn aviability to false and remove pointers from grid and team;
+	void Die();
+
 	//Getters
 	//Gets an array of the selectable cells of the player with a certain range.
 	TArray<ACell*> GetMovableCells();
@@ -150,7 +153,7 @@ public:
 
 	//If the character has the turn available or not.
 	UPROPERTY(VisibleAnywhere, Category = "Team")
-		bool TurnAvailable;
+		bool bTurnAvailable;
 
 	//If the character is dead or not.
 	UPROPERTY(BlueprintReadOnly, Category = "Health Properties")

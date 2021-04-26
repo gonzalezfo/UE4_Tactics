@@ -143,7 +143,7 @@ bool ACustomGameMode::CheckForNextTurn() {
 		if (PlayerController->IsMyTurn() && GameTeams[CurrentTeamTurn].bFinishedTurn == false) {
 			bool finished_players_turn = true;
 			for (int c_idx = 0; c_idx < GameTeams[CurrentTeamTurn].TeamMembers.Num(); c_idx++) {
-				if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->TurnAvailable == true) {
+				if ((GameTeams[CurrentTeamTurn].TeamMembers[c_idx])->bTurnAvailable == true) {
 					finished_players_turn = false;
 				}
 			}

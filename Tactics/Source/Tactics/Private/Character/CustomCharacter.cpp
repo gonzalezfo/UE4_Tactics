@@ -363,7 +363,7 @@ void ACustomCharacter::Heal(ACell* cell_)
 
 void ACustomCharacter::EndTurn()
 {
-	TurnAvailable = false;
+	bTurnAvailable = false;
 
 	Unselected();
 
@@ -373,9 +373,30 @@ void ACustomCharacter::EndTurn()
 	GetWorldTimerManager().SetTimer(handle_, this, &ACustomCharacter::ReturnToMainCamera, 0.3f, false);
 }
 
+void ACustomCharacter::Die() {
+	bDied = true;
+	bTurnAvailable = false;
+
+	current_cell_->SetCharacterPointer(nullptr);
+
+	//Remove Pointer fromm team.
+	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM) {
+		for (int t_idx = 0; t_idx < GM->GameTeams.Num(); t_idx++) {
+			if (GM->GameTeams[t_idx].TeamId == GetCharacterTeam()) {
+				GM->GameTeams[t_idx].TeamMembers.Remove(this);
+				if (GM->GameTeams[t_idx].TeamAIController != nullptr) {
+					GM->GameTeams[t_idx].TeamAIController->AITeamCharacters.Remove(this);
+				}
+			}
+		}
+	}
+}
+
 void ACustomCharacter::StartTurn()
 {
-	TurnAvailable = true;
+	bTurnAvailable = true;
 	isDefending = false;
 	bHasAttackedThisTurn = false;
 	cells_moved_this_turn_ = 0;
@@ -539,7 +560,7 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 {
 	if (CurrentHealth <= 0.0f && !bDied)
 	{
-		bDied = true;
+		Die();
 		mesh_->PlayAnimation(death, false);
 
 		DetachFromControllerPendingDestroy();
@@ -563,5 +584,5 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 
 
 void ACustomCharacter::EndCharacterTurn() {
-	TurnAvailable = false;
+	bTurnAvailable = false;
 }

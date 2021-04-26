@@ -19,7 +19,7 @@ void ACustomAIController::SetCharacterRandomMovement() {
 			int value = FMath::RandRange(0, selectable_cells.Num() - 1);
 			Grid->MoveCharacterToCell(SelectedCharacter, selectable_cells[value]);
 
-			SelectedCharacter->TurnAvailable = false;
+			SelectedCharacter->bTurnAvailable = false;
 			SelectedCharacter->mesh_->PlayAnimation(SelectedCharacter->walk, true);
 
 			GetWorldTimerManager().SetTimer(TimerHandle, this, &ACustomAIController::SetNextCharacterForMovement, 2.0f, false);
@@ -35,7 +35,7 @@ void ACustomAIController::SetNextCharacterForMovement() {
 	SelectedCharacter = nullptr;
 
 	for (int c_idx = 0; c_idx < AITeamCharacters.Num(); c_idx++) {
-		if (AITeamCharacters[c_idx]->TurnAvailable && SelectedCharacter == nullptr) {
+		if (AITeamCharacters[c_idx]->bTurnAvailable && SelectedCharacter == nullptr) {
 			SelectedCharacter = AITeamCharacters[c_idx];
 		}
 	}
