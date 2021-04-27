@@ -33,7 +33,7 @@ ACustomCharacter::ACustomCharacter()
 	isDefending = false;
 	movement_time_ = 0.0f;
 
-	mesh_ = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Character Mesh Component"));
+	mesh_ = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComp"));
 	SetRootComponent(mesh_);
 	
 	CameraComp = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComp"));
