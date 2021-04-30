@@ -240,8 +240,8 @@ void ACameraPawn::MoveCharacterToCell()
 			if (grid)
 			{
 				character_->Unselected();
+				character_->mesh_->PlayAnimation(character_->walk, true);
 				grid->MoveCharacterToCell(character_, cell_);
-
 				ResetCellSelection();
 			}
 		}
@@ -344,7 +344,6 @@ void ACameraPawn::DoCharacterAction()
 			SelectCell();
 			if (CheckCellSelected()) 
 			{
-				character_->mesh_->PlayAnimation(character_->walk, true);
 				MoveCharacterToCell();
 			}
 			break;

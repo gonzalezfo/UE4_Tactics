@@ -167,6 +167,8 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 		ACell* tmp = path_cells_.Top();
 
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+
 		if (current_cell_->GetGridPointer()->North(current_cell_) == tmp->GetID())
 		{
 			FRotator rot = FRotator(0.0f, -180.0f, 0.0f);
@@ -211,6 +213,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
 					}
+					HUDWidget->SetVisibility(ESlateVisibility::Visible);
 					mesh_->PlayAnimation(idle, true);
 				}
 			}
