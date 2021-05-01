@@ -70,7 +70,7 @@ void ACustomCharacter::BeginPlay()
 	PC = Cast<APlayerController>(GetController());
 
 	//Adds the HUD Widget to Viewport.
-	if (HUDWidgetClass)
+	if (HUDWidgetClass && TeamNum == 0)
 	{
 		HUDWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), HUDWidgetClass);
 
@@ -167,7 +167,10 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 
 		ACell* tmp = path_cells_.Top();
 
-		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+		if (HUDWidget && TeamNum == 0)
+		{
+			HUDWidget->SetVisibility(ESlateVisibility::Hidden);
+		}
 
 		if (current_cell_->GetGridPointer()->North(current_cell_) == tmp->GetID())
 		{
@@ -213,7 +216,10 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 					{
 						state_ = CharacterState::kCharacterState_FinishMovement;
 					}
-					HUDWidget->SetVisibility(ESlateVisibility::Visible);
+					if (HUDWidget && TeamNum == 0)
+					{
+						HUDWidget->SetVisibility(ESlateVisibility::Visible);
+					}
 					mesh_->PlayAnimation(idle, true);
 				}
 			}

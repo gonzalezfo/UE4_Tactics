@@ -177,19 +177,22 @@ public:
 
 	//Animations
 	UPROPERTY(EditAnywhere, Category = "Animations")
-	UAnimationAsset* idle;
+		UAnimationAsset* idle;
 
 	UPROPERTY(EditAnywhere, Category = "Animations")
-	UAnimationAsset* attack;
+		UAnimationAsset* attack;
 	
 	UPROPERTY(EditAnywhere, Category = "Animations")
-	UAnimationAsset* defense;
+		UAnimationAsset* defense;
 	
 	UPROPERTY(EditAnywhere, Category = "Animations")
-	UAnimationAsset* walk;
+		UAnimationAsset* walk;
 	
 	UPROPERTY(EditAnywhere, Category = "Animations")
-	UAnimationAsset* death;
+		UAnimationAsset* death;
+
+	UPROPERTY(EditAnywhere, Category = "Animations")
+		UAnimationAsset* victory;
 
 	bool bHasAttackedThisTurn;
 

@@ -174,6 +174,17 @@ void ACustomGameMode::CheckVictoryCondition()
 	{
 		//DEFEAT
 		UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
+
+		for (int i = 1; i < GameTeams.Num(); ++i)
+		{
+			for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
+			{
+				if (!GameTeams[i].TeamMembers[j]->bDied) {
+					GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[0].TeamMembers[i]->victory, false);
+				}
+			}
+		}
+
 		return;
 	}
 
@@ -195,6 +206,14 @@ void ACustomGameMode::CheckVictoryCondition()
 	{
 		//VICTORY
 		UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
+
+		for (int i = 0; i < GameTeams[0].TeamMembers.Num(); ++i)
+		{
+			if (!GameTeams[0].TeamMembers[i]->bDied) {
+				GameTeams[0].TeamMembers[i]->mesh_->PlayAnimation(GameTeams[0].TeamMembers[i]->victory, false);
+			}
+		}
+
 		return;
 	}
 }
