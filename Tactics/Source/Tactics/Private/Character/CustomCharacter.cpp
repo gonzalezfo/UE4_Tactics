@@ -409,9 +409,13 @@ void ACustomCharacter::StartTurn()
 	isDefending = false;
 	bHasAttackedThisTurn = false;
 	cells_moved_this_turn_ = 0;
-	HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-	HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-	HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+
+	if (HUDWidget)
+	{
+		HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	}
 }
 
 
@@ -505,9 +509,13 @@ TArray<ACell*> ACustomCharacter::GetAttackCells()
 void ACustomCharacter::Selected()
 {
 	//Makes the HUD visible and sets the character name
-	HUDWidget->current_character_ = this;
-	HUDWidget->SetCharacterName(name_);
-	HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	if (HUDWidget)
+	{
+		HUDWidget->current_character_ = this;
+		HUDWidget->SetCharacterName(name_);
+		HUDWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	
 	mesh_->PlayAnimation(idle, true);
 
 

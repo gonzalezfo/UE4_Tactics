@@ -4,6 +4,7 @@
 #include "Grid/Grid.h"
 #include "Character/CustomCharacter.h"
 #include "Core/SoundManager.h"
+#include "Widgets/VictoryOrDefeatWidget.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Engine/Engine.h"
@@ -28,6 +29,11 @@ void ACustomGameMode::BeginPlay()
 	if (GameGrid != nullptr) {
 		GameGrid->Init();
 		SetGameTeamsFromGridSpawns(GameGrid);
+	}
+
+	if (VictoryOrDefeatWidgetClass)
+	{
+		VictoryOrDefeatWidget = CreateWidget<UVictoryOrDefeatWidget>(GetWorld(), VictoryOrDefeatWidgetClass);
 	}
 
 	FActorSpawnParameters SpawnParams;
@@ -175,6 +181,12 @@ void ACustomGameMode::CheckVictoryCondition()
 		//DEFEAT
 		UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
 
+		if (VictoryOrDefeatWidget)
+		{
+			VictoryOrDefeatWidget->AddToViewport();
+			VictoryOrDefeatWidget->InitWidget(false);
+		}
+
 		for (int i = 1; i < GameTeams.Num(); ++i)
 		{
 			for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
@@ -206,6 +218,12 @@ void ACustomGameMode::CheckVictoryCondition()
 	{
 		//VICTORY
 		UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
+
+		if (VictoryOrDefeatWidget)
+		{
+			VictoryOrDefeatWidget->AddToViewport();
+			VictoryOrDefeatWidget->InitWidget(true);
+		}
 
 		for (int i = 0; i < GameTeams[0].TeamMembers.Num(); ++i)
 		{
