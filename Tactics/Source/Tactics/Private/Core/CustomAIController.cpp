@@ -1,12 +1,19 @@
 #include "Core/CustomAIController.h"
 
 #include "CameraPawn/CameraPawn.h"
+#include "Components/FSMComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 
 void ACustomAIController::BeginTurn() {
-	SetNextCharacterForMovement();
 	bIsMyTurn = true;
+
+	for (int c_idx = 0; c_idx < AITeamCharacters.Num(); c_idx++) {
+		AITeamCharacters[c_idx]->FiniteStateMachineComponent->BeginTurn();
+		AITeamCharacters[c_idx]->FiniteStateMachineComponent->UpdateCharacterState();
+		AITeamCharacters[c_idx]->FiniteStateMachineComponent->SetGrid(Grid);
+	}
+	SetNextCharacterForAction();
 }
 
 void ACustomAIController::SetCharacterRandomMovement() {
@@ -14,21 +21,13 @@ void ACustomAIController::SetCharacterRandomMovement() {
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 
 	if (SelectedCharacter != nullptr) {
-		TArray<ACell*> selectable_cells = SelectedCharacter->GetMovableCells();
-		if (selectable_cells.Num() > 0 && Grid != nullptr) {
-			int value = FMath::RandRange(0, selectable_cells.Num() - 1);
-			Grid->MoveCharacterToCell(SelectedCharacter, selectable_cells[value]);
-
-			SelectedCharacter->bTurnAvailable = false;
-			SelectedCharacter->mesh_->PlayAnimation(SelectedCharacter->walk, true);
-
-			GetWorldTimerManager().SetTimer(TimerHandle, this, &ACustomAIController::SetNextCharacterForMovement, 2.0f, false);
-		}
+		SelectedCharacter->FiniteStateMachineComponent->CharacterAction();
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &ACustomAIController::SetNextCharacterForAction, 2.0f, false);
 	}
 }
 
 
-void ACustomAIController::SetNextCharacterForMovement() {
+void ACustomAIController::SetNextCharacterForAction() {
 
 	GetWorldTimerManager().ClearTimer(TimerHandle);
 
@@ -39,6 +38,8 @@ void ACustomAIController::SetNextCharacterForMovement() {
 			SelectedCharacter = AITeamCharacters[c_idx];
 		}
 	}
+
+	SetCharacterTarget();
 
 	APlayerController* player_controller = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	if (player_controller) {
@@ -59,4 +60,35 @@ void ACustomAIController::EndTurn() {
 
 bool ACustomAIController::IsMyTurn() {
 	return bIsMyTurn;
+}
+
+void ACustomAIController::SetCharacterTarget() {
+
+	int distance = Grid->Cells.Num();
+	TArray<ACell*> neighbours;
+	TArray<ACell*> path;
+	ACell* target_cell = nullptr;
+	ACustomCharacter* target_character = nullptr;
+
+	if (SelectedCharacter != nullptr && OtherTeamsCharacters.Num() > 0) {
+		for (int c_idx = 0; c_idx < OtherTeamsCharacters.Num(); ++c_idx) {
+			if (OtherTeamsCharacters[c_idx] != nullptr) {
+				neighbours = OtherTeamsCharacters[c_idx]->GetCell()->GetNeighbours();
+				for (int n_idx = 0; n_idx < neighbours.Num(); ++n_idx) {
+					path = Grid->FindPath(SelectedCharacter->GetCell(), neighbours[n_idx]);
+					if (path.Num() != 0) {
+						if (path.Num() < distance) {
+							distance = path.Num();
+							target_cell = neighbours[n_idx];
+							target_character = OtherTeamsCharacters[c_idx];
+						}
+					}
+				}
+			}
+		}
+		if (target_cell && target_character) {
+			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetCell(target_cell);
+			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetCharacter(target_character);
+		}
+	}	
 }

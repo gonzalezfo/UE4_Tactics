@@ -20,6 +20,9 @@ public:
 		TArray<ACustomCharacter*> AITeamCharacters;
 
 	UPROPERTY(VisibleAnywhere)
+		TArray<ACustomCharacter*> OtherTeamsCharacters;
+
+	UPROPERTY(VisibleAnywhere)
 		ACameraPawn* CameraPawn;
 
 	UPROPERTY(VisibleAnywhere)
@@ -33,7 +36,7 @@ protected:
 
 	void SetCharacterRandomMovement();
 
-	void SetNextCharacterForMovement();
+	void SetNextCharacterForAction();
 
 	void EndTurn();
 
@@ -45,5 +48,7 @@ private:
 	FTimerHandle TimerHandle;
 
 	bool bIsMyTurn;
+
+	void SetCharacterTarget();
 
 };

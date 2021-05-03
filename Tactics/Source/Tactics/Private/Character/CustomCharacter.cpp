@@ -7,12 +7,12 @@
 #include "CameraPawn/CameraPawn.h"
 #include "Widgets/CharacterHUDWidget.h"
 #include "Components/HealthComponent.h"
+#include "Components/FSMComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/Button.h"
 
 #include "Core/CustomGameMode.h"
 #include "Widgets/FloatingTextWidget.h"
-
 
 #include "Components/SkeletalMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -40,6 +40,8 @@ ACustomCharacter::ACustomCharacter()
 	CameraComp->SetupAttachment(mesh_);
 
 	HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComp"));
+
+	FiniteStateMachineComponent = CreateDefaultSubobject<UFSMComponent>(TEXT("FSMComp"));
 
 	WidgetComp = CreateDefaultSubobject<UWidgetComponent>(TEXT("WidgetComp"));
 	WidgetComp->SetupAttachment(CameraComp);
@@ -69,16 +71,12 @@ void ACustomCharacter::BeginPlay()
 
 	PC = Cast<APlayerController>(GetController());
 
-	//Adds the HUD Widget to Viewport.
-	if (HUDWidgetClass && TeamNum == 0)
-	{
-		HUDWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), HUDWidgetClass);
+	HUDWidget = CreateWidget<UCharacterHUDWidget>(GetWorld(), HUDWidgetClass);
 
-		if (HUDWidget)
-		{
-			HUDWidget->AddToViewport();
-			HUDWidget->SetVisibility(ESlateVisibility::Hidden);
-		}
+	if (HUDWidget)
+	{
+		HUDWidget->AddToViewport();
+		HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 	}
 
 	HealthComp->OnHealthChanged.AddDynamic(this, &ACustomCharacter::OnHealthChanged);
@@ -409,9 +407,11 @@ void ACustomCharacter::StartTurn()
 	isDefending = false;
 	bHasAttackedThisTurn = false;
 	cells_moved_this_turn_ = 0;
-	HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-	HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-	HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	if (HUDWidget) {
+		HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+	}
 }
 
 
@@ -572,22 +572,9 @@ void ACustomCharacter::OnHealthChanged(UHealthComponent * OwningHealthComp, floa
 		Die();
 		mesh_->PlayAnimation(death, false);
 
-		DetachFromControllerPendingDestroy();
-		current_cell_ = nullptr;
-
-		SetLifeSpan(5.0f);
-
-
-		ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-
-		if (GM)
-		{
-			GM->CheckVictoryCondition();
-		}
-
 		//DetachFromControllerPendingDestroy();
 
-		//SetLifeSpan(5.0f);
+		SetLifeSpan(5.0f);
 	}
 }
 
