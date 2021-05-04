@@ -107,18 +107,15 @@ FVector ACameraPawn::GetCameraPanDirection()
 	{
 		CamDirectionY = -1;
 	}
-
-	if (MousePosY <= Margin)
+	else if (MousePosY <= Margin)
 	{
 		CamDirectionX = 1;
 	}
-
-	if (MousePosX >= ScreenSizeX - Margin)
+	else if (MousePosX >= ScreenSizeX - Margin)
 	{
 		CamDirectionY = 1;
 	}
-
-	if (MousePosY >= ScreenSizeY - Margin)
+	else if (MousePosY >= ScreenSizeY - Margin)
 	{
 		CamDirectionX = -1;
 	}
