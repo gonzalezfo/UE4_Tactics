@@ -13,6 +13,7 @@ class APlayerController;
 class ACustomCharacter;
 class ACell;
 class AGrid;
+class UVictoryOrDefeatWidget;
 
 
 UCLASS()
@@ -68,6 +69,14 @@ public:
 	void DoCharacterAction();
 
 	ACustomCharacter* GetCharacter();
+
+	//Reference to the character VictoryOrDefeat widget class.
+	UPROPERTY(EditAnywhere, Category = "Widget")
+		TSubclassOf<UVictoryOrDefeatWidget> VictoryOrDefeatWidgetClass;
+
+	//Reference to the character VictoryOrDefeat widget.
+	UPROPERTY(VisibleAnywhere, Category = "Widget")
+		UVictoryOrDefeatWidget* VictoryOrDefeatWidget;
 
 protected:
 	// References to classes and components

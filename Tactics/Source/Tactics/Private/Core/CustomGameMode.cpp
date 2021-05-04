@@ -31,11 +31,6 @@ void ACustomGameMode::BeginPlay()
 		SetGameTeamsFromGridSpawns(GameGrid);
 	}
 
-	if (VictoryOrDefeatWidgetClass)
-	{
-		VictoryOrDefeatWidget = CreateWidget<UVictoryOrDefeatWidget>(GetWorld(), VictoryOrDefeatWidgetClass);
-	}
-
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;	
 
@@ -222,10 +217,10 @@ void ACustomGameMode::CheckVictoryCondition()
 		//DEFEAT
 		UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
     
-		if (VictoryOrDefeatWidget)
+		if (GridCamera->VictoryOrDefeatWidget && !GridCamera->VictoryOrDefeatWidget->IsInViewport())
 		{
-			VictoryOrDefeatWidget->AddToViewport();
-			VictoryOrDefeatWidget->InitWidget(false);
+			GridCamera->VictoryOrDefeatWidget->AddToViewport();
+			GridCamera->VictoryOrDefeatWidget->InitWidget(false);
 		}
 
 		for (int i = 0; i < GameTeams.Num(); ++i) {
@@ -259,10 +254,10 @@ void ACustomGameMode::CheckVictoryCondition()
 		//VICTORY
 		UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
 
-		if (VictoryOrDefeatWidget)
+		if (GridCamera->VictoryOrDefeatWidget && !GridCamera->VictoryOrDefeatWidget->IsInViewport())
 		{
-			VictoryOrDefeatWidget->AddToViewport();
-			VictoryOrDefeatWidget->InitWidget(true);
+			GridCamera->VictoryOrDefeatWidget->AddToViewport();
+			GridCamera->VictoryOrDefeatWidget->InitWidget(true);
 		}
 
 		for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)

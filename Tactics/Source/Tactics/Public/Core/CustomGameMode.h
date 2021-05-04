@@ -13,7 +13,6 @@
 #include "CustomGameMode.generated.h"
 
 class ASoundManager;
-class UVictoryOrDefeatWidget;
 
 
 //TODO: Put this in a Class and maybe use them to build the spawns of the Grid later.
@@ -87,13 +86,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		TArray<ACustomAIController*> GameAIPlayers;
 
-	//Reference to the character VictoryOrDefeat widget class.
-	UPROPERTY(EditAnywhere, Category = "Widget")
-		TSubclassOf<UVictoryOrDefeatWidget> VictoryOrDefeatWidgetClass;
-
-	//Reference to the character VictoryOrDefeat widget.
-	UPROPERTY(VisibleAnywhere, Category = "Widget")
-		UVictoryOrDefeatWidget* VictoryOrDefeatWidget;
+	
 
 
 	UFUNCTION()

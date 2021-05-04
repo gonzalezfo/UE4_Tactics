@@ -6,6 +6,7 @@
 #include "Grid/Cell.h"
 #include "Character/CustomCharacter.h"
 #include "Widgets/CharacterHUDWidget.h"
+#include "Widgets/VictoryOrDefeatWidget.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -69,6 +70,11 @@ void ACameraPawn::BeginPlay()
 	}
 
 	SetActorLocation(FVector(tmp_size.X / 2, tmp_size.Y / 2, 720.0f));
+
+	if (VictoryOrDefeatWidgetClass)
+	{
+		VictoryOrDefeatWidget = CreateWidget<UVictoryOrDefeatWidget>(GetWorld(), VictoryOrDefeatWidgetClass);
+	}
 }
 
 // Called every frame

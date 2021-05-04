@@ -6,6 +6,8 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
+#include "Kismet/GameplayStatics.h"
+
 void UVictoryOrDefeatWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -26,6 +28,8 @@ void UVictoryOrDefeatWidget::NativeConstruct()
 
 void UVictoryOrDefeatWidget::InitWidget(bool victory)
 {
+	PlayAnimation(Fade);
+
 	if (victory)
 	{
 		VictoryOrDefeatText->SetText(FText::FromString("Victory"));
@@ -33,13 +37,11 @@ void UVictoryOrDefeatWidget::InitWidget(bool victory)
 	}
 
 	VictoryOrDefeatText->SetText(FText::FromString("Defeat"));
-
-	PlayAnimation(Fade);
 }
 
 void UVictoryOrDefeatWidget::NextLevelButtonClicked()
 {
-
+	UGameplayStatics::OpenLevel(GetWorld(), "MainMap");
 }
 
 void UVictoryOrDefeatWidget::RetryButtonClicked()
@@ -49,5 +51,5 @@ void UVictoryOrDefeatWidget::RetryButtonClicked()
 
 void UVictoryOrDefeatWidget::ExitButtonClicked()
 {
-
+	UGameplayStatics::OpenLevel(GetWorld(), "MainMenu");
 }
