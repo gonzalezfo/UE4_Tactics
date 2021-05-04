@@ -230,8 +230,9 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 void ACustomCharacter::Attack(ACell* cell_)
 {
 	ACell* character_cell = GetCell();
+	ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
 
-	if (character_cell && !bHasAttackedThisTurn && !bHasHealedThisTurn)
+	if (character_cell && !bHasAttackedThisTurn && !bHasHealedThisTurn && GetCharacterTeam() != tmp_char->GetCharacterTeam())
 	{
 		AGrid* grid_ = character_cell->GetGridPointer();
 		if (grid_)
@@ -240,7 +241,6 @@ void ACustomCharacter::Attack(ACell* cell_)
 			int distance_to_cell = grid_->CalculateManhattanDistance(character_cell, cell_);
 			if (distance_to_cell <= 2)
 			{
-				ACustomCharacter* tmp_char = cell_->GetCharacterPointer();
 				if (tmp_char)
 				{
 					if (!tmp_char->bDied) {

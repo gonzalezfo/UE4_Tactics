@@ -101,6 +101,7 @@ void UCharacterHUDWidget::MoveButtonClicked()
 
 	ACameraPawn* pawn = Cast<ACameraPawn>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 
+
 	if (pawn)
 	{
 		ACustomCharacter* character_ = pawn->GetCharacter();
@@ -110,6 +111,7 @@ void UCharacterHUDWidget::MoveButtonClicked()
 			ACell* cell_ = character_->GetCell();
 			if (cell_)
 			{
+				cell_->GetGridPointer()->UnhighlightCells(character_->GetAttackCells());
 				cell_->GetGridPointer()->HighlightMoveCells(character_->GetMovableCells());
 				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 			}
