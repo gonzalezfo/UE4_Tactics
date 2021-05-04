@@ -11,8 +11,8 @@
 
 #include "Kismet/GameplayStatics.h"
 
-//#include "Styling/SlateColor.h"
-//#include "Math/Color.h"
+#include "Styling/SlateColor.h"
+#include "Math/Color.h"
 
 void UFloatingTextWidget::NativeConstruct()
 {
