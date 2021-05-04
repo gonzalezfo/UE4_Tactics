@@ -118,6 +118,7 @@ void UFSMComponent::Chase() {
 		}
 
 		if(target_cell != nullptr) game_grid_->MoveCharacterToCell(owner_, target_cell);
+		owner_->mesh_->PlayAnimation(owner_->walk, true);
 	}	
 }
 
