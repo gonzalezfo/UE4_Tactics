@@ -94,6 +94,9 @@ private:
 		UStaticMeshComponent* CellMeshComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Cell")
+		UStaticMeshComponent* RockMeshComponent;
+
+	UPROPERTY(EditAnywhere, Category = "Cell")
 		TArray<UMaterial*> CellMeshMaterials;
 
 	UPROPERTY(EditAnywhere, Category = "Cell")
@@ -101,6 +104,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Cell")
 		TArray<UMaterialInstance*> CellSpawnMaterials;
+
+	UPROPERTY(EditAnywhere, Category = "Cell")
+		TArray<UStaticMesh*> RocksMeshes;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Cell", meta = (AllowPrivateAccess = "true"))
 		AGrid* Grid;

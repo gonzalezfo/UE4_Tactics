@@ -16,6 +16,9 @@ ACell::ACell()
 	CellMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cell Mesh Component"));
 	CellMeshComponent->SetupAttachment(RootComponent);
 
+	RockMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Rock Mesh Component"));
+	RockMeshComponent->SetupAttachment(CellMeshComponent);
+
 	SetID(0);
 	SetGridPointer(nullptr);
 	SetType(CellType::kCellType_Void);
@@ -147,6 +150,7 @@ void ACell::SetCellMaterial() {
 			break;
 		case kCellType_Wall:
 			if (CellMeshMaterials[1] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[1]);
+			RockMeshComponent->SetStaticMesh(RocksMeshes[FMath::RandRange(0, 2)]);
 			break;
 		case kCellType_Normal:
 			if (CellMeshMaterials[2] != nullptr) CellMeshComponent->SetMaterial(0, CellMeshMaterials[2]);

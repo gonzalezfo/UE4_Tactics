@@ -414,7 +414,7 @@ static TArray<CellType> GenerateObstacles_Walkers(FIntPoint gridSize, int walker
 			if (cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] != kCellType_Spawn) {
 				cell_types[grid_walkers_positions[i].Y * gridSize.X + grid_walkers_positions[i].X] = kCellType_Normal;
 			}
-			grid_walkers_directions[i] = FMath::RandRange(0, 3);
+			grid_walkers_directions[i] = FMath::RandRange(0, 2);
 
 		}
 		iterator++;
