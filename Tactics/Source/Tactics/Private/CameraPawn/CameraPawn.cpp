@@ -272,6 +272,8 @@ void ACameraPawn::Heal()
 	{
 		character_->Heal(cell_);
 		ResetCellSelection();
+		character_->bHasHealedThisTurn = true;
+		character_->bHasHealed = true;
 	}
 }
 

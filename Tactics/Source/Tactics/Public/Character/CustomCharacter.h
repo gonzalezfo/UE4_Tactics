@@ -72,6 +72,9 @@ protected:
 	void FinishAttack();
 	FTimerHandle AttackTimer;
 
+	void FinishHeal();
+	FTimerHandle HealTimer;
+
 public:
 	//Health component.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
@@ -200,7 +203,12 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Animations")
 		UAnimationAsset* victory;
 
+	UPROPERTY(EditAnywhere, Category = "Animations")
+		UAnimationAsset* heal;
+
 	bool bHasAttackedThisTurn;
+	bool bHasHealedThisTurn;
+	bool bHasHealed;
 
 private:
 	//The material of the character.

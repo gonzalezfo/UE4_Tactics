@@ -89,6 +89,8 @@ void ACustomCharacter::BeginPlay()
 
 
 	bHasAttackedThisTurn = false;
+	bHasHealedThisTurn = false;
+	bHasHealed = false;
 
 	//Sets the character state.
 	state_ = CharacterState::kCharacterState_Idle;
@@ -229,7 +231,7 @@ void ACustomCharacter::Attack(ACell* cell_)
 {
 	ACell* character_cell = GetCell();
 
-	if (character_cell)
+	if (character_cell && !bHasAttackedThisTurn && !bHasHealedThisTurn)
 	{
 		AGrid* grid_ = character_cell->GetGridPointer();
 		if (grid_)
@@ -313,7 +315,7 @@ void ACustomCharacter::Heal(ACell* cell_)
 {
 	ACell* character_cell = GetCell();
 
-	if (character_cell)
+	if (character_cell && !bHasAttackedThisTurn && !bHasHealed && !bHasHealedThisTurn)
 	{
 		AGrid* grid_ = character_cell->GetGridPointer();
 		if (grid_)
@@ -359,13 +361,28 @@ void ACustomCharacter::Heal(ACell* cell_)
 						UGameplayStatics::ApplyPointDamage(tmp_char, -50.0f, Direction, Hit, PC, this, tmp_char->MeleeDamage);
 
 						Unselected();
-						//mesh_->PlayAnimation(attack, false);
-						//GetWorldTimerManager().SetTimer(AttackTimer, this, &ACustomCharacter::FinishAttack, 0.7f, false);
+						mesh_->PlayAnimation(heal, false);
+						GetWorldTimerManager().SetTimer(HealTimer, this, &ACustomCharacter::FinishHeal, 2.5f, false);
 					}
 				}
 			}
 		}
 	}
+}
+
+
+void ACustomCharacter::FinishHeal()
+{
+	mesh_->PlayAnimation(idle, true);
+
+	if (bHasHealedThisTurn)
+	{
+		HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+		HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+		HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+
+	GetWorldTimerManager().ClearTimer(HealTimer);
 }
 
 void ACustomCharacter::EndTurn()
@@ -406,13 +423,21 @@ void ACustomCharacter::StartTurn()
 	bTurnAvailable = true;
 	isDefending = false;
 	bHasAttackedThisTurn = false;
+	bHasHealedThisTurn = false;
 	cells_moved_this_turn_ = 0;
 
   if (HUDWidget)
 	{
 		HUDWidget->AttackButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
 		HUDWidget->DefenseButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
-		HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		if (!bHasHealed)
+		{
+			HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			HUDWidget->HealButton->SetColorAndOpacity(FLinearColor(1.0f, 0.0f, 0.0f, 1.0f));
+		}
 	}
 }
 
