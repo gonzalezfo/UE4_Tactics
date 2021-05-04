@@ -102,5 +102,7 @@ public:
 private: 
 
 	FTimerHandle TimerHandle;
+
+	bool LevelFinished;
 	
 };

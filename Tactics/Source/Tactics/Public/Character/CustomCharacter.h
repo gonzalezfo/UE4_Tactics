@@ -11,10 +11,12 @@ class ACameraPawn;
 class UCharacterHUDWidget;
 class UCameraComponent;
 class UHealthComponent;
+class UFSMComponent;
 class UWidgetComponent;
 class USkeletalComponent;
 class UAnimationAsset;
 class UFloatingTextWidget;
+class UMaterialInstance;
 
 
 UENUM(BlueprintType)
@@ -74,6 +76,10 @@ public:
 	//Health component.
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health Properties")
 		UHealthComponent* HealthComp;
+
+	//FSM component. (For AI)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "FSM Properties")
+		UFSMComponent* FiniteStateMachineComponent;
 
 	//Called every frame.
 	virtual void Tick(float DeltaTime) override;

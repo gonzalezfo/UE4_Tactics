@@ -37,31 +37,40 @@ void ACustomGameMode::BeginPlay()
 	}
 
 	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
+	SpawnParams.Owner = this;	
 
 	SoundManager = GetWorld()->SpawnActor<ASoundManager>(SoundManagerClass,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
+
+	LevelFinished = false;
 }
 
 void ACustomGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//NextTurn.
-	bool next_turn = false;
-	next_turn = CheckForNextTurn();
-	if (next_turn) NextTurn();
 
-	FColor text_color = FColor::Purple;
+	//Check Victory Condition
+	CheckVictoryCondition();
 
-	// Team Turn DISPLAY // TODO: MOVE TO WIDGET OR SOMETHING. DELETE THIS LATER.
-	switch (GameTeams[CurrentTeamTurn].TeamId) {
+	//NextTurn if Game Continues.
+	if (!LevelFinished) {
+		bool next_turn = false;
+		next_turn = CheckForNextTurn();
+		if (next_turn) NextTurn();
+
+		FColor text_color = FColor::Purple;
+
+		// Team Turn DISPLAY // TODO: MOVE TO WIDGET OR SOMETHING. DELETE THIS LATER.
+		switch (GameTeams[CurrentTeamTurn].TeamId) {
 		case 0: text_color = FColor::Green; break;
 		case 1: text_color = FColor::Red; break;
 		case 2: text_color = FColor::Blue; break;
 		case 3: text_color = FColor::Yellow; break;
 		default: text_color = FColor::Purple; break;
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 0.0f, text_color, FString::Printf(TEXT("Team Turn: %d"), CurrentTeamTurn));
+
 	}
-	GEngine->AddOnScreenDebugMessage(-1, 0.0f, text_color, FString::Printf(TEXT("Team Turn: %d"), CurrentTeamTurn));
 }
 
 void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
@@ -106,6 +115,19 @@ void ACustomGameMode::SetGameTeamsFromGridSpawns(AGrid* grid) {
 			}
 		} else {
 			GameTeams[t_idx].TeamAIController = nullptr;
+		}
+	}
+
+	//Let AIControllers know about the other teams characters information.
+	for (int t_idx = 0; t_idx < GameTeams.Num(); t_idx++) {
+		if (GameTeams[t_idx].TeamAIController != nullptr) {
+			for (int t_idx_2 = 0; t_idx_2 < GameTeams.Num(); t_idx_2++) {
+				if (t_idx != t_idx_2) {
+					for (int c_idx = 0; c_idx < GameTeams[t_idx_2].TeamMembers.Num(); c_idx++) {
+						GameTeams[t_idx].TeamAIController->OtherTeamsCharacters.Push(GameTeams[t_idx_2].TeamMembers[c_idx]);
+					}
+				}
+			}
 		}
 	}
 
@@ -165,56 +187,74 @@ bool ACustomGameMode::CheckForNextTurn() {
 
 void ACustomGameMode::CheckVictoryCondition() 
 {
-	//DEFEAT CONDITION (assuming player is team 0)
-	bool defeat = true;
+	int player_idx = 0;
 
-	for (int i = 0; i < GameTeams[0].TeamMembers.Num(); ++i)
-	{
-		if (!GameTeams[0].TeamMembers[i]->bDied) {
-			defeat = false;
-			break;
+	// Set player_idx to look for the player team inside our GameTeams Array.
+	for (int t_idx = 0; t_idx < GameTeams.Num(); ++t_idx) {
+		if (GameTeams[t_idx].TeamId == ESpawnTeam::kSpawnTeam_Player) {
+			player_idx = t_idx;
 		}
 	}
 
-	if (defeat)
+	//Check Defeated Teams.
+	for (int t_idx = 0; t_idx < GameTeams.Num(); ++t_idx) {
+		bool team_defeated = true;
+		if (GameTeams[t_idx].TeamMembers.Num() != 0) {
+			team_defeated = false;
+		}
+		//for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); ++c_idx) {
+		//	if (!GameTeams[t_idx].TeamMembers[t_idx]->bDied) {
+		//		team_defeated = false;
+		//	}
+		//}
+		GameTeams[t_idx].Defeated = team_defeated;
+	}
+
+	//Check Victory of the player with the player team idx.
+	bool player_defeat = true;
+
+	if (!GameTeams[player_idx].Defeated) {
+		player_defeat = false;
+	}
+
+	if (player_defeat)
 	{
 		//DEFEAT
 		UE_LOG(LogTemp, Warning, TEXT("GAME OVER"));
-
+    
 		if (VictoryOrDefeatWidget)
 		{
 			VictoryOrDefeatWidget->AddToViewport();
 			VictoryOrDefeatWidget->InitWidget(false);
 		}
 
-		for (int i = 1; i < GameTeams.Num(); ++i)
-		{
-			for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
-			{
-				if (!GameTeams[i].TeamMembers[j]->bDied) {
-					GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[0].TeamMembers[i]->victory, false);
+		for (int i = 0; i < GameTeams.Num(); ++i) {
+			if (i != player_idx) {
+				for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
+				{
+					if (!GameTeams[i].TeamMembers[j]->bDied) {
+						GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[i].TeamMembers[i]->victory, false);
+					}
 				}
 			}
 		}
 
+		LevelFinished = true;
+
 		return;
 	}
 
-	//VICTORY CONDITION (assuming player is team 0)
-	bool victory = true;
+	bool player_victory = true;
 
-	for (int i = 1; i < GameTeams.Num() && victory; ++i)
-	{
-		for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
-		{
-			if (!GameTeams[i].TeamMembers[j]->bDied) {
-				victory = false;
-				break;
+	for (int t_idx = 0; t_idx < GameTeams.Num() && player_victory; ++t_idx) {
+		if (t_idx != player_idx) {
+			if (!GameTeams[t_idx].Defeated) {
+				player_victory = false;
 			}
 		}
 	}
 
-	if (victory)
+	if (player_victory)
 	{
 		//VICTORY
 		UE_LOG(LogTemp, Warning, TEXT("VICTORY"));
@@ -225,12 +265,14 @@ void ACustomGameMode::CheckVictoryCondition()
 			VictoryOrDefeatWidget->InitWidget(true);
 		}
 
-		for (int i = 0; i < GameTeams[0].TeamMembers.Num(); ++i)
+		for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)
 		{
-			if (!GameTeams[0].TeamMembers[i]->bDied) {
-				GameTeams[0].TeamMembers[i]->mesh_->PlayAnimation(GameTeams[0].TeamMembers[i]->victory, false);
+			if (!GameTeams[player_idx].TeamMembers[i]->bDied) {
+				GameTeams[player_idx].TeamMembers[i]->mesh_->PlayAnimation(GameTeams[player_idx].TeamMembers[i]->victory, false);
 			}
 		}
+
+		LevelFinished = true;
 
 		return;
 	}

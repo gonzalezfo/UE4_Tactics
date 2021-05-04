@@ -204,7 +204,7 @@ TArray<ACell*> AGrid::FindPath(ACell* start, ACell* finish)
 		// Checks all the neighbour nodes of the current node
 		for (auto cellNeighbour : cellCurrent->GetNeighbours())
 		{
-			if (!cellNeighbour->bvisited && cellNeighbour->GetType() == kCellType_Normal && cellNeighbour->GetCharacterPointer() == nullptr)
+			if (!cellNeighbour->bvisited && (cellNeighbour->GetType() != kCellType_Wall) && cellNeighbour->GetCharacterPointer() == nullptr)
 			{
 				notTestedCells.push_back(cellNeighbour); // puts in the vector if it's not a wall and has not been visited
 
