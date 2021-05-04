@@ -10,6 +10,9 @@
 #include "Engine/Engine.h"
 #include "Engine/Public/UnrealEngine.h"
 
+#include "GameFramework/Actor.h"
+
+
 ACustomGameMode::ACustomGameMode() {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -180,6 +183,25 @@ bool ACustomGameMode::CheckForNextTurn() {
 	return false;
 }
 
+void ACustomGameMode::VictoryCelebration()
+{
+	int player_idx = 0;
+
+	// Set player_idx to look for the player team inside our GameTeams Array.
+	for (int t_idx = 0; t_idx < GameTeams.Num(); ++t_idx) {
+		if (GameTeams[t_idx].TeamId == ESpawnTeam::kSpawnTeam_Player) {
+			player_idx = t_idx;
+		}
+	}
+	for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)
+	{
+		GameTeams[player_idx].TeamMembers[i]->mesh_->PlayAnimation(GameTeams[player_idx].TeamMembers[i]->victory, true);
+	}
+
+	GetWorldTimerManager().ClearTimer(VictoryTimer);
+
+}
+
 void ACustomGameMode::CheckVictoryCondition() 
 {
 	int player_idx = 0;
@@ -219,20 +241,20 @@ void ACustomGameMode::CheckVictoryCondition()
     
 		if (GridCamera->VictoryOrDefeatWidget && !GridCamera->VictoryOrDefeatWidget->IsInViewport())
 		{
+			for (int i = 0; i < GameTeams.Num(); ++i) {
+				if (i != player_idx) {
+					for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
+					{
+						if (!GameTeams[i].TeamMembers[j]->bDied) {
+							GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[i].TeamMembers[i]->victory, true);
+						}
+					}
+				}
+			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(false);
 		}
 
-		for (int i = 0; i < GameTeams.Num(); ++i) {
-			if (i != player_idx) {
-				for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
-				{
-					if (!GameTeams[i].TeamMembers[j]->bDied) {
-						GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[i].TeamMembers[i]->victory, false);
-					}
-				}
-			}
-		}
 
 		LevelFinished = true;
 
@@ -256,16 +278,17 @@ void ACustomGameMode::CheckVictoryCondition()
 
 		if (GridCamera->VictoryOrDefeatWidget && !GridCamera->VictoryOrDefeatWidget->IsInViewport())
 		{
+			for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)
+			{
+				if (!GameTeams[player_idx].TeamMembers[i]->bDied) {
+					GameTeams[player_idx].TeamMembers[i]->EndTurn();
+				}
+			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(true);
+			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}
 
-		for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)
-		{
-			if (!GameTeams[player_idx].TeamMembers[i]->bDied) {
-				GameTeams[player_idx].TeamMembers[i]->mesh_->PlayAnimation(GameTeams[player_idx].TeamMembers[i]->victory, false);
-			}
-		}
 
 		LevelFinished = true;
 

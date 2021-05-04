@@ -441,6 +441,11 @@ void ACustomCharacter::StartTurn()
 	}
 }
 
+void ACustomCharacter::StartVictoryAnimation()
+{
+	mesh_->PlayAnimation(victory, true);
+}
+
 
 void ACustomCharacter::ReturnToMainCamera()
 {

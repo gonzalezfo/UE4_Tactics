@@ -55,6 +55,10 @@ private:
 
 	bool CheckForNextTurn();
 
+	void VictoryCelebration();
+
+	FTimerHandle VictoryTimer;
+
 public: 
 
 	//Sets default values for this actor's properties.

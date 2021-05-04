@@ -181,6 +181,9 @@ public:
 	UFUNCTION()
 		void StartTurn();
 
+	UFUNCTION()
+		void StartVictoryAnimation();
+
 	int cells_moved_this_turn_;
 
 
