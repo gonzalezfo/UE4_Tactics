@@ -47,6 +47,8 @@ public:
 
 	void SetTargetCell(ACell* new_target);
 
+	void SetTargetReached(bool value);
+
 	void SetGrid(AGrid* new_grid);
 
 

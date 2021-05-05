@@ -34,15 +34,15 @@ void UFSMComponent::BeginTurn() {
 void UFSMComponent::UpdateCharacterState() {
 	if ((owner_->HealthComp)->GetCurrentHealthPercentage() < 0.5) {
 		state_ = CharacterStates::kCharacterState_DEFFENSIVE;
-		sub_state_ = CharacterStates::kCharacterState_CHASE;
 	}
 	else {
 		state_ = CharacterStates::kCharacterState_OFFENSIVE;
-		sub_state_ = CharacterStates::kCharacterState_CHASE;
 	}
+	UpdateCharacterSubState();
 }
 
 void UFSMComponent::UpdateCharacterSubState() {
+
 	if (state_ == CharacterStates::kCharacterState_OFFENSIVE) {
 		if (target_character_ != nullptr && bTargetReached_) {
 			sub_state_ = CharacterStates::kCharacterState_ATTACK;
@@ -58,12 +58,9 @@ void UFSMComponent::UpdateCharacterSubState() {
 			sub_state_ = CharacterStates::kCharacterState_HEAL;
 		}
 		else {
-			if (bMoved_ && target_character_ != nullptr) {
+			if (!bUsedAction_) {
 				sub_state_ = CharacterStates::kCharacterState_DEFEND;
 			}
-			else if (bMoved_ && target_character_ != nullptr)  {
-				sub_state_ = CharacterStates::kCharacterState_RETREAT;
-			} 
 			else {
 				sub_state_ = CharacterStates::kCharacterState_IDLE;
 			}
@@ -78,17 +75,26 @@ void UFSMComponent::CharacterAction() {
 	switch (sub_state_)
 	{
 	case kCharacterState_IDLE:
+		bUsedAction_ = false;
 		owner_->EndCharacterTurn();
 		break;
 	case kCharacterState_CHASE:
 		Chase();
 		owner_->EndCharacterTurn();
 		break;
-	case kCharacterState_RETREAT:
+	case kCharacterState_HEAL:
+		bUsedHeal_ = true;
+		owner_->Heal(owner_->GetCell());
+		owner_->EndCharacterTurn();
 		break;
 	case kCharacterState_ATTACK:
+		owner_->Attack(target_cell_);
+		owner_->EndCharacterTurn();
 		break;
 	case kCharacterState_DEFEND:
+		bUsedAction_ = true;
+		owner_->Defend();
+		owner_->EndCharacterTurn();
 		break;
 	default:
 		break;
@@ -96,9 +102,6 @@ void UFSMComponent::CharacterAction() {
 }
 
 void UFSMComponent::Chase() {
-
-	//Comprobar los vecinos del target para ver si son cells disponibles, y si estan en rango de movimiento.
-	//Asi los enemigos podrian roedear al target en caso de que esta opcion estuviese disponible.
 
 	TArray<ACell*> movable_cells = owner_->GetMovableCells();;
 	TArray<ACell*> path;
@@ -133,5 +136,9 @@ void UFSMComponent::SetTargetCell(ACell* new_target) {
 
 void UFSMComponent::SetGrid(AGrid* new_grid) {
 	game_grid_ = new_grid;
+}
+
+void UFSMComponent::SetTargetReached(bool value) {
+	bTargetReached_ = value;
 }
 
