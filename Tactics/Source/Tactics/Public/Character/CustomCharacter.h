@@ -212,6 +212,7 @@ public:
 	bool bHasAttackedThisTurn;
 	bool bHasHealedThisTurn;
 	bool bHasHealed;
+	bool bIsMoving;
 
 private:
 	//The material of the character.

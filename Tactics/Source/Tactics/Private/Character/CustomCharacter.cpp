@@ -91,6 +91,7 @@ void ACustomCharacter::BeginPlay()
 	bHasAttackedThisTurn = false;
 	bHasHealedThisTurn = false;
 	bHasHealed = false;
+	bIsMoving = false;
 
 	//Sets the character state.
 	state_ = CharacterState::kCharacterState_Idle;
@@ -221,6 +222,7 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 						HUDWidget->SetVisibility(ESlateVisibility::Visible);
 					}
 					mesh_->PlayAnimation(idle, true);
+					bIsMoving = false;
 				}
 			}
 		}

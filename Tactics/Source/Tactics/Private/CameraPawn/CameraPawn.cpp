@@ -235,11 +235,11 @@ void ACameraPawn::SelectCell()
 
 void ACameraPawn::MoveCharacterToCell()
 {
-	if (cell_ && character_)
+	if (cell_ && character_ && !character_->bIsMoving)
 	{
 		if (character_->GetMovableCells().Contains(cell_)) {
 			AGrid* grid = cell_->GetGridPointer();
-
+			character_->bIsMoving = true;
 			if (grid)
 			{
 				character_->Unselected();
