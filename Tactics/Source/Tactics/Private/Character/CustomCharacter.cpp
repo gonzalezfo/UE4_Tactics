@@ -391,6 +391,7 @@ void ACustomCharacter::EndTurn()
 
 	Unselected();
 
+	HUDWidget->selected_action_ = kSelectedAction_None;
 	HUDWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	//Sets the view target to the camera pawn.
