@@ -248,7 +248,7 @@ void ACustomGameMode::CheckVictoryCondition()
 				}
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
-			GridCamera->VictoryOrDefeatWidget->InitWidget(false, 0);
+			GridCamera->VictoryOrDefeatWidget->InitWidget(false, 0.0f, (float)number_of_players);
 		}
 
 
@@ -283,7 +283,7 @@ void ACustomGameMode::CheckVictoryCondition()
 				}
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
-			GridCamera->VictoryOrDefeatWidget->InitWidget(true, players_alive);
+			GridCamera->VictoryOrDefeatWidget->InitWidget(true, (float)players_alive, (float)number_of_players);
 
 			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}

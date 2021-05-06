@@ -42,11 +42,12 @@ protected:
 	UPROPERTY(meta = (BindWidgetAnim))
 		UWidgetAnimation* Fade;
 
-	TArray<UTexture2D*> StarImages;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UTexture2D*> StarImages;
 
 public:
 	UFUNCTION()
-		void InitWidget(bool victory, int players_alive);
+		void InitWidget(bool victory, float players_alive, float max_players);
 
 	UFUNCTION()
 		void NextLevelButtonClicked();

@@ -11,7 +11,6 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "UObject/ConstructorHelpers.h"
 
 void UVictoryOrDefeatWidget::NativeConstruct()
 {
@@ -29,38 +28,37 @@ void UVictoryOrDefeatWidget::NativeConstruct()
 	{
 		ExitButton->OnClicked.AddDynamic(this, &UVictoryOrDefeatWidget::ExitButtonClicked);
 	}
-
-	/*UTexture2D* Tex = LoadObject<UTexture2D>(NULL, TEXT("Texture2D'/Game/Assets/Sprites/Menu/Defeat.Defeat'"));
-
-	static ConstructorHelpers::FClassFinder<UTexture2D> DefeatImageObj(TEXT("Texture2D'/Game/Assets/Sprites/Menu/Defeat.Defeat'"));
-	StarImages.Add(Cast<UTexture2D>(DefeatImageObj.Class));
-
-	static ConstructorHelpers::FClassFinder<UTexture2D> Star1ImageObj(TEXT("/Game/Assets/Sprites/Menu/Victory_1Star"));
-	StarImages.Add(Cast<UTexture2D>(Star1ImageObj.Class));
-
-	static ConstructorHelpers::FClassFinder<UTexture2D> Star2ImageObj(TEXT("/Game/Assets/Sprites/Menu/Victory_2Star"));
-	StarImages.Add(Cast<UTexture2D>(Star2ImageObj.Class));
-
-	static ConstructorHelpers::FClassFinder<UTexture2D> Star3ImageObj(TEXT("/Game/Assets/Sprites/Menu/Victory_3Star"));
-	StarImages.Add(Cast<UTexture2D>(Star3ImageObj.Class));*/
 }
 
-void UVictoryOrDefeatWidget::InitWidget(bool victory, int players_alive)
+void UVictoryOrDefeatWidget::InitWidget(bool victory, float players_alive, float max_players)
 {
-	if (players_alive != 0)
-	{
-
-	}
-
 	PlayAnimation(Fade);
 
-	if (victory)
+	if (StarImages.Num() > 0)
 	{
-		VictoryOrDefeatText->SetText(FText::FromString("Victory"));
-		return;
-	}
+		if (victory)
+		{
+			VictoryOrDefeatText->SetText(FText::FromString("Victory"));
 
-	VictoryOrDefeatText->SetText(FText::FromString("Defeat"));
+			if ((players_alive / max_players) == 1.0f) // 3 stars
+			{
+				ScoreImage->SetBrushFromTexture(StarImages[3]);
+			}
+			else if ((players_alive / max_players) < 0.5f) // 1 star
+			{
+				ScoreImage->SetBrushFromTexture(StarImages[1]);
+			}
+			else //2 stars
+			{
+				ScoreImage->SetBrushFromTexture(StarImages[2]);
+			}
+
+			return;
+		}
+
+		ScoreImage->SetBrushFromTexture(StarImages[0]);
+		VictoryOrDefeatText->SetText(FText::FromString("Defeat"));
+	}
 }
 
 void UVictoryOrDefeatWidget::NextLevelButtonClicked()
