@@ -9,6 +9,8 @@
 class UTextBlock;
 class UButton;
 class UWidgetAnimation;
+class UImage;
+class UTexture2D;
 
 
 /**
@@ -33,13 +35,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
 		UButton* ExitButton;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+		UImage* ScoreImage;
 
 	UPROPERTY(meta = (BindWidgetAnim))
 		UWidgetAnimation* Fade;
 
+	TArray<UTexture2D*> StarImages;
+
 public:
 	UFUNCTION()
-		void InitWidget(bool victory);
+		void InitWidget(bool victory, int players_alive);
 
 	UFUNCTION()
 		void NextLevelButtonClicked();

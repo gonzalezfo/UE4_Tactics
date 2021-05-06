@@ -90,7 +90,7 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "GameMode Variables")
 		TArray<ACustomAIController*> GameAIPlayers;
 
-	
+	int number_of_players;
 
 
 	UFUNCTION()
@@ -101,5 +101,4 @@ private:
 	FTimerHandle TimerHandle;
 
 	bool LevelFinished;
-	
 };

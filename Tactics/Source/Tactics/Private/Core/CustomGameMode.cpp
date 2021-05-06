@@ -219,11 +219,7 @@ void ACustomGameMode::CheckVictoryCondition()
 		if (GameTeams[t_idx].TeamMembers.Num() != 0) {
 			team_defeated = false;
 		}
-		//for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); ++c_idx) {
-		//	if (!GameTeams[t_idx].TeamMembers[t_idx]->bDied) {
-		//		team_defeated = false;
-		//	}
-		//}
+
 		GameTeams[t_idx].Defeated = team_defeated;
 	}
 
@@ -246,13 +242,13 @@ void ACustomGameMode::CheckVictoryCondition()
 					for (int j = 0; j < GameTeams[i].TeamMembers.Num(); ++j)
 					{
 						if (!GameTeams[i].TeamMembers[j]->bDied) {
-							GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[i].TeamMembers[i]->victory, true);
+							GameTeams[i].TeamMembers[j]->mesh_->PlayAnimation(GameTeams[i].TeamMembers[j]->victory, true);
 						}
 					}
 				}
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
-			GridCamera->VictoryOrDefeatWidget->InitWidget(false);
+			GridCamera->VictoryOrDefeatWidget->InitWidget(false, 0);
 		}
 
 
@@ -278,14 +274,17 @@ void ACustomGameMode::CheckVictoryCondition()
 
 		if (GridCamera->VictoryOrDefeatWidget && !GridCamera->VictoryOrDefeatWidget->IsInViewport())
 		{
+			int players_alive = 0;
 			for (int i = 0; i < GameTeams[player_idx].TeamMembers.Num(); ++i)
 			{
 				if (!GameTeams[player_idx].TeamMembers[i]->bDied) {
 					GameTeams[player_idx].TeamMembers[i]->EndTurn();
+					players_alive++;
 				}
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
-			GridCamera->VictoryOrDefeatWidget->InitWidget(true);
+			GridCamera->VictoryOrDefeatWidget->InitWidget(true, players_alive);
+
 			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}
 

@@ -3,9 +3,13 @@
 #include "Grid/Grid.h"
 #include "Grid/Cell.h"
 #include "Character/CustomCharacter.h"
+#include "Core/CustomGameMode.h"
 #include "DrawDebugHelpers.h"
 #include "Containers/Array.h"
 #include "Engine/World.h"
+
+#include "Kismet/GameplayStatics.h"
+
 #include <list>
 
 // Sets default values
@@ -570,6 +574,13 @@ void AGrid::InitGrid() {
 			Cells[cell_index]->SetID(cell_index);
 			Cells[cell_index]->SetMeshSize(CellSize);
 		}
+	}
+	
+	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM)
+	{
+		GM->number_of_players = Spawns[ESpawnTeam::kSpawnTeam_Player].SpawnCharacters[0].NumberOfCharacters;
 	}
 }
 
