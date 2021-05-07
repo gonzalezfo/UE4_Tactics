@@ -71,15 +71,15 @@ void ACustomAIController::SetCharacterTarget() {
 	TArray<ACell*> path;
 	ACell* target_cell = nullptr;
 	ACustomCharacter* target_character = nullptr;
-	bool target_reached = false;
+	bool target_in_range = false;
 
 	if (SelectedCharacter != nullptr) {
 		//CHeck for Character Target Next To Our Character. (set that into target_reached in FSM).
 		neighbours = SelectedCharacter->GetCell()->GetNeighbours();
-		for (int n_idx = 0; n_idx < neighbours.Num() && target_reached == false ; ++n_idx) {
-			for (int c_idx = 0; c_idx < OtherTeamsCharacters.Num() && target_reached == false; ++c_idx) {
+		for (int n_idx = 0; n_idx < neighbours.Num() && target_in_range == false ; ++n_idx) {
+			for (int c_idx = 0; c_idx < OtherTeamsCharacters.Num() && target_in_range == false; ++c_idx) {
 				if (neighbours[n_idx]->GetCharacterPointer() == OtherTeamsCharacters[c_idx]) {
-					target_reached = true;
+					target_in_range = true;
 					target_cell = neighbours[n_idx];
 					target_character = OtherTeamsCharacters[c_idx];
 				}
@@ -87,7 +87,7 @@ void ACustomAIController::SetCharacterTarget() {
 		}
 
 		//Look for the closest target available. 
-		if (OtherTeamsCharacters.Num() > 0 && !target_reached) {
+		if (OtherTeamsCharacters.Num() > 0 && !target_in_range) {
 			for (int c_idx = 0; c_idx < OtherTeamsCharacters.Num(); ++c_idx) {
 				if (OtherTeamsCharacters[c_idx] != nullptr) {
 					neighbours = OtherTeamsCharacters[c_idx]->GetCell()->GetNeighbours();
@@ -108,7 +108,7 @@ void ACustomAIController::SetCharacterTarget() {
 		if (target_cell && target_character) {
 			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetCell(target_cell);
 			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetCharacter(target_character);
-			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetReached(target_reached);
+			(SelectedCharacter->FiniteStateMachineComponent)->SetTargetInRange(target_in_range);
 		}
 	}
 

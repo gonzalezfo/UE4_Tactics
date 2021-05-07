@@ -49,6 +49,8 @@ public:
 
 	void SetTargetReached(bool value);
 
+	void SetTargetInRange(bool value);
+
 	void SetGrid(AGrid* new_grid);
 
 
@@ -82,13 +84,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "FSM Values")
 		bool bMoved_;
 
-	//Check Action Conts Heal / Attack / Deffend.
+	//Check if action has been used.
 	UPROPERTY(VisibleAnywhere, Category = "FSM Values")
 		bool bUsedAction_;
 
-	//Check Action Conts Heal / Attack / Deffend.
+	//Check if target has been reached after movement.
 	UPROPERTY(VisibleAnywhere, Category = "FSM Values")
 		bool bTargetReached_;
+
+	//Check if target is in range.
+	UPROPERTY(VisibleAnywhere, Category = "FSM Values")
+		bool bTargetInRange_;
 
 	AGrid* game_grid_;
 

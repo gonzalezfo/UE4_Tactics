@@ -24,6 +24,7 @@ void UFSMComponent::BeginPlay()
 	bUsedHeal_ = false;
 	bMoved_ = false;
 	bTargetReached_ = false;
+	bTargetInRange_ = false;
 }
 
 void UFSMComponent::BeginTurn() {
@@ -44,10 +45,10 @@ void UFSMComponent::UpdateCharacterState() {
 void UFSMComponent::UpdateCharacterSubState() {
 
 	if (state_ == CharacterStates::kCharacterState_OFFENSIVE) {
-		if (target_character_ != nullptr && bTargetReached_) {
+		if (target_character_ != nullptr && bTargetInRange_) {
 			sub_state_ = CharacterStates::kCharacterState_ATTACK;
 		}
-		else if (target_character_ != nullptr && !bTargetReached_) {
+		else if (target_character_ != nullptr && !bTargetInRange_) {
 			sub_state_ = CharacterStates::kCharacterState_CHASE;
 		}
 		else {
@@ -80,7 +81,7 @@ void UFSMComponent::CharacterAction() {
 		break;
 	case kCharacterState_CHASE:
 		Chase();
-		owner_->EndCharacterTurn();
+		if(!bTargetReached_) owner_->EndCharacterTurn();
 		break;
 	case kCharacterState_HEAL:
 		bUsedHeal_ = true;
@@ -120,8 +121,11 @@ void UFSMComponent::Chase() {
 			}
 		}
 
-		if(target_cell != nullptr) game_grid_->MoveCharacterToCell(owner_, target_cell);
-		owner_->mesh_->PlayAnimation(owner_->walk, true);
+		if (target_cell != nullptr) {
+			if (target_cell_ == target_cell) bTargetReached_ = true;
+			game_grid_->MoveCharacterToCell(owner_, target_cell);
+			owner_->mesh_->PlayAnimation(owner_->walk, true);
+		} 
 	}	
 }
 
@@ -140,5 +144,9 @@ void UFSMComponent::SetGrid(AGrid* new_grid) {
 
 void UFSMComponent::SetTargetReached(bool value) {
 	bTargetReached_ = value;
+}
+
+void UFSMComponent::SetTargetInRange(bool value) {
+	bTargetInRange_ = value;
 }
 
