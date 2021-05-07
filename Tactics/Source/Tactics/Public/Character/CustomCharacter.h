@@ -113,6 +113,7 @@ public:
 	TArray<ACell*> GetMovableCells();
 
 	TArray<ACell*> GetAttackCells();
+	TArray<ACell*> GetHealCells();
 
 	//Gets the current character cell.
 	ACell* GetCell();

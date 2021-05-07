@@ -537,6 +537,15 @@ TArray<ACell*> ACustomCharacter::GetAttackCells()
 	return cells;
 }
 
+TArray<ACell*> ACustomCharacter::GetHealCells()
+{
+	TArray<ACell*> cells = GetAttackCells();
+
+	cells.Add(current_cell_);
+
+	return cells;
+}
+
 void ACustomCharacter::Selected()
 {
 	//Makes the HUD visible and sets the character name

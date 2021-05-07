@@ -88,8 +88,8 @@ void UCharacterHUDWidget::HealButtonClicked()
 			if (cell_)
 			{
 				cell_->GetGridPointer()->UnhighlightCells(character_->GetMovableCells());
-				cell_->GetGridPointer()->HighlightHealCells(character_->GetAttackCells());
-				cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
+				cell_->GetGridPointer()->HighlightHealCells(character_->GetHealCells());
+				//cell_->HighlightCell(CellMaterial::kCellMaterial_CurrentCell);
 			}
 		}
 	}
