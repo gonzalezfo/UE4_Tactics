@@ -31,7 +31,7 @@ void AGrid::Init()
 	ConnectCells();
 	GenerateObstacles();
 	GenerateSpawns();
-	SpawnCharacter();
+	SpawnCharacters();
 }
 
 int AGrid::CalculateManhattanDistance(ACell* a, ACell* b)
@@ -712,7 +712,7 @@ void AGrid::GenerateSpawns() {
 	}
 }
 
-void AGrid::SpawnCharacter() {
+void AGrid::SpawnCharacters() {
 
 	//Check Our Spawns.
 	if (Spawns.Num() > 0) {
@@ -752,42 +752,6 @@ void AGrid::SpawnCharacter() {
 			}
 		}
 	}
-	/* Spawn a Random Character into the Grid.
-	else {
-		//Set a proper position for our character.
-		int character_index = FMath::FRandRange(0, Cells.Num() - 1);
-		bool valid_position = false;
-
-		int repetitions = 0;
-
-		//IMPORTANT: Check if the cell is already asigned to another character
-		while (valid_position == false || repetitions > (Cells.Num() * 2)) {
-			if (Cells[character_index]->GetType() == CellType::kCellType_Normal || Cells[character_index]->GetType() == CellType::kCellType_Spawn) {
-				valid_position = true;
-			}
-			else {
-				character_index = FMath::FRandRange(0, Cells.Num() - 1);
-			}
-		}
-
-		//New character position
-		FVector new_pos = Cells[character_index]->GetActorLocation();
-		new_pos.Z += 50.0f;
-		FRotator character_rotation = FRotator(0.0f);
-
-
-		//Spawn character and set it's cell pointer
-		ACustomCharacter* cchar = Cast<ACustomCharacter>(GetWorld()->SpawnActor<AActor>(CharacterToInstantiate, new_pos, character_rotation));
-		if (cchar)
-		{
-			cchar->InitPlayer(Cells[character_index]);
-		}
-
-		//Set the character pointer on the character cell.
-		Cells[character_index]->SetCharacterPointer(cchar);
-		Cells[character_index]->SetType(CellType::kCellType_Normal);
-	}
-	*/
 }
 
 void AGrid::HighlightMoveCells(TArray<ACell*> cell_array)

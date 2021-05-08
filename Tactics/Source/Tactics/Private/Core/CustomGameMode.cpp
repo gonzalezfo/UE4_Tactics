@@ -3,6 +3,7 @@
 #include "Grid/Cell.h"
 #include "Grid/Grid.h"
 #include "Character/CustomCharacter.h"
+#include "Core/CustomAIController.h"
 #include "Core/SoundManager.h"
 #include "Widgets/VictoryOrDefeatWidget.h"
 
@@ -249,6 +250,7 @@ void ACustomGameMode::CheckVictoryCondition()
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(false, 0.0f, (float)number_of_players);
+			GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Visible);
 		}
 
 
@@ -284,6 +286,7 @@ void ACustomGameMode::CheckVictoryCondition()
 			}
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(true, (float)players_alive, (float)number_of_players);
+			GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Visible);
 
 			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}
@@ -293,4 +296,41 @@ void ACustomGameMode::CheckVictoryCondition()
 
 		return;
 	}
+}
+
+void ACustomGameMode::ResetGameLevel() {
+
+	LevelFinished = false;
+
+	// Empty GameTeams Units and set their values. 
+	for (int t_idx = 0; t_idx < GameTeams.Num(); ++t_idx) {
+
+		//Destroy all Characters that were left.
+		for (int c_idx = 0; c_idx < GameTeams[t_idx].TeamMembers.Num(); c_idx++) {
+			if (GameTeams[t_idx].TeamMembers[c_idx] != nullptr) {
+				GameTeams[t_idx].TeamMembers[c_idx]->Destroy();
+			}
+		}
+
+		//Empty the Arrays.
+		GameTeams[t_idx].TeamMembers.Empty();
+		if (GameTeams[t_idx].TeamAIController != nullptr) {
+			GameTeams[t_idx].TeamAIController->AITeamCharacters.Empty();
+			GameTeams[t_idx].TeamAIController->OtherTeamsCharacters.Empty();
+		}
+		GameTeams[t_idx].Defeated = false;
+	}
+
+	for (int c_idx = 0; c_idx < GameGrid->Cells.Num(); c_idx++) {
+		GameGrid->Cells[c_idx]->SetCharacterPointer(nullptr);
+	}
+
+	//Respawn Characters.
+	GameGrid->SpawnCharacters();
+
+	//Assign new Characters to the Teams.
+	SetGameTeamsFromGridSpawns(GameGrid);
+
+	GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Hidden);
+	GridCamera->VictoryOrDefeatWidget->RemoveFromViewport();
 }

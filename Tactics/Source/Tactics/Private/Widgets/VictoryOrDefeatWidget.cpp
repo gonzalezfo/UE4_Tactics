@@ -11,6 +11,8 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#include "Core/CustomGameMode.h"
+
 
 void UVictoryOrDefeatWidget::NativeConstruct()
 {
@@ -68,6 +70,11 @@ void UVictoryOrDefeatWidget::NextLevelButtonClicked()
 
 void UVictoryOrDefeatWidget::RetryButtonClicked()
 {
+	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM) {
+		GM->ResetGameLevel();
+	}
 
 }
 

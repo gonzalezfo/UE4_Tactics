@@ -110,13 +110,14 @@ public:
 	ACell* GetCellByID(int id);
 	float CalculateDistance(ACell* a, ACell* b);
 
+	void SpawnCharacters();
+
 private:
 
 	void InitGrid();
 	void ConnectCells();
 	void GenerateObstacles();
 	void GenerateSpawns();
-	void SpawnCharacter();
 
 public:
 

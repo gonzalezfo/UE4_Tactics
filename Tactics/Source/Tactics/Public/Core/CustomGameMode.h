@@ -92,9 +92,12 @@ public:
 
 	int number_of_players;
 
-
 	UFUNCTION()
 		void CheckVictoryCondition();
+
+	//ResetLevel was already taken.
+	UFUNCTION()
+		void ResetGameLevel();
 
 private: 
 
