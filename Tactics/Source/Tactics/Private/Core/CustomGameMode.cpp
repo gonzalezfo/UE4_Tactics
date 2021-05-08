@@ -331,6 +331,7 @@ void ACustomGameMode::ResetGameLevel() {
 	//Assign new Characters to the Teams.
 	SetGameTeamsFromGridSpawns(GameGrid);
 
+	GridCamera->ResetSelection();
 	GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Hidden);
 	GridCamera->VictoryOrDefeatWidget->RemoveFromViewport();
 }
