@@ -11,6 +11,8 @@
 #include "Engine/Engine.h"
 #include "Engine/Public/UnrealEngine.h"
 
+#include "Components/AudioComponent.h"
+
 #include "GameFramework/Actor.h"
 
 
@@ -251,6 +253,12 @@ void ACustomGameMode::CheckVictoryCondition()
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(false, 0.0f, (float)number_of_players);
 			GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Visible);
+
+			if (SoundManager)
+			{
+				SoundManager->AudioComponents[ESounds::kESounds_Battle]->Stop();
+				SoundManager->AudioComponents[ESounds::kESounds_Defeat]->Play();
+			}
 		}
 
 
@@ -287,6 +295,12 @@ void ACustomGameMode::CheckVictoryCondition()
 			GridCamera->VictoryOrDefeatWidget->AddToViewport();
 			GridCamera->VictoryOrDefeatWidget->InitWidget(true, (float)players_alive, (float)number_of_players);
 			GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Visible);
+
+			if (SoundManager)
+			{
+				SoundManager->AudioComponents[ESounds::kESounds_Battle]->Stop();
+				SoundManager->AudioComponents[ESounds::kESounds_Victory]->Play();
+			}
 
 			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}

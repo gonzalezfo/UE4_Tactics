@@ -10,8 +10,10 @@
 #include "Components/FSMComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/Button.h"
+#include "Components/AudioComponent.h"
 
 #include "Core/CustomGameMode.h"
+#include "Core/SoundManager.h"
 #include "Widgets/FloatingTextWidget.h"
 
 #include "Components/SkeletalMeshComponent.h"
@@ -206,6 +208,16 @@ void ACustomCharacter::MoveAlongPath(float DeltaTime)
 				current_cell_ = tmp;
 				tmp->SetCharacterPointer(this);
 
+				ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+				if (GM)
+				{
+					if (GM->SoundManager)
+					{
+						GM->SoundManager->AudioComponents[ESounds::kESounds_Steps]->Play();
+					}
+				}
+
 				path_cells_.Remove(tmp);
 				cells_moved_this_turn_++;
 				movement_time_ = 0.0f;
@@ -284,6 +296,16 @@ void ACustomCharacter::Attack(ACell* cell_)
 						Unselected();
 						mesh_->PlayAnimation(attack, false);
 						GetWorldTimerManager().SetTimer(AttackTimer, this, &ACustomCharacter::FinishAttack, 0.7f, false);
+
+						ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+						if (GM)
+						{
+							if (GM->SoundManager)
+							{
+								GM->SoundManager->AudioComponents[ESounds::kESounds_Sword]->Play();
+							}
+						}
 					}
 				}
 			}
@@ -365,6 +387,16 @@ void ACustomCharacter::Heal(ACell* cell_)
 						Unselected();
 						mesh_->PlayAnimation(heal, false);
 						GetWorldTimerManager().SetTimer(HealTimer, this, &ACustomCharacter::FinishHeal, 2.5f, false);
+
+						ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+						if (GM)
+						{
+							if (GM->SoundManager)
+							{
+								GM->SoundManager->AudioComponents[ESounds::kESounds_Heal]->Play();
+							}
+						}
 					}
 				}
 			}

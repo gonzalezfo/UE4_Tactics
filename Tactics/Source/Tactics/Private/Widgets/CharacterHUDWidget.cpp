@@ -172,7 +172,7 @@ void UCharacterHUDWidget::PlayClickedButtonSound()
 
 		if (SM)
 		{
-			SM->UISoundComponent->Play();
+			SM->AudioComponents[ESounds::kESounds_UI]->Play();
 		}
 	}
 }

@@ -7,12 +7,15 @@
 #include "Character/CustomCharacter.h"
 #include "Widgets/CharacterHUDWidget.h"
 #include "Widgets/VictoryOrDefeatWidget.h"
+#include "Core/CustomGameMode.h"
+#include "Core/SoundManager.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "Components/AudioComponent.h"
 
 #include "DrawDebugHelpers.h"
 
@@ -74,6 +77,16 @@ void ACameraPawn::BeginPlay()
 	if (VictoryOrDefeatWidgetClass)
 	{
 		VictoryOrDefeatWidget = CreateWidget<UVictoryOrDefeatWidget>(GetWorld(), VictoryOrDefeatWidgetClass);
+	}
+
+	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (GM)
+	{
+		if (GM->SoundManager)
+		{
+			GM->SoundManager->AudioComponents[ESounds::kESounds_Battle]->Play();
+		}
 	}
 }
 

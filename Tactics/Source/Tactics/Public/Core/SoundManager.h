@@ -10,6 +10,19 @@
 class UAudioComponent;
 class USoundCue;
 
+UENUM(BlueprintType)
+enum ESounds {
+	kESounds_UI = 0				UMETA(DisplayName = "UI"),
+	kESounds_Menu				UMETA(DisplayName = "Menu"),
+	kESounds_Battle				UMETA(DisplayName = "Battle"),
+	kESounds_Victory			UMETA(DisplayName = "Victory"),
+	kESounds_Defeat				UMETA(DisplayName = "Defeat"),
+	kESounds_Steps				UMETA(DisplayName = "Steps"),
+	kESounds_Heal				UMETA(DisplayName = "Heal"),
+	kESounds_Sword				UMETA(DisplayName = "Sword"),
+};
+
+
 UCLASS()
 class TACTICS_API ASoundManager : public AActor
 {
@@ -29,8 +42,8 @@ public:
 
 	//Sound
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Sound")
-		UAudioComponent* UISoundComponent;
+		TArray<UAudioComponent*> AudioComponents;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
-		USoundCue* UISoundCue;
+		TArray<USoundCue*> SoundCues;
 };
