@@ -348,4 +348,9 @@ void ACustomGameMode::ResetGameLevel() {
 	GridCamera->ResetSelection();
 	GridCamera->VictoryOrDefeatWidget->SetVisibility(ESlateVisibility::Hidden);
 	GridCamera->VictoryOrDefeatWidget->RemoveFromViewport();
+
+	if (SoundManager)
+	{
+		SoundManager->AudioComponents[ESounds::kESounds_Battle]->Play();
+	}
 }
