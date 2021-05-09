@@ -81,13 +81,6 @@ void ACameraPawn::BeginPlay()
 
 	ACustomGameMode* GM = Cast<ACustomGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	if (GM)
-	{
-		if (GM->SoundManager)
-		{
-			GM->SoundManager->AudioComponents[ESounds::kESounds_Battle]->Play();
-		}
-	}
 }
 
 // Called every frame

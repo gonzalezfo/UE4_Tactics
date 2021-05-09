@@ -43,6 +43,10 @@ void ACustomGameMode::BeginPlay()
 	SoundManager = GetWorld()->SpawnActor<ASoundManager>(SoundManagerClass,
 		FVector(0.0f, 0.0f, 0.0f), FRotator(0.0f, 0.0f, 0.0f), SpawnParams);
 
+	if (SoundManager != nullptr) {
+		SoundManager->AudioComponents[ESounds::kESounds_Battle]->Play();
+	}
+
 	LevelFinished = false;
 }
 
@@ -304,7 +308,6 @@ void ACustomGameMode::CheckVictoryCondition()
 
 			GetWorldTimerManager().SetTimer(VictoryTimer, this, &ACustomGameMode::VictoryCelebration, 2.0f, false);
 		}
-
 
 		LevelFinished = true;
 
