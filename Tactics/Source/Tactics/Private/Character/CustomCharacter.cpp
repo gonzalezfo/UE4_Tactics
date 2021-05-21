@@ -447,6 +447,7 @@ void ACustomCharacter::Die() {
 				GM->GameTeams[t_idx].TeamMembers.Remove(this);
 				if (GM->GameTeams[t_idx].TeamAIController != nullptr) {
 					GM->GameTeams[t_idx].TeamAIController->AITeamCharacters.Remove(this);
+					GM->GameTeams[t_idx].TeamAIController->OtherTeamsCharacters.Remove(this);
 				}
 			}
 		}
